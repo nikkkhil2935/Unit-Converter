@@ -1,124 +1,61 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ConverterWidget from '../components/ConverterWidget';
-import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 import FAQSchema from '../components/FAQSchema.astro';
 import { categories, convert, getFormulaExplanation, type Category, type Unit } from '../lib/conversions';
+import { getPairSEO, getRealWorldContext, getEquivalent } from '../utils/seo';
 
 export interface Props {
   category: Category;
   unitA: Unit;
   unitB: Unit;
-  unitASlug: string;
-  unitBSlug: string;
+  isRedirect: boolean;
+  redirectTo?: string;
+  canonicalPath: string;
 }
 
 export async function getStaticPaths() {
   const paths = [];
-  
-  // 1. Generate all standard full ID pairs
   for (const category of categories) {
     const units = category.units;
-    for (const unitA of units) {
-      for (const unitB of units) {
-        if (unitA.id !== unitB.id) {
+    for (let i = 0; i < units.length; i++) {
+      for (let j = 0; j < units.length; j++) {
+        if (i !== j) {
+          const fromUnit = units[i];
+          const toUnit = units[j];
+
+          const canonicalSlug = `${fromUnit.slug}-to-${toUnit.slug}`;
+          const legacySlug = `${fromUnit.id}-to-${toUnit.id}`;
+
+          // 1. Primary Canonical SEO Slug Path (e.g. /cm-to-inches)
           paths.push({
             params: {
-              unitA: unitA.id,
-              unitB: unitB.id
+              unitA: fromUnit.slug,
+              unitB: toUnit.slug
             },
             props: {
               category,
-              unitA,
-              unitB,
-              unitASlug: unitA.id,
-              unitBSlug: unitB.id
+              unitA: fromUnit,
+              unitB: toUnit,
+              isRedirect: false,
+              canonicalPath: `/${canonicalSlug}`
             }
           });
-        }
-      }
-    }
-  }
 
-  // 2. Generate priority short-name pairs
-  const shortAliasMap: Record<string, string> = {
-    "cm": "centimeter",
-    "inches": "inch",
-    "inch": "inch",
-    "kg": "kilogram",
-    "lbs": "pound",
-    "pound": "pound",
-    "mm": "millimeter",
-    "meters": "meter",
-    "feet": "foot",
-    "foot": "foot",
-    "km": "kilometer",
-    "miles": "mile",
-    "grams": "gram",
-    "ounces": "ounce",
-    "oz": "ounce",
-    "liters": "liter",
-    "gallons": "gallon-us",
-    "gallon": "gallon-us",
-    "mph": "mile-per-hour",
-    "kph": "kilometer-per-hour",
-    "yards": "yard",
-    "yard": "yard",
-    "acres": "acre",
-    "sq-ft": "square-foot",
-    "celsius": "celsius",
-    "fahrenheit": "fahrenheit",
-  };
-
-  const priorityPairs = [
-    ["cm", "inches"],
-    ["kg", "lbs"],
-    ["celsius", "fahrenheit"],
-    ["mm", "inches"],
-    ["meters", "feet"],
-    ["km", "miles"],
-    ["feet", "cm"],
-    ["grams", "ounces"],
-    ["inches", "cm"],
-    ["lbs", "kg"],
-    ["fahrenheit", "celsius"],
-    ["miles", "km"],
-    ["liters", "gallons"],
-    ["gallons", "liters"],
-    ["mph", "kph"],
-    ["kph", "mph"],
-    ["meters", "yards"],
-    ["yards", "meters"],
-    ["oz", "grams"],
-    ["feet", "inches"],
-    ["acres", "sq-ft"]
-  ];
-
-  for (const [aliasA, aliasB] of priorityPairs) {
-    const idA = shortAliasMap[aliasA];
-    const idB = shortAliasMap[aliasB];
-    if (idA && idB) {
-      // Find category
-      const category = categories.find(cat => 
-        cat.units.some(u => u.id === idA) && cat.units.some(u => u.id === idB)
-      );
-      if (category) {
-        const unitA = category.units.find(u => u.id === idA);
-        const unitB = category.units.find(u => u.id === idB);
-        if (unitA && unitB) {
-          // Avoid pushing duplicates if the slugs are already identical to standard IDs
-          if (aliasA !== idA || aliasB !== idB) {
+          // 2. Legacy ID Path (e.g. /centimeter-to-inch) redirecting to Canonical
+          if (canonicalSlug !== legacySlug) {
             paths.push({
               params: {
-                unitA: aliasA,
-                unitB: aliasB
+                unitA: fromUnit.id,
+                unitB: toUnit.id
               },
               props: {
                 category,
-                unitA,
-                unitB,
-                unitASlug: aliasA,
-                unitBSlug: aliasB
+                unitA: fromUnit,
+                unitB: toUnit,
+                isRedirect: true,
+                redirectTo: `/${canonicalSlug}`,
+                canonicalPath: `/${canonicalSlug}`
               }
             });
           }
@@ -126,13 +63,21 @@ export async function getStaticPaths() {
       }
     }
   }
-
   return paths;
 }
 
-const { category, unitA, unitB, unitASlug, unitBSlug } = Astro.props;
+const { category, unitA, unitB, isRedirect, redirectTo, canonicalPath } = Astro.props;
 
-// Formatting helper
+if (isRedirect && redirectTo) {
+  // Static 301-like client-side redirect fallback
+  return Astro.redirect(redirectTo, 301);
+}
+
+// Generate dynamic SEO titles and metadata
+const seo = getPairSEO(unitA, unitB, category);
+const realWorldParagraph = getRealWorldContext(unitA, unitB, category);
+
+// Format output values nicely
 const formatVal = (v: number) => {
   if (v === 0) return '0';
   const absV = Math.abs(v);
@@ -140,106 +85,244 @@ const formatVal = (v: number) => {
   return Number(v.toFixed(6)).toString();
 };
 
-const tableValues = [1, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
-const conversions = tableValues.map(val => ({
-  from: val,
-  to: formatVal(convert(val, unitA.id, unitB.id, category.id))
-}));
+const conversionFactor = formatVal(convert(1, unitA.id, unitB.id, category.id));
 
-const title = `Convert ${unitA.name} to ${unitB.name} — ${unitA.name} to ${unitB.name} Converter`;
-const description = `Instantly convert ${unitA.name} to ${unitB.name} online. Free calculator with the exact formula, step-by-step explanation, and a full conversion table. No signup required.`;
-const ogTitle = `${unitA.name} to ${unitB.name} Converter | MyUnitConverter`;
-const ogDescription = `Convert ${unitA.name} to ${unitB.name} instantly. See the formula, conversion table, and live results — free and accurate.`;
+// Generate the 14-row Conversion Table
+const tableValues = [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
+const conversions = tableValues.map(val => {
+  const converted = convert(val, unitA.id, unitB.id, category.id);
+  return {
+    from: formatVal(val),
+    to: formatVal(converted),
+    equivalent: getEquivalent(converted, unitB.slug)
+  };
+});
 
-// Build Breadcrumbs
-const crumbs = [
-  { name: 'Home', url: '/' },
-  { name: `${category.name} Converter`, url: `/${category.id}-converter` },
-  { name: `${unitA.name} to ${unitB.name}`, url: `/${unitASlug}-to-${unitBSlug}` }
-];
-
-// Build FAQs
+// Dynamic FAQ list
 const faqs = [
   {
-    question: `How many ${unitB.name.toLowerCase()}s is 1 ${unitA.name.toLowerCase()}?`,
-    answer: `1 ${unitA.name.toLowerCase()} (${unitA.symbol}) is equal to ${formatVal(convert(1, unitA.id, unitB.id, category.id))} ${unitB.name.toLowerCase()}s (${unitB.symbol}).`
+    question: `How many ${unitB.name.toLowerCase()}s are in a ${unitA.name.toLowerCase()}?`,
+    answer: `1 ${unitA.name} (${unitA.symbol}) is equal to ${conversionFactor} ${unitB.name} (${unitB.symbol}). To convert ${unitA.name.toLowerCase()}s to ${unitB.name.toLowerCase()}s, multiply your value by ${conversionFactor}.`
   },
   {
-    question: `How do I convert ${unitASlug} to ${unitBSlug} manually?`,
-    answer: `To convert ${unitASlug} to ${unitBSlug} manually, use the conversion formula: ${getFormulaExplanation(unitA.id, unitB.id, category.id)}.`
+    question: `How do I convert ${unitA.name.toLowerCase()} to ${unitB.name.toLowerCase()}?`,
+    answer: `To convert ${unitA.name} to ${unitB.name}, use the formula: ${unitB.name} = ${unitA.name} × ${conversionFactor}. For example, 5 ${unitA.symbol} = ${formatVal(convert(5, unitA.id, unitB.id, category.id))} ${unitB.symbol}.`
   },
   {
-    question: `Is ${unitASlug} to ${unitBSlug} the same as ${unitA.name.toLowerCase()} to ${unitB.name.toLowerCase()}?`,
-    answer: `Yes, ${unitASlug} to ${unitBSlug} is the common abbreviation for converting ${unitA.name.toLowerCase()}s to ${unitB.name.toLowerCase()}s. Both terms refer to the same measurement transformation.`
+    question: `What is the formula for ${unitA.symbol} to ${unitB.symbol}?`,
+    answer: `The formula is: ${unitB.symbol} = ${unitA.symbol} × ${conversionFactor}. This is based on the exact SI conversion factor. Use our calculator above to convert any value instantly.`
   }
 ];
 
-// 3 Sibling unit-pair links in same category
-const shortAliasMapInverse: Record<string, string> = {
-  "centimeter": "cm",
-  "inch": "inches",
-  "kilogram": "kg",
-  "pound": "lbs",
-  "millimeter": "mm",
-  "meter": "meters",
-  "foot": "feet",
-  "kilometer": "km",
-  "mile": "miles",
-  "gram": "grams",
-  "ounce": "ounces",
-  "gallon-us": "gallons",
-  "liter": "liters",
-  "mile-per-hour": "mph",
-  "kilometer-per-hour": "kph",
-  "yard": "yards",
-  "acre": "acres",
-  "square-foot": "sq-ft",
-  "celsius": "celsius",
-  "fahrenheit": "fahrenheit"
+// Generate dynamic 6 same-category links
+// 3 starting with unitA, 3 ending with unitB
+const siblingFrom = category.units
+  .filter(u => u.slug !== unitA.slug && u.slug !== unitB.slug)
+  .slice(0, 3)
+  .map(u => ({
+    label: `Convert ${unitA.symbol} to ${u.symbol}`,
+    url: `/${unitA.slug}-to-${u.slug}`
+  }));
+
+const siblingTo = category.units
+  .filter(u => u.slug !== unitA.slug && u.slug !== unitB.slug)
+  .slice(0, 3)
+  .map(u => ({
+    label: `Convert ${u.symbol} to ${unitB.symbol}`,
+    url: `/${u.slug}-to-${unitB.slug}`
+  }));
+
+const siblingLinks = [...siblingFrom, ...siblingTo];
+
+// Related categories
+const categoryMap = categories.reduce((acc, c) => {
+  acc[c.slug] = c.name;
+  return acc;
+}, {} as Record<string, string>);
+
+const relatedCategories = category.relatedCategories.map(slug => ({
+  name: categoryMap[slug] || slug,
+  url: `/${slug}-converter`
+}));
+
+// Popular footer conversions
+const popularFooterConversions = [
+  { label: "cm to inches", url: "/cm-to-inches" },
+  { label: "kg to lbs", url: "/kg-to-lbs" },
+  { label: "Celsius to Fahrenheit", url: "/celsius-to-fahrenheit" },
+  { label: "mm to inches", url: "/mm-to-inches" },
+  { label: "meters to feet", url: "/meters-to-feet" },
+  { label: "km to miles", url: "/km-to-miles" },
+  { label: "feet to cm", url: "/feet-to-cm" },
+  { label: "grams to ounces", url: "/grams-to-ounces" },
+  { label: "inches to cm", url: "/inches-to-cm" },
+  { label: "liters to gallons", url: "/liters-to-gallons" },
+  { label: "mph to kph", url: "/mph-to-kph" },
+  { label: "acres to sq ft", url: "/acres-to-sqft" }
+];
+
+// Build JSON-LD objects
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to Convert ${unitA.name} to ${unitB.name}`,
+  "description": `Step-by-step guide to convert ${unitA.name} (${unitA.symbol}) to ${unitB.name} (${unitB.symbol}) using the formula and our free calculator.`,
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": `Enter your ${unitA.name} value`,
+      "text": `Type the number of ${unitA.name} you want to convert into the input field above.`
+    },
+    {
+      "@type": "HowToStep",
+      "name": `Select ${unitA.name} as the From unit`,
+      "text": `Make sure '${unitA.name} (${unitA.symbol})' is selected in the left dropdown.`
+    },
+    {
+      "@type": "HowToStep",
+      "name": `Select ${unitB.name} as the To unit`,
+      "text": `Choose '${unitB.name} (${unitB.symbol})' in the right dropdown.`
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Read your result",
+      "text": `The converted value in ${unitB.name} appears instantly. No button click required.`
+    }
+  ]
 };
 
-const siblingPairs = category.popularPairs
-  .filter(p => !(p[0] === unitA.id && p[1] === unitB.id) && !(p[0] === unitB.id && p[1] === unitA.id))
-  .slice(0, 3)
-  .map(p => {
-    const slugA = shortAliasMapInverse[p[0]] || p[0];
-    const slugB = shortAliasMapInverse[p[1]] || p[1];
-    return { label: `${slugA} to ${slugB}`, url: `/${slugA}-to-${slugB}` };
-  });
+const jsonLdMathSolver = {
+  "@context": "https://schema.org",
+  "@type": "MathSolver",
+  "name": `${unitA.name} to ${unitB.name} Converter`,
+  "url": `https://myunitconverter.app${canonicalPath}`,
+  "description": `Converts ${unitA.name} to ${unitB.name} using the formula: ${unitB.symbol} = ${unitA.symbol} × ${conversionFactor}`
+};
 
-if (siblingPairs.length < 3) {
-  category.units.slice(0, 5).forEach(u => {
-    if (u.id !== unitA.id && u.id !== unitB.id && siblingPairs.length < 3) {
-      const slugA = shortAliasMapInverse[u.id] || u.id;
-      const slugB = shortAliasMapInverse[unitB.id] || unitB.id;
-      siblingPairs.push({ label: `${slugA} to ${slugB}`, url: `/${slugA}-to-${slugB}` });
+const jsonLdFAQ = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
     }
-  });
-}
+  }))
+};
+
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://myunitconverter.app"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": `${category.name} Converter`,
+      "item": `https://myunitconverter.app/${category.slug}-converter`
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": `${unitA.name} to ${unitB.name}`,
+      "item": `https://myunitconverter.app${canonicalPath}`
+    }
+  ]
+};
+
+// Calculate Inverse Formula
+const inverseFactor = formatVal(1 / convert(1, unitA.id, unitB.id, category.id));
+
+// Generate Mental Math Tip
+const getMentalMathTip = () => {
+  if (category.slug === 'temperature') {
+    if (unitA.slug === 'celsius' && unitB.slug === 'fahrenheit') {
+      return "Double the Celsius temperature and add 30 for a quick mental estimate.";
+    }
+    if (unitA.slug === 'fahrenheit' && unitB.slug === 'celsius') {
+      return "Subtract 30 and half the Fahrenheit temperature for a quick mental estimate.";
+    }
+    return "Use our instant calculator above to avoid complex temperature offset math.";
+  }
+  const f = convert(1, unitA.id, unitB.id, category.id);
+  if (f === 1) return "The units are equivalent; no math is required.";
+  
+  if (Math.abs(f - 2.54) < 0.01) {
+    return "Divide the centimeters value by 2.5 (or divide by 5 and multiply by 2) for a fast estimate.";
+  }
+  if (Math.abs(f - 0.3048) < 0.01) {
+    return "Divide the feet value by 3 to get a rough estimate in meters.";
+  }
+  if (Math.abs(f - 0.45359) < 0.01) {
+    return "Divide the pounds value by 2 and subtract 10% for a quick weight estimate.";
+  }
+  if (Math.abs(f - 1.60934) < 0.01) {
+    return "Multiply the miles value by 1.6 to quickly estimate the distance in kilometers.";
+  }
+  
+  if (f > 1) {
+    const rounded = Math.round(f * 10) / 10;
+    return `Multiply the value by roughly ${rounded} to calculate the equivalent amount in your head.`;
+  } else {
+    const roundedDiv = Math.round((1 / f) * 10) / 10;
+    return `Divide the value by roughly ${roundedDiv} to quickly estimate the converted result.`;
+  }
+};
 ---
 
 <BaseLayout
-  title={title}
-  description={description}
-  keywords={`convert ${unitA.name.toLowerCase()} to ${unitB.name.toLowerCase()}, ${unitA.name.toLowerCase()} to ${unitB.name.toLowerCase()} converter, ${unitA.symbol} to ${unitB.symbol}`}
-  canonicalPath={`/${unitASlug}-to-${unitBSlug}`}
-  ogTitle={ogTitle}
-  ogDescription={ogDescription}
+  title={seo.title}
+  description={seo.description}
+  keywords={seo.keywords.join(', ')}
+  canonicalPath={canonicalPath}
+  categorySlug={category.slug}
 >
-  <!-- Breadcrumbs -->
-  <BreadcrumbSchema crumbs={crumbs} />
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdFAQ)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdBreadcrumb)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdMathSolver)} />
+  </Fragment>
 
-  <!-- Title Section -->
+  <!-- Visible Breadcrumb Trail -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span class="mx-0.5 text-muted-text/60">/</span>
+    <a href={`/${category.slug}-converter`} class="hover:text-brand-blue transition-colors">{category.name} Converter</a>
+    <span class="mx-0.5 text-muted-text/60">/</span>
+    <span class="text-ink font-semibold">{unitA.symbol} to {unitB.symbol}</span>
+  </nav>
+
+  <!-- Title & Direct Answer Section (Snippet Optimization) -->
   <section class="mb-8 select-none">
-    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2">
-      {unitA.name} to {unitB.name} Converter
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">
+      {seo.h1}
     </h1>
-    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
-      Convert {unitA.name.toLowerCase()}s to {unitB.name.toLowerCase()}s ({unitA.symbol} to {unitB.symbol}) instantly using this clean, modern calculator. Type in the box below to see live bidirectional conversion results.
+    
+    <!-- Direct Answer Snippet for Position 0 -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl select-text">
+      <p class="text-base text-ink mb-1">
+        <strong>1 {unitA.name} = {conversionFactor} {unitB.name}</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        To convert {unitA.name.toLowerCase()}s to {unitB.name.toLowerCase()}s, multiply by {conversionFactor}.
+      </p>
+    </div>
+
+    <!-- Context Paragraph -->
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed select-text">
+      {realWorldParagraph}
     </p>
   </section>
 
-  <!-- Widget Island -->
+  <!-- Interactive Converter Widget -->
   <section class="mb-10">
     <ConverterWidget 
       client:load 
@@ -249,13 +332,13 @@ if (siblingPairs.length < 3) {
     />
   </section>
 
-  <!-- Split grid for Table and Formula Explanation -->
+  <!-- Split Grid for Table and Formulas -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 select-none">
     
-    <!-- Left: Conversion Table -->
+    <!-- Left: Conversion Table (14 rows) -->
     <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
       <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
-        Common {unitA.name} to {unitB.name} Conversions
+        {seo.h2variants[2]}
       </h2>
       <div class="overflow-hidden border border-hairline rounded-lg">
         <table class="w-full border-collapse text-left text-xs">
@@ -263,6 +346,7 @@ if (siblingPairs.length < 3) {
             <tr class="bg-canvas border-b border-hairline text-muted-text font-mono text-[10px] uppercase">
               <th class="p-3 font-semibold">{unitA.name} ({unitA.symbol})</th>
               <th class="p-3 font-semibold">{unitB.name} ({unitB.symbol})</th>
+              <th class="p-3 font-semibold hidden sm:table-cell">Real-world equivalent</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-hairline font-mono">
@@ -270,6 +354,7 @@ if (siblingPairs.length < 3) {
               <tr class="hover:bg-canvas/50 transition-colors">
                 <td class="p-3 text-ink font-medium">{row.from}</td>
                 <td class="p-3 text-brand-blue font-bold">{row.to}</td>
+                <td class="p-3 text-muted-text text-[11px] hidden sm:table-cell">{row.equivalent}</td>
               </tr>
             ))}
           </tbody>
@@ -277,66 +362,122 @@ if (siblingPairs.length < 3) {
       </div>
     </section>
 
-    <!-- Right: Calculation Details -->
+    <!-- Right: Formulas & Dynamic Details -->
     <section class="flex flex-col gap-6">
       
-      <!-- Formula Explained -->
+      <!-- Formula Explanation Block -->
       <div class="bg-card border border-hairline rounded-xl p-6 transition-colors">
         <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
-          How to Convert {unitA.name} to {unitB.name}
+          {seo.h2variants[1]}
         </h2>
-        <div class="p-4 bg-canvas border border-hairline rounded-lg mb-4">
-          <p class="font-mono text-sm font-semibold text-brand-blue">
-            {getFormulaExplanation(unitA.id, unitB.id, category.id)}
-          </p>
+        <div class="space-y-4">
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1.5">Direct Formula</span>
+            <code class="font-mono text-sm font-semibold text-brand-blue">
+              {getFormulaExplanation(unitA.id, unitB.id, category.id)}
+            </code>
+          </div>
+          
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1.5">Inverse Formula</span>
+            <code class="font-mono text-sm font-semibold text-body-text">
+              {unitA.symbol} = {unitB.symbol} × {inverseFactor}
+            </code>
+          </div>
+
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1.5">Mental Math Shortcut</span>
+            <p class="text-xs text-body-text leading-relaxed font-sans mt-0.5">
+              {getMentalMathTip()}
+            </p>
+          </div>
         </div>
-        <p class="text-xs text-body-text leading-relaxed">
-          The exact calculation formula is displayed in the box above. Multiply your starting value by the conversion factor to resolve the measurement.
-        </p>
-        <p class="text-xs text-body-text leading-relaxed mt-2">
-          For example, to convert 10 {unitA.name.toLowerCase()}s:
-          <span class="block font-mono text-[11px] text-ink bg-canvas px-2 py-1.5 rounded border border-hairline mt-1">
-            10 {unitA.symbol} = {formatVal(convert(10, unitA.id, unitB.id, category.id))} {unitB.symbol}
-          </span>
-        </p>
       </div>
 
-      <!-- FAQ Section -->
+      <!-- Common Value Searches (Targeting specific searches) -->
       <div class="bg-card border border-hairline rounded-xl p-6 transition-colors">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
-          Frequently Asked Questions
+        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
+          Common {unitA.name} to {unitB.name} Calculations
         </h2>
-        <FAQSchema faqs={faqs} />
+        <ul class="space-y-2 text-xs font-mono text-body-text">
+          <li>5 {unitA.symbol} = {formatVal(convert(5, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+          <li>10 {unitA.symbol} = {formatVal(convert(10, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+          <li>50 {unitA.symbol} = {formatVal(convert(50, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+          <li>100 {unitA.symbol} = {formatVal(convert(100, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+          <li>500 {unitA.symbol} = {formatVal(convert(500, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+        </ul>
       </div>
-      
+
     </section>
   </div>
 
-  <!-- Internal Linking Footer Block -->
-  <section class="border-t border-hairline pt-6 text-xs text-body-text select-none">
-    <div class="flex flex-col gap-4">
-      <div>
-        <h3 class="font-semibold text-ink mb-2">Reverse Conversion</h3>
-        <a href={`/${unitBSlug}-to-${unitASlug}`} class="hover:text-brand-blue transition-colors font-mono">
-          {unitB.name} to {unitA.name} Converter
-        </a>
-      </div>
-      <div>
-        <h3 class="font-semibold text-ink mb-2">Related Sibling Conversions</h3>
-        <div class="flex flex-wrap gap-4">
-          {siblingPairs.map(sibling => (
-            <a href={sibling.url} class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded font-mono font-medium transition-all">
-              {sibling.label}
-            </a>
-          ))}
+  <!-- FAQs Accordion UI -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+      {seo.h2variants[0]}
+    </h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Internal Linking Sections (PILLAR 4) -->
+  <section class="border-t border-hairline pt-8 pb-12 text-xs text-body-text select-none">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- Reverse & Sibling Links -->
+      <div class="flex flex-col gap-6">
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Reverse Conversion</h3>
+          <a href={`/${unitB.slug}-to-${unitA.slug}`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Convert {unitB.name} to {unitA.name}
+          </a>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other {category.name} Conversions</h3>
+          <div class="grid grid-cols-2 gap-2">
+            {siblingLinks.map(sibling => (
+              <a href={sibling.url} class="p-2 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded font-mono text-[11px] truncate">
+                {sibling.label}
+              </a>
+            ))}
+          </div>
         </div>
       </div>
-      <div>
-        <h3 class="font-semibold text-ink mb-2">Parent Category</h3>
-        <a href={`/${category.id}-converter`} class="hover:text-brand-blue transition-colors font-medium">
-          {category.name} Converter
-        </a>
+
+      <!-- Related Categories & Popular Conversions -->
+      <div class="flex flex-col gap-6">
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Related Measurement Types</h3>
+          <div class="flex flex-wrap gap-2">
+            {relatedCategories.map(cat => (
+              <a href={cat.url} class="px-3 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded-full font-medium">
+                {cat.name} Converter
+              </a>
+            ))}
+            <a href={`/${category.slug}-converter`} class="px-3 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded-full font-semibold">
+              All {category.name} Units
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Popular Converter Links</h3>
+          <div class="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-muted-text font-mono">
+            {popularFooterConversions.map((link, idx) => (
+              <span>
+                {idx > 0 && <span class="mr-2 text-hairline">|</span>}
+                <a href={link.url} class="hover:text-brand-blue transition-colors">
+                  {link.label}
+                </a>
+              </span>
+            ))}
+          </div>
+        </div>
       </div>
+
     </div>
   </section>
 

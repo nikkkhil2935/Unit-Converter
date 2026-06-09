@@ -129,16 +129,17 @@ if (isHomePage) {
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content="Unit Convert" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
   <!-- WebApplication Schema -->
   {webAppSchema && (
     <script type="application/ld+json" set:html={JSON.stringify(webAppSchema)} />
   )}
 
-  <!-- Fonts -->
+  <!-- Fonts and Prefetching -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <!-- Custom head slots (e.g. FAQ schema, Breadcrumb schema) -->

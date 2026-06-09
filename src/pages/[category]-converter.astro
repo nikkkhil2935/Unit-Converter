@@ -72,7 +72,9 @@ const faqs = [
 ];
 
 // Related sibling categories
-const relatedCategories = categories.filter(c => c.id !== category.id).slice(0, 3);
+const relatedCategories = category.relatedCategories
+  .map(slug => categories.find(c => c.slug === slug))
+  .filter(Boolean);
 ---
 
 <BaseLayout

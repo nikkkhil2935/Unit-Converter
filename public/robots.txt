@@ -1,4 +1,6 @@
 User-agent: *
 Allow: /
+Allow: /*-to-*/
+Allow: /*-converter
 Disallow: /api/
-Sitemap: https://myunitconverter.app/sitemap.xml
+Sitemap: https://myunitconverter.app/sitemap-index.xml
