@@ -6,44 +6,104 @@ import '../styles/global.css';
 export interface Props {
   title: string;
   description: string;
-  canonical?: string;
+  keywords?: string;
+  canonicalPath?: string;
+  ogTitle?: string;
+  ogDescription?: string;
   categorySlug?: string;
 }
 
-const { title, description, canonical, categorySlug } = Astro.props;
-const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site || 'https://myunitconverter.app').href;
+const { 
+  title, 
+  description, 
+  keywords = "unit converter, online unit converter, unit converter calculator, converter", 
+  canonicalPath, 
+  ogTitle = title, 
+  ogDescription = description,
+  categorySlug 
+} = Astro.props;
+
+const path = canonicalPath || Astro.url.pathname;
+const cleanPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
+const canonicalURL = `https://myunitconverter.app${cleanPath}`;
 ---
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <!-- Primary Meta -->
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <meta name="keywords" content={keywords} />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#000000" />
+  <link rel="canonical" href={canonicalURL} />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonicalURL} />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:image" content="https://myunitconverter.app/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="MyUnitConverter — Free Online Unit Converter" />
+  <meta property="og:site_name" content="MyUnitConverter" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={ogTitle} />
+  <meta name="twitter:description" content={ogDescription} />
+  <meta name="twitter:image" content="https://myunitconverter.app/og-image.png" />
+  <meta name="twitter:site" content="@myunitconverter" />
+
+  <!-- Technical favicons / manifest -->
   <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="shortcut icon" href="/favicon.ico" />
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content="Unit Convert" />
   <link rel="manifest" href="/site.webmanifest" />
-  <title>{title}</title>
-  <meta name="description" content={description} />
-  <link rel="canonical" href={canonicalURL} />
+  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
 
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content={canonicalURL} />
-  <meta property="og:title" content={title} />
-  <meta property="og:description" content={description} />
-  
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image" />
-  <meta property="twitter:url" content={canonicalURL} />
-  <meta property="twitter:title" content={title} />
-  <meta property="twitter:description" content={description} />
+  <!-- WebApplication Schema -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MyUnitConverter",
+    "url": "https://myunitconverter.app",
+    "description": "Free online unit converter calculator supporting 77+ categories including length, weight, temperature, volume, area, speed, pressure, energy, time, torque, density, electricity, and more. Live bidirectional conversion with shareable URLs, keyboard shortcuts, and dark mode.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Live bidirectional unit conversion",
+      "77+ unit categories",
+      "Shareable conversion URLs",
+      "Keyboard shortcuts",
+      "Dark and light mode",
+      "Conversion formula display",
+      "Recent conversions history",
+      "No account required"
+    ]
+  }
+  </script>
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <!-- Custom head slots (e.g. FAQ schema, Breadcrumb schema) -->
+  <slot name="head" />
 
   <!-- Theme and Language init: prevent flash of wrong styling -->
   <script is:inline>
@@ -100,6 +160,7 @@ const canonicalURL = canonical || new URL(Astro.url.pathname, Astro.site || 'htt
       <div class="flex gap-6 font-medium">
         <a href="/about" class="hover:text-brand-blue transition-colors">About</a>
         <a href="/privacy" class="hover:text-brand-blue transition-colors">Privacy</a>
+        <a href="/terms" class="hover:text-brand-blue transition-colors">Terms</a>
         <a href="/contact" class="hover:text-brand-blue transition-colors">Contact</a>
       </div>
     </div>

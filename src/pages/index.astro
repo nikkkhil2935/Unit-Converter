@@ -2,32 +2,107 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBar from '../components/SearchBar.astro';
 import CategoryCard from '../components/CategoryCard.astro';
+import FAQSchema from '../components/FAQSchema.astro';
 import { categories } from '../lib/conversions';
 
 const popularLinks = [
-  { label: "cm → inches", href: "/centimeter-to-inch" },
-  { label: "kg → lbs", href: "/kilogram-to-pound" },
+  { label: "cm → inches", href: "/cm-to-inches" },
+  { label: "kg → lbs", href: "/kg-to-lbs" },
   { label: "°C → °F", href: "/celsius-to-fahrenheit" },
-  { label: "miles → km", href: "/mile-to-kilometer" },
-  { label: "liters → gallons", href: "/liter-to-gallon-us" },
+  { label: "miles → km", href: "/miles-to-km" },
+  { label: "liters → gallons", href: "/liters-to-gallons" },
   { label: "MB → GB", href: "/megabyte-to-gigabyte" },
+];
+
+const footerKeywordLinks = [
+  { label: "cm to inches", href: "/cm-to-inches" },
+  { label: "kg to lbs", href: "/kg-to-lbs" },
+  { label: "Celsius to Fahrenheit", href: "/celsius-to-fahrenheit" },
+  { label: "mm to inches", href: "/mm-to-inches" },
+  { label: "meters to feet", href: "/meters-to-feet" },
+  { label: "km to miles", href: "/km-to-miles" },
+  { label: "feet to cm", href: "/feet-to-cm" },
+  { label: "grams to ounces", href: "/grams-to-ounces" },
+  { label: "inches to cm", href: "/inches-to-cm" },
+  { label: "liters to gallons", href: "/liters-to-gallons" },
+  { label: "mph to kph", href: "/mph-to-kph" },
+  { label: "acres to sq ft", href: "/acres-to-sq-ft" },
+  { label: "lbs to kg", href: "/lbs-to-kg" },
+  { label: "Fahrenheit to Celsius", href: "/fahrenheit-to-celsius" },
+  { label: "miles to km", href: "/miles-to-km" },
+  { label: "oz to grams", href: "/oz-to-grams" }
+];
+
+const homepageFaqs = [
+  {
+    question: "What is a unit converter?",
+    answer: "A unit converter is an online tool that transforms a measurement from one unit to another within the same physical quantity — for example, converting kilometers to miles, kilograms to pounds, or Celsius to Fahrenheit using exact mathematical conversion factors."
+  },
+  {
+    question: "How do I use an online unit converter?",
+    answer: "To use MyUnitConverter: (1) Select a unit category such as length, weight, or temperature. (2) Choose your from and to units using the dropdowns. (3) Type your value — the result updates live as you type. (4) Press S to swap units or C to copy the result. No signup or installation required."
+  },
+  {
+    question: "What is the most accurate online unit converter?",
+    answer: "MyUnitConverter uses exact SI (International System of Units) conversion factors calculated to 15 significant figures, making it one of the most accurate free online unit converter calculators available."
+  },
+  {
+    question: "Does Google have a unit converter?",
+    answer: "Google includes a basic unit converter in search results for common conversions like length and temperature. However, it does not support engineering units, electricity converters, torque, density, or the 77+ specialist categories available on MyUnitConverter."
+  },
+  {
+    question: "What is a metric unit converter?",
+    answer: "A metric unit converter helps you convert between units in the International System of Units (SI), such as meters, kilograms, liters, and Celsius. MyUnitConverter supports full metric-to-imperial and metric-to-metric conversions across all major categories."
+  },
+  {
+    question: "How do I use a unit converter on TI-84 Plus?",
+    answer: "On a TI-84 Plus calculator, press the APPS button and select the Unit Converter app if installed, or use the ANGLE menu for angle conversions. For a faster alternative, use MyUnitConverter online — it supports all the same conversions instantly in your browser without any setup."
+  },
+  {
+    question: "How do I make a unit converter in Python?",
+    answer: "To make a unit converter in Python, define a dictionary of conversion factors for each unit category, then write a function that takes a value, from-unit, and to-unit as arguments and returns value * (factor[from_unit] / factor[to_unit]). For a ready-to-use online alternative, MyUnitConverter handles all categories without any code."
+  },
+  {
+    question: "How do I create a unit converter in Excel?",
+    answer: "In Excel, use the built-in CONVERT function: =CONVERT(value, from_unit, to_unit). For example, =CONVERT(1, 'kg', 'lbm') converts 1 kilogram to pounds. Excel supports common unit categories including weight, length, temperature, and volume through this function."
+  },
+  {
+    question: "What happened to Google unit converter?",
+    answer: "Google's built-in unit converter is still available — search 'unit converter' or any specific conversion like '5 kg to lbs' in Google Search to see the calculator widget. However, it covers only basic categories. MyUnitConverter supports 77+ categories including engineering, electricity, and radiology units that Google's tool does not include."
+  },
+  {
+    question: "Is there a free unit converter app?",
+    answer: "Yes. MyUnitConverter works as a Progressive Web App (PWA) — open myunitconverter.app in your phone browser and tap 'Add to Home Screen' on iOS or Android. You get a free, app-like unit converter with 77+ categories, dark mode, and offline support — no App Store download required."
+  },
+  {
+    question: "What is the difference between a unit converter and a calculator?",
+    answer: "A calculator performs arithmetic operations on numbers. A unit converter transforms a measurement expressed in one unit into its equivalent in another unit using a fixed conversion factor — for example, multiplying meters by 3.28084 to get feet. MyUnitConverter combines both: you enter a value and get the converted result instantly, with the formula displayed."
+  },
+  {
+    question: "How do I use a unit converter for weight?",
+    answer: "On MyUnitConverter, go to the Weight and Mass Converter page. Select your input unit (e.g. kilograms) and output unit (e.g. pounds) from the dropdowns. Type your weight value and the converted result appears instantly. Common weight conversions include kg to lbs, grams to ounces, and tonnes to pounds."
+  }
 ];
 ---
 
 <BaseLayout
-  title="Free Unit Converter — myunitconverter.app"
-  description="Free online unit converter for length, weight, temperature, volume, speed, area, data, energy and more. Instant, accurate, no signup required."
+  title="Unit Converter — Free Online Unit Converter Calculator"
+  description="MyUnitConverter is a free online unit converter calculator supporting 77+ categories: length, weight, temperature, volume, area, speed, pressure, torque, electricity, and more. Instant live results, no signup required."
+  keywords="unit converter, online unit converter, unit converter calculator, unit converter weight, weight unit converter, unit converter length, metric unit converter, time unit converter, pressure unit converter, density unit converter, torque unit converter, electricity unit converter, unit converter online, unit converter area, power unit converter"
+  canonicalPath="/"
+  ogTitle="Unit Converter — Fast, Free & Accurate | MyUnitConverter"
+  ogDescription="Convert units instantly across 77+ categories. Live results, shareable URLs, dark mode — no signup needed."
 >
 
   <!-- HERO SECTION -->
-  <section class="text-center pt-16 pb-8 max-w-xl mx-auto relative z-10">
-    <h1 data-t="title" class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-ink leading-[1.1] sm:leading-[1.05] font-sans">
-      Convert any unit, instantly.
+  <section class="text-center pt-16 pb-8 max-w-xl mx-auto relative z-10 select-none">
+    <h1 class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3 text-ink leading-[1.1] sm:leading-[1.05] font-sans">
+      Unit Converter
     </h1>
     
-    <p data-t="subtitle" class="text-body-text text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed">
-      Quick, accurate, and ad-light unit converter for developers, engineers, and students. Supporting 77+ categories.
-    </p>
+    <h2 class="text-muted-text text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed font-normal">
+      Free Online Unit Converter for Every Measurement
+    </h2>
 
     <!-- Popular quick links -->
     <div class="flex flex-wrap justify-center gap-2 mb-6">
@@ -47,8 +122,8 @@ const popularLinks = [
   <SearchBar />
 
   <!-- CATEGORY GRID -->
-  <section class="pb-16 relative z-10">
-    <h2 data-t="categories" class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 border-b border-hairline pb-2 font-mono">
+  <section class="pb-10 relative z-10">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 border-b border-hairline pb-2 font-mono">
       Unit Categories
     </h2>
     <div id="category-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -58,9 +133,117 @@ const popularLinks = [
     </div>
     
     <!-- Empty search state -->
-    <p id="no-results" data-t="noResults" class="hidden text-center text-muted-text py-16 text-xs italic">
+    <p id="no-results" class="hidden text-center text-muted-text py-16 text-xs italic">
       No categories found matching your query. Check spelling or try a different term.
     </p>
+  </section>
+
+  <!-- SEO CONTENT BLOCK -->
+  <section class="prose prose-sm dark:prose-invert max-w-none border-t border-hairline pt-12 pb-16 relative z-10 text-body-text">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div>
+        <h2 class="text-xl font-bold text-ink mb-4">What Is a Unit Converter?</h2>
+        <p class="text-xs leading-relaxed mb-4">
+          A unit converter is an online tool that transforms a value from one unit of
+          measurement to another within the same physical quantity. Whether you need
+          to convert centimeters to inches, kilograms to pounds, Celsius to Fahrenheit,
+          or miles per hour to kilometers per hour, a unit converter calculator gives
+          you the answer instantly — no manual formula required.
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          MyUnitConverter is a free online unit converter built for speed, accuracy,
+          and clarity. With support for 77+ unit categories and live bidirectional
+          conversion, you see your result the moment you start typing — no button
+          clicks, no page reloads, no wasted time.
+        </p>
+
+        <h2 class="text-xl font-bold text-ink mt-8 mb-4">How to Use the Unit Converter</h2>
+        <ol class="list-decimal pl-4 text-xs space-y-2 mb-4">
+          <li><strong>Choose a category</strong> — pick from the grid on the homepage: length, weight, temperature, volume, area, time, speed, pressure, energy, torque, electricity, and 65+ more.</li>
+          <li><strong>Select your units</strong> — choose the unit you're converting from and the unit you're converting to using the dropdown menus.</li>
+          <li><strong>Enter your value</strong> — type any number and the converted result appears instantly in real time.</li>
+          <li><strong>Swap units</strong> — click the swap button or press S on your keyboard to instantly reverse the conversion direction.</li>
+          <li><strong>Copy or share</strong> — press C to copy the result, or share the page URL which contains your exact conversion for bookmarking or sending.</li>
+        </ol>
+      </div>
+
+      <div>
+        <h2 class="text-xl font-bold text-ink mb-4">Unit Converter Categories</h2>
+        <p class="text-xs leading-relaxed mb-4">
+          MyUnitConverter covers every major measurement system used globally today:
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          <strong>Common Converters:</strong> Length Converter, Weight Unit Converter,
+          Temperature Converter, Volume Converter, Area Converter, Time Unit Converter,
+          Speed Converter, Pressure Unit Converter, Energy Converter, Power Unit Converter
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          <strong>Engineering Converters:</strong> Torque Unit Converter, Density Unit Converter,
+          Force Converter, Acceleration Converter, Moment of Inertia Converter
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          <strong>Electricity Converters:</strong> Electricity Unit Converter, Charge Converter,
+          Current Converter, Voltage Converter, Electric Resistance Converter,
+          Capacitance Converter, Inductance Converter
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          <strong>Other Converters:</strong> Metric Unit Converter, Data Storage Converter,
+          Data Transfer Converter, Numbers Converter, Sound Converter,
+          Typography Converter, Currency Converter, Unit Converter for Money
+        </p>
+        <p class="text-xs leading-relaxed mb-4">
+          Every category page includes the exact mathematical formula used, a
+          reference conversion table, and a FAQ section so you understand the
+          conversion — not just the number.
+        </p>
+      </div>
+    </div>
+
+    <div class="mt-8 border-t border-hairline/60 pt-8">
+      <h2 class="text-xl font-bold text-ink mb-4">Why MyUnitConverter Is Better</h2>
+      <p class="text-xs leading-relaxed mb-4">
+        Older tools like unitconverters.net were built in 2008 and haven't kept up
+        with how people use the web today. MyUnitConverter was built from scratch
+        with modern standards:
+      </p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 text-xs mb-8">
+        <ul class="list-disc pl-4 space-y-1">
+          <li><strong>Instant results</strong> — live conversion as you type, no submit button needed</li>
+          <li><strong>Shareable URLs</strong> — every conversion has its own link: /cm-to-inches, /kg-to-lbs, /celsius-to-fahrenheit — bookmark or share any conversion</li>
+          <li><strong>Keyboard shortcuts</strong> — Tab between fields, S to swap, C to copy result</li>
+        </ul>
+        <ul class="list-disc pl-4 space-y-1">
+          <li><strong>Formula display</strong> — every converter shows the math behind the answer</li>
+          <li><strong>Dark and light mode</strong> — comfortable to use any time of day</li>
+          <li><strong>Mobile-first design</strong> — works perfectly on phones, tablets, and desktops</li>
+        </ul>
+        <ul class="list-disc pl-4 space-y-1">
+          <li><strong>No account required</strong> — open the page and start converting immediately</li>
+          <li><strong>Recent history</strong> — your last 10 conversions are saved locally for quick access</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- REUSED FAQ SCHEMA SECTION -->
+    <div class="mt-12 border-t border-hairline/60 pt-8">
+      <h2 class="text-xl font-bold text-ink mb-6">Frequently Asked Questions</h2>
+      <FAQSchema faqs={homepageFaqs} />
+    </div>
+  </section>
+
+  <!-- KEYWORD RICH FOOTER LINKS -->
+  <section class="border-t border-hairline py-8 text-xs text-muted-text select-none relative z-10">
+    <h3 class="font-semibold text-ink mb-4">Quick Conversion Links</h3>
+    <div class="flex flex-wrap gap-x-4 gap-y-2">
+      {footerKeywordLinks.map((link, index) => (
+        <span class="flex items-center">
+          {index > 0 && <span class="mr-4 text-hairline">|</span>}
+          <a href={link.href} class="hover:text-brand-blue transition-colors font-mono">
+            {link.label}
+          </a>
+        </span>
+      ))}
+    </div>
   </section>
 
 </BaseLayout>

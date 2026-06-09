@@ -9,7 +9,28 @@ export default defineConfig({
   site: 'https://myunitconverter.app',
   integrations: [
     react(),
-    sitemap(),
+    sitemap({
+      serialize(item) {
+        const url = item.url;
+        if (url === 'https://myunitconverter.app/') {
+          item.changefreq = 'weekly';
+          item.priority = 1.0;
+        } else if (url.includes('-converter')) {
+          item.changefreq = 'monthly';
+          item.priority = 0.8;
+        } else if (url.includes('-to-')) {
+          item.changefreq = 'monthly';
+          item.priority = 0.6;
+        } else if (url.includes('/blog/')) {
+          item.changefreq = 'weekly';
+          item.priority = 0.5;
+        } else if (url.includes('/about') || url.includes('/privacy') || url.includes('/terms') || url.includes('/contact')) {
+          item.changefreq = 'monthly';
+          item.priority = 0.5;
+        }
+        return item;
+      }
+    }),
   ],
   adapter: vercel(),
   vite: {

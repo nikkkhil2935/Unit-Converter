@@ -2,7 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ConverterWidget from '../components/ConverterWidget';
 import CategoryIcon from '../components/CategoryIcon';
-import { categories, type Category } from '../lib/conversions';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import { categories, convert, getFormulaExplanation, type Category } from '../lib/conversions';
 
 export async function getStaticPaths() {
   return categories.map(cat => ({
@@ -17,29 +19,78 @@ interface Props {
 
 const { category } = Astro.props;
 
-// Get the initial values from query parameters in the client script,
-// but for static HTML render, we pre-fill defaults.
-const title = `Free ${category.name} Converter — myunitconverter.app`;
-const description = `Free online ${category.name.toLowerCase()} converter. Convert between ${category.units.slice(0, 5).map(u => u.name.toLowerCase() + 's').join(', ')} instantly. Accurate results, formulas, and history.`;
+const unit1 = category.units[0]?.name || '';
+const unit2 = category.units[1]?.name || '';
+const unit3 = category.units[2]?.name || '';
+const unit4 = category.units[3]?.name || '';
+
+const title = `${category.name} Converter — Convert ${unit1}, ${unit2} & More Online`;
+const description = `Free online ${category.name.toLowerCase()} converter. Instantly convert between ${category.units.slice(0, 3).map(u => u.name.toLowerCase() + 's').join(', ')}. Live results, formula shown, no signup required.`;
+const ogTitle = `${category.name} Converter | MyUnitConverter`;
+const ogDescription = `Convert ${category.name.toLowerCase()} units instantly. ${unit1} to ${unit2}, ${unit3} to ${unit4}, and more — free, live, accurate.`;
+
+// Build Breadcrumbs
+const crumbs = [
+  { name: 'Home', url: '/' },
+  { name: `${category.name} Converter`, url: `/${category.id}-converter` }
+];
+
+// Top 4 popular unit pairs for the reference tables
+const pairs = [...category.popularPairs];
+while (pairs.length < 4 && category.units.length >= 2) {
+  const uA = category.units[0];
+  for (const uB of category.units) {
+    if (uA.id !== uB.id && !pairs.some(p => p[0] === uA.id && p[1] === uB.id)) {
+      pairs.push([uA.id, uB.id]);
+      if (pairs.length >= 4) break;
+    }
+  }
+}
+
+// Build FAQ questions
+const faqs = [
+  {
+    question: `What is a ${category.name} converter?`,
+    answer: `A ${category.name} converter is a free online utility that transforms a measurement expressed in one unit of ${category.name.toLowerCase()} into its equivalent in another, such as converting ${unit1} to ${unit2}.`
+  },
+  {
+    question: `How do you convert ${category.name.toLowerCase()} units?`,
+    answer: `To convert ${category.name.toLowerCase()} units, choose your from-unit and to-unit from the dropdown list in the tool above, then enter the value you wish to convert. The tool computes the result live in real time using exact SI conversion factor formulas.`
+  },
+  {
+    question: `What are the most popular ${category.name.toLowerCase()} conversions?`,
+    answer: `The most frequently performed ${category.name.toLowerCase()} conversions on our site are ${category.popularPairs.slice(0, 3).map(p => `${category.units.find(u => u.id === p[0])?.name || p[0]} to ${category.units.find(u => u.id === p[1])?.name || p[1]}`).join(', ')}. Our tool pre-calculates full charts and formulas for all of them.`
+  },
+  {
+    question: `Which ${category.name.toLowerCase()} units are supported?`,
+    answer: `We support all standard global SI (metric) and imperial units including ${category.units.slice(0, 6).map(u => `${u.name} (${u.symbol})`).join(', ')}${category.units.length > 6 ? ', and others' : ''}.`
+  }
+];
+
+// Related sibling categories
+const relatedCategories = categories.filter(c => c.id !== category.id).slice(0, 3);
 ---
 
-<BaseLayout title={title} description={description} categorySlug={category.id}>
-  
-  <!-- Breadcrumb -->
-  <nav class="flex text-[10px] font-mono text-muted-text mt-8 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
-    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
-    <span>/</span>
-    <span class="text-ink font-semibold">{category.name} Converter</span>
-  </nav>
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={`unit converter, online unit converter, unit converter calculator, ${category.name.toLowerCase()} converter, convert ${category.name.toLowerCase()} units`}
+  canonicalPath={`/${category.id}-converter`}
+  ogTitle={ogTitle}
+  ogDescription={ogDescription}
+  categorySlug={category.id}
+>
+  <!-- Breadcrumbs -->
+  <BreadcrumbSchema crumbs={crumbs} />
 
   <!-- Title Section -->
   <section class="mb-8 select-none">
     <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2 flex items-center gap-2">
       <CategoryIcon id={category.id} className="w-8 h-8 text-brand-blue" />
-      <span>Free {category.name} Converter</span>
+      <span>{category.name} Converter</span>
     </h1>
     <p class="text-sm text-body-text max-w-2xl leading-relaxed">
-      {category.description}. Use the tool below to convert values dynamically in real-time. Copy results with a single click or toggle dark/light mode for a comfortable reading experience.
+      {category.description}. Use this smart bidirectional calculator to convert between different {category.name.toLowerCase()} measurements instantly. See live results, calculation history, and exact formulas.
     </p>
   </section>
 
@@ -48,27 +99,102 @@ const description = `Free online ${category.name.toLowerCase()} converter. Conve
     <ConverterWidget client:load initialCategory={category.id} />
   </section>
 
-  <!-- Units reference list for SEO -->
-  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 select-none transition-colors">
-    <h2 class="text-sm font-semibold text-ink mb-4 flex items-center gap-1.5">
-      <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      <span>Supported {category.name} Units</span>
-    </h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-      {category.units.map(unit => (
-        <div class="p-3 border border-hairline bg-canvas rounded-lg text-xs flex justify-between items-center">
-          <div>
-            <span class="font-semibold text-ink block">{unit.name}</span>
-            <span class="text-[10px] text-muted-text font-mono">Symbol: {unit.symbol}</span>
-          </div>
-          {category.id !== 'temperature' && category.id !== 'fuel_consumption' && (
-            <span class="text-[10px] text-brand-blue font-mono bg-card border border-hairline px-1.5 py-0.5 rounded">
-              {Number(unit.factor.toFixed(9)).toString()} {category.baseUnit.substring(0, 3)}
-            </span>
-          )}
-        </div>
-      ))}
-    </div>
-  </section>
+  <!-- Split Grid for Formulas and Reference Tables -->
+  <div class="grid grid-cols-1 gap-8 mb-10 select-none">
+    
+    <!-- Formulas Section -->
+    <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+        How to Convert {category.name} Units
+      </h2>
+      <p class="text-xs text-body-text leading-relaxed mb-4">
+        To perform a conversion, look up the target unit's conversion factor relative to the base unit ({category.baseUnit}). 
+        Below are the exact mathematical formulas for the most common {category.name.toLowerCase()} unit pairs:
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {pairs.slice(0, 4).map(pair => {
+          const uA = category.units.find(u => u.id === pair[0]);
+          const uB = category.units.find(u => u.id === pair[1]);
+          if (!uA || !uB) return null;
+          return (
+            <div class="p-3 bg-canvas border border-hairline rounded-lg">
+              <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">{uA.name} to {uB.name}</span>
+              <code class="text-xs font-mono font-semibold text-brand-blue">{getFormulaExplanation(uA.id, uB.id, category.id)}</code>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- Reference Tables -->
+    <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-2 font-mono">
+        {category.name} Unit Conversion Charts
+      </h2>
+      <p class="text-xs text-body-text leading-relaxed mb-6">
+        Here are the standard reference conversion charts displaying values from 1 to 20 for the most popular unit conversions:
+      </p>
+      
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {pairs.slice(0, 4).map(pair => {
+          const uA = category.units.find(u => u.id === pair[0]);
+          const uB = category.units.find(u => u.id === pair[1]);
+          if (!uA || !uB) return null;
+          
+          return (
+            <div class="border border-hairline bg-canvas rounded-lg p-3">
+              <h3 class="text-[10px] font-bold font-mono uppercase text-ink mb-2 text-center truncate">
+                {uA.symbol} to {uB.symbol}
+              </h3>
+              <div class="overflow-hidden border border-hairline rounded-md">
+                <table class="w-full text-left text-[10px] font-mono">
+                  <thead>
+                    <tr class="bg-card border-b border-hairline text-[8px] uppercase font-bold text-muted-text">
+                      <th class="p-1.5 border-r border-hairline text-center">{uA.symbol}</th>
+                      <th class="p-1.5 text-center">{uB.symbol}</th>
+                    </tr>
+                  </thead>
+                  <tbody class="divide-y divide-hairline">
+                    {Array.from({ length: 20 }, (_, i) => i + 1).map(v => (
+                      <tr class="hover:bg-card/50 transition-colors">
+                        <td class="p-1.5 border-r border-hairline text-center text-ink">{v}</td>
+                        <td class="p-1.5 text-center text-brand-blue font-semibold">
+                          {Number(convert(v, uA.id, uB.id, category.id).toFixed(6)).toString()}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+
+    <!-- FAQs Section -->
+    <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+        {category.name} Converter FAQs
+      </h2>
+      <FAQSchema faqs={faqs} />
+    </section>
+
+    <!-- Sibling Categories Navigation -->
+    <section class="border-t border-hairline pt-6 text-xs text-body-text">
+      <h3 class="font-semibold text-ink mb-3">Other Measurement Converters</h3>
+      <div class="flex flex-wrap gap-4">
+        {relatedCategories.map(cat => (
+          <a
+            href={`/${cat.id}-converter`}
+            class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all"
+          >
+            {cat.name} Converter
+          </a>
+        ))}
+      </div>
+    </section>
+
+  </div>
 
 </BaseLayout>

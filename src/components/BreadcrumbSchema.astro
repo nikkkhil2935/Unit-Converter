@@ -1,0 +1,41 @@
+---
+interface Crumb {
+  name: string;
+  url: string;
+}
+
+export interface Props {
+  crumbs: Crumb[];
+}
+
+const { crumbs } = Astro.props;
+
+// Build the BreadcrumbList JSON-LD
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": crumbs.map((crumb, index) => ({
+    "@type": "ListItem",
+    "position": index + 1,
+    "name": crumb.name,
+    "item": crumb.url.startsWith("http") ? crumb.url : `https://myunitconverter.app${crumb.url}`
+  }))
+};
+---
+
+<!-- JSON-LD Breadcrumb Schema -->
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+
+<!-- Visible Breadcrumb Trail -->
+<nav class="flex text-[10px] font-mono text-muted-text mt-8 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+  {crumbs.map((crumb, index) => (
+    <>
+      {index > 0 && <span class="mx-0.5 text-muted-text/60">/</span>}
+      {index === crumbs.length - 1 ? (
+        <span class="text-ink font-semibold">{crumb.name}</span>
+      ) : (
+        <a href={crumb.url} class="hover:text-brand-blue transition-colors">{crumb.name}</a>
+      )}
+    </>
+  ))}
+</nav>
