@@ -37,12 +37,16 @@ const crumbs = [
 
 // Top 4 popular unit pairs for the reference tables
 const pairs = [...category.popularPairs];
-while (pairs.length < 4 && category.units.length >= 2) {
-  const uA = category.units[0];
-  for (const uB of category.units) {
-    if (uA.id !== uB.id && !pairs.some(p => p[0] === uA.id && p[1] === uB.id)) {
-      pairs.push([uA.id, uB.id]);
-      if (pairs.length >= 4) break;
+if (pairs.length < 4 && category.units.length >= 2) {
+  outerLoop:
+  for (const uA of category.units) {
+    for (const uB of category.units) {
+      if (uA.id !== uB.id && !pairs.some(p => p[0] === uA.id && p[1] === uB.id)) {
+        pairs.push([uA.id, uB.id]);
+        if (pairs.length >= 4) {
+          break outerLoop;
+        }
+      }
     }
   }
 }

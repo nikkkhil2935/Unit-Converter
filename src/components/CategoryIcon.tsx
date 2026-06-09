@@ -134,13 +134,13 @@ export default function CategoryIcon({ id, className = "w-4 h-4" }: Props) {
           <line x1="12" y1="22.08" x2="12" y2="12"/>
         </svg>
       );
-    case "flow_rate":
+    case "flow-rate":
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M12 22a7 7 0 0 0 7-7c0-4.3-7-11-7-11S5 10.7 5 15a7 7 0 0 0 7 7Z"/>
         </svg>
       );
-    case "fuel_consumption":
+    case "fuel-consumption":
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 22h12"/>
@@ -179,7 +179,7 @@ export default function CategoryIcon({ id, className = "w-4 h-4" }: Props) {
           <path d="M6 18h12"/>
         </svg>
       );
-    case "data_transfer":
+    case "data-transfer":
       return (
         <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6"/>

@@ -26,6 +26,59 @@ const {
 const path = canonicalPath || Astro.url.pathname;
 const cleanPath = path.endsWith('/') && path !== '/' ? path.slice(0, -1) : path;
 const canonicalURL = `https://myunitconverter.app${cleanPath}`;
+
+// WebApplication JSON-LD Schema Logic
+const isHomePage = cleanPath === '' || cleanPath === '/';
+const isConverterPage = !!(categorySlug || cleanPath.includes('-to-') || cleanPath.includes('/convert/'));
+
+let webAppSchema = null;
+if (isHomePage) {
+  webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MyUnitConverter",
+    "url": "https://myunitconverter.app",
+    "description": "Free online unit converter calculator supporting 77+ categories including length, weight, temperature, volume, area, speed, pressure, energy, time, torque, density, electricity, and more. Live bidirectional conversion with shareable URLs, keyboard shortcuts, and dark mode.",
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Live bidirectional unit conversion",
+      "77+ unit categories",
+      "Shareable conversion URLs",
+      "Keyboard shortcuts",
+      "Dark and light mode",
+      "Conversion formula display",
+      "Recent conversions history",
+      "No account required"
+    ]
+  };
+} else if (isConverterPage) {
+  const parts = title.split(/ — |\u2014|\u2013| \| /);
+  let toolName = parts[0].trim();
+  if (toolName.toLowerCase().startsWith('convert ') && parts.length > 1) {
+    toolName = parts[1].trim();
+  }
+  
+  webAppSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": toolName,
+    "url": canonicalURL,
+    "description": description,
+    "applicationCategory": "UtilityApplication",
+    "operatingSystem": "Any",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    }
+  };
+}
 ---
 <!DOCTYPE html>
 <html lang="en" class="light">
@@ -67,35 +120,12 @@ const canonicalURL = `https://myunitconverter.app${cleanPath}`;
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
   <meta name="apple-mobile-web-app-title" content="Unit Convert" />
   <link rel="manifest" href="/site.webmanifest" />
-  <link rel="sitemap" type="application/xml" href="/sitemap-index.xml" />
+  <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
   <!-- WebApplication Schema -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "MyUnitConverter",
-    "url": "https://myunitconverter.app",
-    "description": "Free online unit converter calculator supporting 77+ categories including length, weight, temperature, volume, area, speed, pressure, energy, time, torque, density, electricity, and more. Live bidirectional conversion with shareable URLs, keyboard shortcuts, and dark mode.",
-    "applicationCategory": "UtilityApplication",
-    "operatingSystem": "Any",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "featureList": [
-      "Live bidirectional unit conversion",
-      "77+ unit categories",
-      "Shareable conversion URLs",
-      "Keyboard shortcuts",
-      "Dark and light mode",
-      "Conversion formula display",
-      "Recent conversions history",
-      "No account required"
-    ]
-  }
-  </script>
+  {webAppSchema && (
+    <script type="application/ld+json" set:html={JSON.stringify(webAppSchema)} />
+  )}
 
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />

@@ -5,11 +5,18 @@ import { categories, type Category, type Unit } from '../../../../../lib/convers
 
 export async function getStaticPaths() {
   const paths = [];
+  const oldCategories = [
+    { oldId: "flow_rate", newId: "flow-rate" },
+    { oldId: "fuel_consumption", newId: "fuel-consumption" },
+    { oldId: "data_transfer", newId: "data-transfer" }
+  ];
+
   for (const category of categories) {
     const units = category.units;
     for (const unitA of units) {
       for (const unitB of units) {
         if (unitA.id !== unitB.id) {
+          // Standard path
           paths.push({
             params: {
               category: category.id,
@@ -19,9 +26,29 @@ export async function getStaticPaths() {
             props: {
               category,
               unitA,
-              unitB
+              unitB,
+              isRedirect: false
             }
           });
+
+          // Redirect path for old underscore IDs
+          const redirectMatch = oldCategories.find(oc => oc.newId === category.id);
+          if (redirectMatch) {
+            paths.push({
+              params: {
+                category: redirectMatch.oldId,
+                unitA: unitA.id,
+                unitB: unitB.id
+              },
+              props: {
+                category,
+                unitA,
+                unitB,
+                isRedirect: true,
+                redirectTo: `/convert/${category.id}/${unitA.id}/to/${unitB.id}`
+              }
+            });
+          }
         }
       }
     }
@@ -33,15 +60,19 @@ interface Props {
   category: Category;
   unitA: Unit;
   unitB: Unit;
+  isRedirect?: boolean;
+  redirectTo?: string;
 }
 
-const { category, unitA, unitB } = Astro.props;
+const { category, unitA, unitB, isRedirect, redirectTo } = Astro.props;
 
 const title = `Convert ${unitA.name} to ${unitB.name} (${unitA.symbol} to ${unitB.symbol}) — Live Calculator`;
 const description = `Live online conversion for ${category.name.toLowerCase()} from ${unitA.name.toLowerCase()} to ${unitB.name.toLowerCase()}. Free and shareable.`;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={isRedirect ? `Redirecting...` : title} description={description} canonicalPath={`/${unitA.id}-to-${unitB.id}`}>
+  {isRedirect && redirectTo && <script set:html={`window.location.replace('${redirectTo}')`} />}
+
   <!-- Breadcrumb -->
   <nav class="flex text-[10px] font-mono text-muted-text mt-8 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
     <a href="/" class="hover:text-brand-blue transition-colors">Home</a>

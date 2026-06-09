@@ -402,7 +402,7 @@ export const categories: Category[] = [
     ]
   },
   {
-    id: "flow_rate",
+    id: "flow-rate",
     name: "Flow Rate",
     icon: "🚰",
     description: "Liters per minute and cubic meters per second",
@@ -420,7 +420,7 @@ export const categories: Category[] = [
     ]
   },
   {
-    id: "fuel_consumption",
+    id: "fuel-consumption",
     name: "Fuel Consumption",
     icon: "🚗",
     description: "MPG and liters per 100 kilometers",
@@ -497,7 +497,7 @@ export const categories: Category[] = [
     ]
   },
   {
-    id: "data_transfer",
+    id: "data-transfer",
     name: "Data Transfer Rate",
     icon: "🌐",
     description: "Bits per second, megabits per second, and bytes per second",
@@ -582,7 +582,7 @@ export function convert(value: number, from: string, to: string, categoryId: str
   }
 
   // 2. Special Fuel Consumption Conversion (Inverse-linear relationships)
-  if (categoryId === "fuel_consumption") {
+  if (categoryId === "fuel-consumption") {
     // Standardize to L/100km
     let l100km = value;
     if (from === "mpg-us") l100km = 235.214583 / value;
@@ -620,7 +620,7 @@ export function getFormulaExplanation(fromId: string, toId: string, categoryId: 
     if (fromId === "kelvin" && toId === "fahrenheit") return "°F = (K - 273.15) × 9/5 + 32";
   }
 
-  if (categoryId === "fuel_consumption") {
+  if (categoryId === "fuel-consumption") {
     if (fromId === "mpg-us" && toId === "l100km") return "L/100km = 235.215 ÷ mpg (US)";
     if (fromId === "l100km" && toId === "mpg-us") return "mpg (US) = 235.215 ÷ (L/100km)";
     if (fromId === "mpg-uk" && toId === "l100km") return "L/100km = 282.481 ÷ mpg (UK)";
