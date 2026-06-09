@@ -1,0 +1,43 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="About Us — myunitconverter.app"
+  description="Learn about myunitconverter.app, our mission to build fast, ad-light unit converters, and our open-source technology stack."
+>
+  <div class="max-w-2xl mx-auto mt-12 mb-16 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-6">About Us</h1>
+    
+    <div class="prose dark:prose-invert text-sm text-body-text leading-relaxed flex flex-col gap-4">
+      <p>
+        Welcome to <strong>myunitconverter.app</strong>. Our mission is simple: to provide the fastest, cleanest, and most accurate unit conversion experience on the web.
+      </p>
+      
+      <p>
+        Many existing unit converters are cluttered with excessive ads, outdated layouts, and slow navigation systems. We built this tool with a developer-first mindset:
+      </p>
+      
+      <ul class="list-disc pl-5 flex flex-col gap-2 my-2">
+        <li><strong>Stupidly Fast:</strong> Static HTML output, edge-delivered, loaded with near-instant client-side logic.</li>
+        <li><strong>Keyboard-First:</strong> Navigate without leaving your keyboard using hotkeys like <code class="px-1.5 py-0.5 border border-hairline bg-canvas rounded text-xs font-mono text-brand-blue">S</code> to swap and <code class="px-1.5 py-0.5 border border-hairline bg-canvas rounded text-xs font-mono text-brand-blue">C</code> to copy.</li>
+        <li><strong>Minimalist Design:</strong> A clean, sharp Vercel-style interface that works perfectly on both desktop and mobile viewports.</li>
+        <li><strong>Open & Learnable:</strong> Clear formulas are presented for every conversion, helping you understand the math behind the answers.</li>
+      </ul>
+
+      <h2 class="text-lg font-bold text-ink mt-6 mb-2">Technology Stack</h2>
+      <p>
+        This site is built using modern front-end technologies:
+      </p>
+      <ul class="list-disc pl-5 flex flex-col gap-2">
+        <li><strong>Astro 6</strong> for programmatic page generation and static delivery.</li>
+        <li><strong>Tailwind CSS v4</strong> for styling and seamless dark mode configuration.</li>
+        <li><strong>React</strong> for the interactive, stateful converter widget.</li>
+      </ul>
+
+      <p class="mt-6 text-xs text-muted-text">
+        If you have feedback, feature requests, or questions, please visit our <a href="/contact" class="text-brand-blue hover:underline">Contact page</a> to get in touch.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,11 +1,66 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SearchBar from '../components/SearchBar.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import { categories } from '../lib/conversions';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const popularLinks = [
+  { label: "cm → inches", href: "/centimeter-to-inch" },
+  { label: "kg → lbs", href: "/kilogram-to-pound" },
+  { label: "°C → °F", href: "/celsius-to-fahrenheit" },
+  { label: "miles → km", href: "/mile-to-kilometer" },
+  { label: "liters → gallons", href: "/liter-to-gallon-us" },
+  { label: "MB → GB", href: "/megabyte-to-gigabyte" },
+];
 ---
 
-<Layout>
-	<Welcome />
-</Layout>
+<BaseLayout
+  title="Free Unit Converter — myunitconverter.app"
+  description="Free online unit converter for length, weight, temperature, volume, speed, area, data, energy and more. Instant, accurate, no signup required."
+>
+
+  <!-- HERO SECTION -->
+  <section class="text-center pt-16 pb-8 max-w-xl mx-auto relative z-10">
+    <h1 data-t="title" class="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4 text-ink leading-[1.1] sm:leading-[1.05] font-sans">
+      Convert any unit, instantly.
+    </h1>
+    
+    <p data-t="subtitle" class="text-body-text text-sm sm:text-base mb-8 max-w-md mx-auto leading-relaxed">
+      Quick, accurate, and ad-light unit converter for developers, engineers, and students. Supporting 77+ categories.
+    </p>
+
+    <!-- Popular quick links -->
+    <div class="flex flex-wrap justify-center gap-2 mb-6">
+      {popularLinks.map(link => (
+        <a
+          href={link.href}
+          class="px-3 py-1.5 text-xs font-mono rounded-full border border-hairline bg-card text-body-text hover:border-brand-blue hover:text-brand-blue transition-colors duration-200 shadow-[0_1px_2px_rgba(0,0,0,0.01)] cursor-pointer select-none"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </section>
+
+
+  <!-- SEARCH BAR -->
+  <SearchBar />
+
+  <!-- CATEGORY GRID -->
+  <section class="pb-16 relative z-10">
+    <h2 data-t="categories" class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 border-b border-hairline pb-2 font-mono">
+      Unit Categories
+    </h2>
+    <div id="category-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {categories.map(cat => (
+        <CategoryCard category={cat} />
+      ))}
+    </div>
+    
+    <!-- Empty search state -->
+    <p id="no-results" data-t="noResults" class="hidden text-center text-muted-text py-16 text-xs italic">
+      No categories found matching your query. Check spelling or try a different term.
+    </p>
+  </section>
+
+</BaseLayout>

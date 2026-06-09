@@ -1,0 +1,74 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ConverterWidget from '../components/ConverterWidget';
+import CategoryIcon from '../components/CategoryIcon';
+import { categories, type Category } from '../lib/conversions';
+
+export async function getStaticPaths() {
+  return categories.map(cat => ({
+    params: { category: cat.id },
+    props: { category: cat }
+  }));
+}
+
+interface Props {
+  category: Category;
+}
+
+const { category } = Astro.props;
+
+// Get the initial values from query parameters in the client script,
+// but for static HTML render, we pre-fill defaults.
+const title = `Free ${category.name} Converter — myunitconverter.app`;
+const description = `Free online ${category.name.toLowerCase()} converter. Convert between ${category.units.slice(0, 5).map(u => u.name.toLowerCase() + 's').join(', ')} instantly. Accurate results, formulas, and history.`;
+---
+
+<BaseLayout title={title} description={description} categorySlug={category.id}>
+  
+  <!-- Breadcrumb -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-8 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{category.name} Converter</span>
+  </nav>
+
+  <!-- Title Section -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2 flex items-center gap-2">
+      <CategoryIcon id={category.id} className="w-8 h-8 text-brand-blue" />
+      <span>Free {category.name} Converter</span>
+    </h1>
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      {category.description}. Use the tool below to convert values dynamically in real-time. Copy results with a single click or toggle dark/light mode for a comfortable reading experience.
+    </p>
+  </section>
+
+  <!-- Interactive Converter Widget Island -->
+  <section class="mb-10">
+    <ConverterWidget client:load initialCategory={category.id} />
+  </section>
+
+  <!-- Units reference list for SEO -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 select-none transition-colors">
+    <h2 class="text-sm font-semibold text-ink mb-4 flex items-center gap-1.5">
+      <svg class="w-4 h-4 text-brand-blue" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      <span>Supported {category.name} Units</span>
+    </h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      {category.units.map(unit => (
+        <div class="p-3 border border-hairline bg-canvas rounded-lg text-xs flex justify-between items-center">
+          <div>
+            <span class="font-semibold text-ink block">{unit.name}</span>
+            <span class="text-[10px] text-muted-text font-mono">Symbol: {unit.symbol}</span>
+          </div>
+          {category.id !== 'temperature' && category.id !== 'fuel_consumption' && (
+            <span class="text-[10px] text-brand-blue font-mono bg-card border border-hairline px-1.5 py-0.5 rounded">
+              {Number(unit.factor.toFixed(9)).toString()} {category.baseUnit.substring(0, 3)}
+            </span>
+          )}
+        </div>
+      ))}
+    </div>
+  </section>
+
+</BaseLayout>
