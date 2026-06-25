@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Linear Feet to Board Feet Converter | Lumber Calculator";
+const description = "Convert linear feet of standard dimensional lumber (2x4, 2x6, 1x12) to board feet volume. Look up structural lumber parameters.";
+
+const sizes = [
+  { value: "1x2", t: 1, w: 2, name: "1x2 board" },
+  { value: "1x4", t: 1, w: 4, name: "1x4 board" },
+  { value: "1x6", t: 1, w: 6, name: "1x6 board" },
+  { value: "1x8", t: 1, w: 8, name: "1x8 board" },
+  { value: "1x12", t: 1, w: 12, name: "1x12 board" },
+  { value: "2x4", t: 2, w: 4, name: "2x4 studs" },
+  { value: "2x6", t: 2, w: 6, name: "2x6 joists" },
+  { value: "2x8", t: 2, w: 8, name: "2x8 joists" },
+  { value: "2x10", t: 2, w: 10, name: "2x10 framing lumber" },
+  { value: "4x4", t: 4, w: 4, name: "4x4 posts" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="volume">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/volume-converter" class="hover:text-brand-blue transition-colors">Volume Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Linear to Board Feet</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Linear Feet to Board Feet Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Board Feet = [Thickness (in) × Width (in) × Linear Feet] ÷ 12</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: 10 linear feet of 2x4 lumber is equivalent to exactly 6.67 board feet.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text">Lumber Specs</h2>
+      
+      <div>
+        <label for="size-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Lumber Size (Nominal)</label>
+        <select id="size-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {sizes.map(s => (
+            <option value={s.value} data-t={s.t} data-w={s.w}>{s.value} ({s.name})</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="lin-feet" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Linear Feet</label>
+        <input
+          id="lin-feet"
+          type="number"
+          value="10"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Volume Output</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Calculated Board Feet</span>
+        <span id="bf-res" class="text-lg font-mono font-bold text-brand-blue">6.67 BF</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Lookup Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text font-mono">Board Feet per 10 Linear Feet</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Lumber Size</th>
+            <th class="p-3 font-semibold">Board Feet per 10 Linear Feet</th>
+            <th class="p-3 font-semibold">Board Feet per 12 Linear Feet</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {sizes.map(s => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{s.value}</td>
+              <td class="p-3 text-ink">{Number(((s.t * s.w * 10) / 12).toFixed(2))} BF</td>
+              <td class="p-3 text-muted-text">{Number(((s.t * s.w * 12) / 12).toFixed(2))} BF</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const sizeSelect = document.getElementById('size-select') as HTMLSelectElement;
+    const linFeet = document.getElementById('lin-feet') as HTMLInputElement;
+    const bfRes = document.getElementById('bf-res') as HTMLSpanElement;
+
+    function calculate() {
+      const opt = sizeSelect.options[sizeSelect.selectedIndex];
+      const t = parseFloat(opt.getAttribute('data-t') || '1');
+      const w = parseFloat(opt.getAttribute('data-w') || '1');
+      const lf = parseFloat(linFeet.value) || 0;
+
+      const bf = (t * w * lf) / 12;
+
+      if (bfRes) bfRes.textContent = `${bf.toFixed(2)} BF`;
+    }
+
+    sizeSelect?.addEventListener('change', calculate);
+    linFeet?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+</BaseLayout>

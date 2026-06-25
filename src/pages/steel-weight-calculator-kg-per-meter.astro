@@ -1,0 +1,330 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Steel Weight Calculator | Metal Profile Weight per Meter — Bars, Pipes, Plates";
+const description = "Calculate the weight per meter or total weight of steel and metal profiles — round bars, plates, pipes, square tubes, and angle sections. Uses standard carbon steel density 7850 kg/m³.";
+const keywords = "steel weight calculator, steel weight per meter, metal weight calculator, round bar weight calculator, steel plate weight, steel pipe weight, kg per meter steel, steel weight formula, metal bar weight, structural steel weight";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Steel Weight Calculator", url: "/steel-weight-calculator-kg-per-meter" }
+];
+
+const faqs = [
+  {
+    question: "What is the density of steel?",
+    answer: "Standard carbon/mild steel has a density of 7,850 kg/m³ (7.85 g/cm³ or 0.284 lb/in³). Stainless steel 304 is slightly denser at 7,930 kg/m³. Aluminum is about 2,700 kg/m³ — roughly 1/3 the weight of steel."
+  },
+  {
+    question: "How do you calculate steel weight per meter for a round bar?",
+    answer: "Weight per meter (kg/m) = π/4 × D² × ρ / 1,000,000, where D is diameter in mm and ρ is density in kg/m³. Simplified formula: kg/m = D² × 0.00617 for carbon steel. Example: 20mm round bar = 20² × 0.00617 = 2.47 kg/m."
+  },
+  {
+    question: "How much does a steel plate weigh?",
+    answer: "Steel plate weight (kg) = Length (m) × Width (m) × Thickness (mm) × 7.85. Example: A 2m × 1m × 10mm steel plate = 2 × 1 × 0.01 × 7850 = 157 kg."
+  },
+  {
+    question: "How do you calculate the weight of a steel pipe?",
+    answer: "Pipe weight per meter (kg/m) = (OD − wall thickness) × wall thickness × 0.02466 × density_factor. For carbon steel: kg/m = (OD−WT) × WT × 0.02466. Example: 50mm OD × 3mm wall = (50−3) × 3 × 0.02466 ≈ 3.48 kg/m."
+  },
+  {
+    question: "What is the difference between nominal and actual steel pipe sizes?",
+    answer: "Nominal pipe size (NPS) is a trade designation — it does not directly correspond to actual outside diameter. For example, 1-inch NPS pipe has an actual OD of 33.4mm, not 25.4mm. Always use the actual OD and wall thickness when calculating pipe weight for engineering purposes."
+  }
+];
+
+const commonDensities = [
+  { material: "Mild Steel / Carbon Steel", density: 7850, unit: "kg/m³", note: "Standard structural steel" },
+  { material: "Stainless Steel (304)", density: 7930, unit: "kg/m³", note: "Austenitic stainless" },
+  { material: "Stainless Steel (316)", density: 7990, unit: "kg/m³", note: "Marine grade" },
+  { material: "Aluminum (6061)", density: 2700, unit: "kg/m³", note: "Common structural alloy" },
+  { material: "Copper (Pure)", density: 8960, unit: "kg/m³", note: "Electrical grade" },
+  { material: "Brass (70/30)", density: 8520, unit: "kg/m³", note: "Plumbing / fittings" },
+  { material: "Cast Iron", density: 7200, unit: "kg/m³", note: "Grey cast iron" },
+];
+---
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/steel-weight-calculator-kg-per-meter"
+  categorySlug="weight"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/weight-converter" class="hover:text-brand-blue transition-colors">Weight Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Steel Weight Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Steel Weight Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Standard Carbon Steel Density = 7850 kg/m³ (0.284 lb/in³)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A 1-meter length of 10mm round steel bar weighs approximately 0.62 kg.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Estimate steel weights by shape, dimensions, and length. Supports plates, solid bars, square tubes, and pipes.
+    </p>
+  </section>
+
+  <!-- Interactive Calculator -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Parameters</h2>
+      
+      <div>
+        <label for="shape-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Profile Shape</label>
+        <select id="shape-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="round-bar">Solid Round Bar</option>
+          <option value="plate">Plate / Flat Bar</option>
+          <option value="pipe">Pipe / Round Tube</option>
+          <option value="square-tube">Square Tube</option>
+        </select>
+      </div>
+
+      <!-- Round Bar Inputs -->
+      <div id="inputs-round-bar" class="shape-inputs space-y-3">
+        <div>
+          <label for="dia-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Diameter (mm)</label>
+          <input id="dia-in" type="number" value="10" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+      </div>
+
+      <!-- Plate Inputs -->
+      <div id="inputs-plate" class="shape-inputs space-y-3 hidden">
+        <div>
+          <label for="thick-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Thickness (mm)</label>
+          <input id="thick-in" type="number" value="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+        <div>
+          <label for="width-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Width (mm)</label>
+          <input id="width-in" type="number" value="100" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+      </div>
+
+      <!-- Pipe Inputs -->
+      <div id="inputs-pipe" class="shape-inputs space-y-3 hidden">
+        <div>
+          <label for="od-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Outside Diameter (mm)</label>
+          <input id="od-in" type="number" value="50" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+        <div>
+          <label for="wall-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Wall Thickness (mm)</label>
+          <input id="wall-in" type="number" value="3" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+      </div>
+
+      <!-- Square Tube Inputs -->
+      <div id="inputs-square-tube" class="shape-inputs space-y-3 hidden">
+        <div>
+          <label for="side-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Side Width (mm)</label>
+          <input id="side-in" type="number" value="40" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+        <div>
+          <label for="sq-wall-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Wall Thickness (mm)</label>
+          <input id="sq-wall-in" type="number" value="2" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+        </div>
+      </div>
+
+      <div>
+        <label for="length-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Total Length (meters)</label>
+        <input id="length-in" type="number" value="1" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Steel Weight</h2>
+        <div class="space-y-4">
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total Weight</span>
+            <span id="weight-res" class="text-2xl font-mono font-bold text-brand-blue">0.62 kg</span>
+            <span id="lbs-res" class="text-sm font-mono text-muted-text ml-2">(1.36 lbs)</span>
+          </div>
+
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight Per Meter</span>
+            <span id="wpm-res" class="text-base font-mono font-bold text-ink">0.62 kg/m</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg text-xs leading-normal mt-4">
+        <strong>Material Densities:</strong> Typical structural carbon steel is modeled at 7,850 kg/m³. Aluminum profiles are roughly 1/3 the weight.
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference densities -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Metal Densities</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Metal Material</th>
+            <th class="p-3 font-semibold">Density</th>
+            <th class="p-3 font-semibold">Notes</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonDensities.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.material}</td>
+              <td class="p-3 text-ink">{row.density} {row.unit}</td>
+              <td class="p-3 text-muted-text font-sans">Used for standard calculations.</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const shapeSelect = document.getElementById('shape-select') as HTMLSelectElement;
+    
+    const lengthIn = document.getElementById('length-in') as HTMLInputElement;
+    const diaIn = document.getElementById('dia-in') as HTMLInputElement;
+    
+    const thickIn = document.getElementById('thick-in') as HTMLInputElement;
+    const widthIn = document.getElementById('width-in') as HTMLInputElement;
+    
+    const odIn = document.getElementById('od-in') as HTMLInputElement;
+    const wallIn = document.getElementById('wall-in') as HTMLInputElement;
+    
+    const sideIn = document.getElementById('side-in') as HTMLInputElement;
+    const sqWallIn = document.getElementById('sq-wall-in') as HTMLInputElement;
+
+    const weightRes = document.getElementById('weight-res') as HTMLSpanElement;
+    const lbsRes = document.getElementById('lbs-res') as HTMLSpanElement;
+    const wpmRes = document.getElementById('wpm-res') as HTMLSpanElement;
+
+    const density = 7850; // kg/m3
+
+    function calculate() {
+      const shape = shapeSelect.value;
+      const length = parseFloat(lengthIn.value) || 0;
+
+      // Show/hide correct inputs
+      document.querySelectorAll('.shape-inputs').forEach(el => el.classList.add('hidden'));
+      const activeDiv = document.getElementById(`inputs-${shape}`);
+      activeDiv?.classList.remove('hidden');
+
+      let areaM2 = 0; // Area in square meters
+
+      if (shape === 'round-bar') {
+        const dia = parseFloat(diaIn.value) || 0;
+        // Area = pi * r^2
+        const r = (dia / 2) / 1000; // convert mm to meters
+        areaM2 = Math.PI * Math.pow(r, 2);
+      } else if (shape === 'plate') {
+        const thick = parseFloat(thickIn.value) || 0;
+        const width = parseFloat(widthIn.value) || 0;
+        areaM2 = (thick / 1000) * (width / 1000);
+      } else if (shape === 'pipe') {
+        const od = parseFloat(odIn.value) || 0;
+        const wall = parseFloat(wallIn.value) || 0;
+        const id = od - 2 * wall;
+        
+        const areaOuter = Math.PI * Math.pow((od / 2) / 1000, 2);
+        const areaInner = Math.PI * Math.pow((id / 2) / 1000, 2);
+        areaM2 = areaOuter - areaInner;
+      } else if (shape === 'square-tube') {
+        const side = parseFloat(sideIn.value) || 0;
+        const wall = parseFloat(sqWallIn.value) || 0;
+        const innerSide = side - 2 * wall;
+        
+        const areaOuter = Math.pow(side / 1000, 2);
+        const areaInner = Math.pow(innerSide / 1000, 2);
+        areaM2 = areaOuter - areaInner;
+      }
+
+      // Weight per meter (kg/m) = Area (m2) * Density (kg/m3)
+      const wpm = areaM2 * density;
+      const totalWeight = wpm * length;
+      const totalLbs = totalWeight * 2.2046226218;
+
+      if (wpmRes) wpmRes.textContent = `${wpm.toFixed(2)} kg/m`;
+      if (weightRes) weightRes.textContent = `${totalWeight.toFixed(2)} kg`;
+      if (lbsRes) lbsRes.textContent = `(${totalLbs.toFixed(2)} lbs)`;
+    }
+
+    shapeSelect?.addEventListener('change', calculate);
+    
+    lengthIn?.addEventListener('input', calculate);
+    diaIn?.addEventListener('input', calculate);
+    
+    thickIn?.addEventListener('input', calculate);
+    widthIn?.addEventListener('input', calculate);
+    
+    odIn?.addEventListener('input', calculate);
+    wallIn?.addEventListener('input', calculate);
+    
+    sideIn?.addEventListener('input', calculate);
+    sqWallIn?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Steel Weight Formula for Common Profiles</h3>
+      <p class="leading-relaxed mb-3">
+        All steel weight calculations follow the same principle: cross-sectional area × length × density. Density for carbon steel is <strong>7,850 kg/m³</strong>. Since most dimensions are given in millimeters, the cross-section area in mm² needs to be converted to m² by dividing by 1,000,000 before multiplying by the length in meters.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Round Bar:</strong> kg/m = D² × 0.00617</div>
+        <div><strong>Plate:</strong> kg/m = W × T × 0.00785</div>
+        <div><strong>Pipe:</strong> kg/m = (OD − WT) × WT × 0.02466</div>
+        <div><strong>Square Tube:</strong> kg/m = (S² − (S−2T)²) × 0.00785</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Why Steel Weight Matters in Engineering</h3>
+      <p class="leading-relaxed mb-3">
+        Accurate steel weight calculations are critical for: structural load analysis (dead load calculations), freight shipping cost estimation (LTL and FTL quotes are weight-based), crane and hoist capacity planning, and bill of materials (BOM) costing for fabrication projects.
+      </p>
+      <p class="leading-relaxed">
+        Structural engineers use weight tables from standards like AISC (American) and BS/EN (European) for standard hot-rolled sections (I-beams, channels, angles). This calculator handles custom profiles and non-standard dimensions where published tables don't apply.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Steel Weight</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+      <a href="/concrete-mix-ratio-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Mix Ratio</a>
+      <a href="/board-feet-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Board Feet Calculator</a>
+      <a href="/awg-to-mm2-wire-gauge-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Wire Gauge Ampacity</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/weight-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Weight Unit Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>
+

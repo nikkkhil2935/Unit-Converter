@@ -1,0 +1,259 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Board Feet Calculator | Lumber Volume & Cost Estimator";
+const description = "Calculate board feet for any lumber dimension. Enter thickness, width, and length to get exact board foot volume and material cost. Free woodworking & construction tool.";
+const keywords = "board feet calculator, board foot formula, lumber board feet, how to calculate board feet, board feet to cubic feet, lumber volume calculator, wood board feet, 2x4 board feet, 2x6 board feet, board foot cost estimator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Board Feet Calculator", url: "/board-feet-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is a board foot?",
+    answer: "A board foot (BF) is a specialized unit of lumber volume used in the US and Canada. It equals a piece of wood that is 12 inches wide, 12 inches long, and 1 inch thick — equivalent to 144 cubic inches or 1/12 of a cubic foot. Lumber prices at sawmills are quoted per board foot."
+  },
+  {
+    question: "How do you calculate board feet?",
+    answer: "Board Feet = (Thickness in inches × Width in inches × Length in feet) ÷ 12. Example: A 2×4 board that is 8 feet long = (2 × 4 × 8) ÷ 12 = 5.33 board feet. For length in inches instead of feet, divide by 144 instead."
+  },
+  {
+    question: "How many board feet are in a 2x4x8?",
+    answer: "A standard 2×4 that is 8 feet long contains (2 × 4 × 8) ÷ 12 = 5.33 board feet. A 2×4×10 contains 6.67 BF, and a 2×4×12 contains 8 BF."
+  },
+  {
+    question: "How many board feet are in a 2x6x8?",
+    answer: "A 2×6 that is 8 feet long contains (2 × 6 × 8) ÷ 12 = 8 board feet. A 2×6×10 = 10 BF, a 2×6×12 = 12 BF."
+  },
+  {
+    question: "How do you convert board feet to cubic feet?",
+    answer: "Divide board feet by 12 to get cubic feet. For example, 120 board feet = 10 cubic feet. This is because 1 board foot = 1/12 cubic foot."
+  },
+  {
+    question: "Why is lumber measured in board feet instead of linear feet?",
+    answer: "Linear feet only measures length, not volume. Board feet accounts for all three dimensions (thickness × width × length), giving a standardized volume measure for pricing lumber regardless of its cross-section profile."
+  }
+];
+
+const commonLumberSizes = [
+  { nom: "1×4", t: 1, w: 4, lens: [6,8,10,12] },
+  { nom: "1×6", t: 1, w: 6, lens: [6,8,10,12] },
+  { nom: "2×4", t: 2, w: 4, lens: [6,8,10,12] },
+  { nom: "2×6", t: 2, w: 6, lens: [6,8,10,12] },
+  { nom: "2×8", t: 2, w: 8, lens: [6,8,10,12] },
+  { nom: "2×10", t: 2, w: 10, lens: [6,8,10,12] },
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/board-feet-calculator"
+  categorySlug="length"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Breadcrumb Nav -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/construction-diy" class="hover:text-brand-blue transition-colors">Construction & DIY</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Board Feet Calculator</span>
+  </nav>
+
+  <!-- Title & Direct Answer -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Board Feet Calculator — Lumber Volume & Cost Estimator</h1>
+
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl" style="border-left: 3px solid #0070f3">
+      <p class="text-base text-ink font-semibold mb-1">Board Feet = (Thickness" × Width" × Length') ÷ 12</p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A standard 2×6 board that is 10 feet long = (2 × 6 × 10) ÷ 12 = <strong>10 board feet</strong>.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Board feet (BF) is the universal lumber volume unit used by sawmills, lumber yards, and woodworkers across North America. Unlike linear feet which only measures length, board feet accounts for the full 3-dimensional volume — thickness, width, and length — making it the standard for pricing hardwoods, softwoods, and structural timbers. Use this calculator to estimate material volume and total cost for any project.
+    </p>
+  </section>
+
+  <!-- Interactive Calculator -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Lumber Dimensions</h2>
+
+      <div class="grid grid-cols-3 gap-3">
+        <div>
+          <label for="thick-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Thickness (in)</label>
+          <input id="thick-in" type="number" value="2" min="0.25" step="0.25"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+        <div>
+          <label for="width-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Width (in)</label>
+          <input id="width-in" type="number" value="6" min="0.5" step="0.5"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+        <div>
+          <label for="len-ft" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Length (ft)</label>
+          <input id="len-ft" type="number" value="10" min="1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+      </div>
+
+      <div>
+        <label for="qty-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Number of Boards</label>
+        <input id="qty-in" type="number" value="1" min="1"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+      </div>
+
+      <div>
+        <label for="price-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Price per Board Foot (Optional $)</label>
+        <div class="relative">
+          <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-mono font-bold text-muted-text">$</span>
+          <input id="price-in" type="number" value="2.50" step="0.01" min="0"
+            class="w-full pl-7 bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Calculated Results</h2>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Board Feet per Board</span>
+        <span id="bf-each" class="text-3xl font-mono font-bold text-brand-blue">10.00 BF</span>
+      </div>
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Total Board Feet (all boards)</span>
+        <span id="bf-total" class="text-2xl font-mono font-bold text-ink">10.00 BF</span>
+      </div>
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Estimated Material Cost</span>
+        <span id="cost-res" class="text-xl font-mono font-bold text-ink">$25.00</span>
+      </div>
+      <div class="p-3 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Equivalent Cubic Feet</span>
+        <span id="cubic-res" class="text-sm font-mono font-semibold text-muted-text">0.833 ft³</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Common Lumber Sizes Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Board Feet Reference Chart — Common Lumber Sizes</h2>
+    <p class="text-xs text-body-text mb-4 leading-relaxed">
+      This chart shows pre-calculated board feet for the most common nominal lumber sizes at standard lengths. Note that nominal dimensions (2×4, 2×6) are slightly larger than actual dressed dimensions, but board feet is always calculated using the <em>nominal</em> size.
+    </p>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase">
+            <th class="p-3 font-semibold">Nominal Size</th>
+            <th class="p-3 font-semibold">6 ft</th>
+            <th class="p-3 font-semibold">8 ft</th>
+            <th class="p-3 font-semibold">10 ft</th>
+            <th class="p-3 font-semibold">12 ft</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonLumberSizes.map(row => (
+            <tr class="hover:bg-canvas/50 transition-colors">
+              <td class="p-3 font-bold text-ink">{row.nom}</td>
+              {row.lens.map(l => (
+                <td class="p-3 text-brand-blue font-bold">{((row.t * row.w * l) / 12).toFixed(2)} BF</td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Why Board Feet Matter in Woodworking</h3>
+      <p class="leading-relaxed mb-3">
+        Hardwood lumber — oak, maple, walnut, cherry — is sold exclusively by the board foot because each plank varies in width, thickness, and length. When buying rough-sawn lumber from a sawmill or specialty lumber dealer, you pay a per-board-foot price. Calculating exact board feet prevents over-ordering expensive hardwoods and ensures accurate project material budgets.
+      </p>
+      <p class="leading-relaxed">
+        Softwood dimensional lumber (2×4, 2×6, etc.) sold at home improvement stores is typically priced by the linear foot, but large commercial orders from building supply wholesalers revert to board feet pricing. Contractors ordering structural framing lumber in bulk always use board feet for quotes and invoices.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Board Foot vs. Linear Foot vs. Running Foot</h3>
+      <p class="leading-relaxed mb-3">
+        A <strong>linear foot</strong> (or running foot) only measures length — it ignores thickness and width. One linear foot of a 2×4 and one linear foot of a 2×10 are the same in linear measure, but vastly different in material volume. For any project where material volume matters (pricing, structural loads, weight calculations), always use board feet.
+      </p>
+      <p class="leading-relaxed">
+        The <strong>board foot formula</strong> standardizes all lumber to a common volume unit, making it easy to compare prices between different sizes and species at different suppliers.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Board Feet</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Lumber & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/lumber-linear-feet-to-board-feet" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Linear Feet to Board Feet</a>
+      <a href="/square-footage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Square Footage Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/concrete-mix-ratio-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Mix Ratio</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+      <a href="/length-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Length Converter</a>
+    </div>
+  </section>
+
+  <script>
+    const thickIn = document.getElementById('thick-in') as HTMLInputElement;
+    const widthIn = document.getElementById('width-in') as HTMLInputElement;
+    const lenFt = document.getElementById('len-ft') as HTMLInputElement;
+    const qtyIn = document.getElementById('qty-in') as HTMLInputElement;
+    const priceIn = document.getElementById('price-in') as HTMLInputElement;
+
+    const bfEach = document.getElementById('bf-each') as HTMLSpanElement;
+    const bfTotal = document.getElementById('bf-total') as HTMLSpanElement;
+    const costRes = document.getElementById('cost-res') as HTMLSpanElement;
+    const cubicRes = document.getElementById('cubic-res') as HTMLSpanElement;
+
+    function calculate() {
+      const t = parseFloat(thickIn.value) || 0;
+      const w = parseFloat(widthIn.value) || 0;
+      const l = parseFloat(lenFt.value) || 0;
+      const qty = parseInt(qtyIn.value) || 1;
+      const price = parseFloat(priceIn.value) || 0;
+
+      const bf = (t * w * l) / 12;
+      const total = bf * qty;
+      const cost = total * price;
+      const cubic = total / 12;
+
+      if (bfEach) bfEach.textContent = `${bf.toFixed(2)} BF`;
+      if (bfTotal) bfTotal.textContent = `${total.toFixed(2)} BF`;
+      if (costRes) costRes.textContent = `$${cost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (cubicRes) cubicRes.textContent = `${cubic.toFixed(3)} ft³`;
+    }
+
+    thickIn?.addEventListener('input', calculate);
+    widthIn?.addEventListener('input', calculate);
+    lenFt?.addEventListener('input', calculate);
+    qtyIn?.addEventListener('input', calculate);
+    priceIn?.addEventListener('input', calculate);
+
+    calculate();
+  </script>
+</BaseLayout>

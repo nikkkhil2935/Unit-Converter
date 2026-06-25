@@ -1,0 +1,212 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Specific Gravity Calculator | Substance Density Ratio";
+const description = "Calculate specific gravity (SG) based on substance density and reference water density. Free online scientific calculator.";
+const keywords = "specific gravity calculator, specific gravity of water, density ratio calculator, specific gravity to density, sg calculator, specific gravity formula, relative density calculator, specific gravity of metals, specific gravity chart, what is specific gravity";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Science & Lab", url: "/scientific-lab" },
+  { name: "Specific Gravity Calculator", url: "/specific-gravity-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is specific gravity?",
+    answer: "Specific gravity (SG) is the ratio of a substance's density to the density of a reference material, typically pure water at 4°C (1000 kg/m³). It is a dimensionless number. SG > 1.0 means the substance sinks in water; SG < 1.0 means it floats."
+  },
+  {
+    question: "How do you calculate specific gravity?",
+    answer: "Specific Gravity = Density of Substance ÷ Density of Water (reference). Formula: SG = ρ_substance / ρ_water. Example: Gold has density 19,300 kg/m³, so SG = 19,300 / 1000 = 19.30."
+  },
+  {
+    question: "What is the specific gravity of water?",
+    answer: "Pure water at 4°C has a specific gravity of exactly 1.000 by definition, since it is the reference material. Water at 20°C has SG ≈ 0.998 due to thermal expansion. Seawater has SG ≈ 1.025 because dissolved salts increase its density."
+  },
+  {
+    question: "What does specific gravity tell us about a material?",
+    answer: "Specific gravity indicates buoyancy, density classification, and material purity. In brewing, it measures sugar content during fermentation. In geology, it helps identify minerals. In medicine, it's used for urine and blood tests. In construction, it indicates concrete aggregate quality."
+  },
+  {
+    question: "How is specific gravity used in brewing?",
+    answer: "Specific gravity measures dissolved sugars in wort before fermentation (Original Gravity, OG) and after (Final Gravity, FG). ABV = (OG − FG) × 131.25. Typical beer OG ranges from 1.030 to 1.080. The hydrometer measures SG to track fermentation progress."
+  }
+];
+
+const referenceDensities = [
+  { substance: "Pure Water (at 4°C)", density: "1000 kg/m³", sg: "1.000" },
+  { substance: "Gold (Pure)", density: "19300 kg/m³", sg: "19.30" },
+  { substance: "Iron / Steel", density: "7850 kg/m³", sg: "7.85" },
+  { substance: "Concrete", density: "2400 kg/m³", sg: "2.40" },
+  { substance: "Oak Wood (Dry)", density: "750 kg/m³", sg: "0.75" },
+  { substance: "Ethanol (Alcohol)", density: "789 kg/m³", sg: "0.789" },
+  { substance: "Air (at sea level)", density: "1.225 kg/m³", sg: "0.001" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/specific-gravity-calculator"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Specific Gravity</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Specific Gravity Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Specific Gravity (SG) = Density of Substance ÷ Density of Water</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: Steel has a density of 7850 kg/m³, giving it a specific gravity of 7.85 relative to water (1000 kg/m³).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Calculate the relative density of materials compared to pure water. Supports metric density inputs. Essential for geology, brewing, chemical engineering, and material science.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Material Parameters</h2>
+      
+      <div>
+        <label for="density-sub" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Density of Substance (kg/m³)</label>
+        <input
+          id="density-sub"
+          type="number"
+          value="7850"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div>
+        <label for="density-water" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Density of Water Reference (kg/m³)</label>
+        <input
+          id="density-water"
+          type="number"
+          value="1000"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-base font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue"
+        />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text font-mono">Calculated Ratio</h2>
+      
+      <div class="p-4 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Specific Gravity (SG)</span>
+        <span id="sg-res" class="text-2xl font-mono font-bold text-brand-blue">7.850</span>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg text-xs leading-normal">
+        <strong>Result Context:</strong> An SG greater than 1.000 means the substance sinks in water. An SG less than 1.000 means it floats.
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Common Materials Specific Gravity Chart</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Material</th>
+            <th class="p-3 font-semibold">Nominal Density</th>
+            <th class="p-3 font-semibold">Specific Gravity (SG)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {referenceDensities.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-bold text-brand-blue">{row.substance}</td>
+              <td class="p-3 text-ink">{row.density}</td>
+              <td class="p-3 text-muted-text">{row.sg}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const densitySub = document.getElementById('density-sub') as HTMLInputElement;
+    const densityWater = document.getElementById('density-water') as HTMLInputElement;
+    const sgRes = document.getElementById('sg-res') as HTMLSpanElement;
+
+    function calculate() {
+      const sub = parseFloat(densitySub.value) || 0;
+      const water = parseFloat(densityWater.value) || 1000;
+
+      const sg = sub / water;
+
+      if (sgRes) sgRes.textContent = sg.toFixed(3);
+    }
+
+    densitySub?.addEventListener('input', calculate);
+    densityWater?.addEventListener('input', calculate);
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding Specific Gravity</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Specific gravity</strong> is a dimensionless ratio comparing a material's density to a reference (usually water at 4°C = 1000 kg/m³). Because it's a ratio, it has no units — it's simply a number that tells you how much heavier or lighter a substance is compared to water.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>SG > 1.0:</strong> Material sinks in water (denser)</div>
+        <div><strong>SG = 1.0:</strong> Material has same density as water</div>
+        <div><strong>SG < 1.0:</strong> Material floats on water (lighter)</div>
+        <div><strong>Reference:</strong> Water at 4°C = 1000 kg/m³ = 1.000 SG</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Applications Across Industries</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Brewing:</strong> SG measures sugar content — Original Gravity (OG) and Final Gravity (FG) determine alcohol by volume. <strong>Geology:</strong> Identifies minerals by comparing measured SG to known values (quartz = 2.65, calcite = 2.71).
+      </p>
+      <p class="leading-relaxed">
+        <strong>Medicine:</strong> Urine specific gravity (1.005-1.030) assesses kidney function and hydration. <strong>Construction:</strong> Concrete aggregate SG affects mix design — lightweight aggregates (SG 0.5-1.0) produce insulating concrete; normal weight aggregates (SG 2.4-2.9) provide structural strength.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Specific Gravity</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Science Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/brix-to-specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Brix to Specific Gravity</a>
+      <a href="/proof-to-abv-alcohol-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Proof to ABV Converter</a>
+      <a href="/ph-to-hydrogen-concentration-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">pH to [H+] Calculator</a>
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PPM to mg/L Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

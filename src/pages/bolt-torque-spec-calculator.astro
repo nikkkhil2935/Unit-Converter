@@ -1,0 +1,192 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Bolt Torque Spec Calculator | Recommended Tightening Torque";
+const description = "Calculate recommended bolt tightening torque specifications based on bolt size, thread pitch, steel grade, and lubrication status. Supports metric and imperial bolts.";
+
+const boltSizes = [
+  { value: "m6", name: "M6 (6mm nominal)", d: 6, area: 20.1, category: "metric" },
+  { value: "m8", name: "M8 (8mm nominal)", d: 8, area: 36.6, category: "metric" },
+  { value: "m10", name: "M10 (10mm nominal)", d: 10, area: 58.0, category: "metric" },
+  { value: "m12", name: "M12 (12mm nominal)", d: 12, area: 84.3, category: "metric" },
+  { value: "m14", name: "M14 (14mm nominal)", d: 14, area: 115.0, category: "metric" },
+  { value: "m16", name: "M16 (16mm nominal)", d: 16, area: 157.0, category: "metric" },
+  { value: "m20", name: "M20 (20mm nominal)", d: 20, area: 245.0, category: "metric" },
+  { value: "m24", name: "M24 (24mm nominal)", d: 24, area: 353.0, category: "metric" }
+];
+
+const boltGrades = [
+  { value: "8.8", name: "Class 8.8 (Metric)", proof: 600, category: "metric" },
+  { value: "10.9", name: "Class 10.9 (Metric)", proof: 830, category: "metric" },
+  { value: "12.9", name: "Class 12.9 (Metric)", proof: 970, category: "metric" }
+];
+
+const lubes = [
+  { value: "dry", name: "Dry (Unlubricated steel) - K = 0.20", k: 0.20 },
+  { value: "lubed", name: "Lubricated (Lightly oiled) - K = 0.15", k: 0.15 },
+  { value: "zinc", name: "Zinc-plated - K = 0.22", k: 0.22 }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="torque">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/torque-converter" class="hover:text-brand-blue transition-colors">Torque Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Bolt Torque Specs</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Bolt Torque Spec Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Recommended Torque Formula: T = K × d × F</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Where T is torque, K is the friction coefficient, d is bolt diameter, and F is bolt preload tension (typically 75% of proof strength).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      A professional estimator for machine shops, automotive technicians, and structural engineers. Calculate target tightening torque and preload parameters for standard fasteners.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Parameters</h2>
+      
+      <div>
+        <label for="bolt-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Bolt Size</label>
+        <select id="bolt-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {boltSizes.map(b => (
+            <option value={b.value} data-d={b.d} data-area={b.area}>{b.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="grade-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Strength Grade</label>
+        <select id="grade-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {boltGrades.map(g => (
+            <option value={g.value} data-proof={g.proof}>{g.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="lube-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Lubrication / Finish</label>
+        <select id="lube-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {lubes.map(l => (
+            <option value={l.value} data-k={l.k}>{l.name}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Calculation Outputs</h2>
+        <div class="space-y-4">
+          <div class="p-4 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+            <div>
+              <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Recommended Torque</span>
+              <span id="torque-nm-result" class="text-2xl font-mono font-bold text-brand-blue">9.0 Nm</span>
+            </div>
+            <span id="torque-ftlb-result" class="text-sm font-mono font-bold text-muted-text">(6.7 ft-lb)</span>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-3 bg-canvas border border-hairline rounded-lg">
+              <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Target Preload Force</span>
+              <span id="preload-result" class="text-sm font-mono font-bold text-ink">9.0 kN</span>
+            </div>
+            <div class="p-3 bg-canvas border border-hairline rounded-lg">
+              <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Stress Area</span>
+              <span id="area-result" class="text-sm font-mono font-semibold text-muted-text">20.1 mm²</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="text-[11px] text-muted-text leading-relaxed mt-4 font-sans">
+        *Disclaimer: Calculated values are estimates based on standard formula coefficients. Actual structural clamp forces vary with surface condition, thread quality, and installation tools.
+      </p>
+    </div>
+  </section>
+
+  <!-- Technical reference info -->
+  <section class="prose prose-sm dark:prose-invert max-w-none border-t border-hairline pt-8 mb-10 text-body-text">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs leading-relaxed">
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">The Friction Factor K</h3>
+        <p class="mb-3">
+          The torque coefficient $K$ (friction factor) accounts for the friction in the threads and under the bolt head:
+        </p>
+        <ul class="list-disc pl-4 space-y-1">
+          <li><strong>Dry Steel (0.20):</strong> Uncoated steel bolts with dry threads. Friction is high, requiring more torque to reach target clamp preload force.</li>
+          <li><strong>Lubricated (0.15):</strong> Threads coated with motor oil, graphite, or anti-seize. Lubrication lowers friction, meaning a smaller torque value generates the same clamp load. **Warning: Torquing a lubed bolt to dry specs can snap it!**</li>
+          <li><strong>Zinc Plated (0.22):</strong> Zinc coating increases surface friction slightly, needing higher installation torque values.</li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Target Preload Tension F</h3>
+        <p class="mb-3">
+          Preload is the tension created in a fastener when tightened. It is designed to be high enough to hold joints together, but safely below the plastic deformation limit of the bolt:
+        </p>
+        <p class="font-mono bg-card p-3 border border-hairline rounded-lg">
+          Preload Force = 0.75 × Tensile Stress Area × Grade Proof Strength
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const boltSelect = document.getElementById('bolt-select') as HTMLSelectElement;
+    const gradeSelect = document.getElementById('grade-select') as HTMLSelectElement;
+    const lubeSelect = document.getElementById('lube-select') as HTMLSelectElement;
+
+    const torqueNmResult = document.getElementById('torque-nm-result') as HTMLSpanElement;
+    const torqueFtlbResult = document.getElementById('torque-ftlb-result') as HTMLSpanElement;
+    const preloadResult = document.getElementById('preload-result') as HTMLSpanElement;
+    const areaResult = document.getElementById('area-result') as HTMLSpanElement;
+
+    function calculate() {
+      const selectedBolt = boltSelect.options[boltSelect.selectedIndex];
+      const selectedGrade = gradeSelect.options[gradeSelect.selectedIndex];
+      const selectedLube = lubeSelect.options[lubeSelect.selectedIndex];
+
+      const d = parseFloat(selectedBolt.getAttribute('data-d') || '0');
+      const area = parseFloat(selectedBolt.getAttribute('data-area') || '0');
+      const proof = parseFloat(selectedGrade.getAttribute('data-proof') || '0');
+      const k = parseFloat(selectedLube.getAttribute('data-k') || '0');
+
+      if (!d || !area || !proof || !k) return;
+
+      // 1. Preload tension F (N) = 0.75 * area (mm²) * proof strength (MPa / N/mm²)
+      const preloadN = 0.75 * area * proof;
+      
+      // 2. Torque T (N-m) = K * d (m) * F (N)
+      // Since d is in mm, convert to meters: d / 1000
+      const torqueNm = k * (d / 1000) * preloadN;
+      const torqueFtlb = torqueNm * 0.7375621493;
+
+      if (torqueNmResult) torqueNmResult.textContent = `${Math.round(torqueNm * 10) / 10} Nm`;
+      if (torqueFtlbResult) torqueFtlbResult.textContent = `(${Math.round(torqueFtlb * 10) / 10} ft-lb)`;
+      if (preloadResult) preloadResult.textContent = `${Math.round((preloadN / 1000) * 10) / 10} kN`;
+      if (areaResult) areaResult.textContent = `${area} mm²`;
+    }
+
+    boltSelect?.addEventListener('change', calculate);
+    gradeSelect?.addEventListener('change', calculate);
+    lubeSelect?.addEventListener('change', calculate);
+
+    // Initial calculation
+    calculate();
+  </script>
+</BaseLayout>

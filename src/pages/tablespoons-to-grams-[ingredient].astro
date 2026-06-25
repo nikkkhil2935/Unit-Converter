@@ -1,0 +1,351 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ingredients, type Ingredient } from '../data/ingredientDensity';
+
+export async function getStaticPaths() {
+  return ingredients.map(ing => ({
+    params: { ingredient: ing.slug },
+    props: { ingredient: ing }
+  }));
+}
+
+interface Props {
+  ingredient: Ingredient;
+}
+
+const { ingredient } = Astro.props;
+
+// Calculate default values
+const tbspToGrams = (tbsp: number) => {
+  return Math.round(tbsp * ingredient.gramsPerTbsp * 100) / 100;
+};
+
+const tspToGrams = (tsp: number) => {
+  return Math.round(tsp * (ingredient.gramsPerTbsp / 3) * 100) / 100;
+};
+
+const defaultGrams = tbspToGrams(1);
+const defaultOunces = Math.round((defaultGrams / 28.349523125) * 100) / 100;
+
+// Dynamic title & metadata following exact SEO Architecture rules
+const title = `Tablespoons to Grams: ${ingredient.name} | Density Weight Calculator`;
+const description = `1 tablespoon of ${ingredient.name.toLowerCase()} equals ${defaultGrams}g (${defaultOunces} oz) and 1 teaspoon equals ${tspToGrams(1)}g. Convert tablespoons to grams instantly. Free, instant, no signup.`;
+
+// SEO H1
+const h1 = `Tablespoons to Grams: ${ingredient.name} Converter`;
+
+// FAQ Schema questions
+const faqs = [
+  {
+    question: `How many grams in 1 tablespoon of ${ingredient.name}?`,
+    answer: `1 tablespoon of ${ingredient.name} weighs approximately ${defaultGrams} grams (or ${defaultOunces} ounces). For smaller measurements, 1 teaspoon weighs about ${tspToGrams(1)} grams.`
+  },
+  {
+    question: `How do I convert tablespoons of ${ingredient.name} to grams?`,
+    answer: `To convert tablespoons of ${ingredient.name} to grams, multiply the tablespoons by ${ingredient.gramsPerTbsp}. Formula: grams = tablespoons × ${ingredient.gramsPerTbsp}.`
+  },
+  {
+    question: `What is 3 teaspoons of ${ingredient.name} in grams?`,
+    answer: `3 teaspoons of ${ingredient.name} is equivalent to 1 tablespoon, which weighs ${defaultGrams} grams.`
+  }
+];
+
+// Reference table increments
+const tableValues = [0.25, 0.5, 1, 2, 3, 4, 6, 8, 12, 16];
+const tableRows = tableValues.map(val => {
+  const grams = tbspToGrams(val);
+  const oz = Math.round((grams / 28.349523125) * 100) / 100;
+  
+  let context = `Standard cooking measure for ${ingredient.name.toLowerCase()}`;
+  if (val === 1) context = "One tablespoon base";
+  if (val === 3) context = "Equivalent to 1 tablespoon + 2 teaspoons";
+  if (val === 16) context = "Equivalent to 1 cup";
+
+  return {
+    tbsp: `${val} tbsp`,
+    grams: `${grams}g`,
+    ounces: `${oz} oz`,
+    context
+  };
+});
+
+// JSON-LD schemas
+const jsonLdFAQ = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+
+const tspFactor = Math.round((ingredient.gramsPerTbsp / 3) * 100) / 100;
+
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to Convert ${ingredient.name} from Tablespoons to Grams`,
+  "description": `Baking guide to convert tablespoons of ${ingredient.name} to grams based on density.`,
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Enter the number of tablespoons",
+      "text": "Input the tablespoons value into the calculator above."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Read the exact weight in grams",
+      "text": `Multiply the tablespoons by ${ingredient.gramsPerTbsp} to get the grams. Use tablespoons × ${tspFactor} for teaspoons.`
+    }
+  ]
+};
+
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://myunitconverter.app"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Cooking",
+      "item": "https://myunitconverter.app/cooking-converter"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": `Tablespoons to Grams ${ingredient.name}`,
+      "item": `https://myunitconverter.app/tablespoons-to-grams-${ingredient.slug}`
+    }
+  ]
+};
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug="cooking"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdFAQ)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdBreadcrumb)} />
+  </Fragment>
+
+  <!-- Visible Breadcrumbs -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/cooking-converter" class="hover:text-brand-blue transition-colors">Cooking Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{ingredient.name} Tablespoons to Grams</span>
+  </nav>
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">{h1}</h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 tablespoon of {ingredient.name} = {defaultGrams} grams ({defaultOunces} oz)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        1 teaspoon of {ingredient.name.toLowerCase()} = {tspToGrams(1)} grams.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert tablespoons (tbsp) and teaspoons (tsp) of <strong>{ingredient.name}</strong> to grams instantly. Our calculator incorporates specific density variables to give accurate culinary measurements for all your recipes.
+    </p>
+  </section>
+
+  <!-- Interactive Baking Calculator Widget -->
+  <section 
+    id="tbsp-to-grams-container"
+    data-factor={ingredient.gramsPerTbsp}
+    class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl"
+  >
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Interactive Tablespoons to Grams Converter</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div>
+        <label for="ingredient-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Select Ingredient</label>
+        <select
+          id="ingredient-select"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-medium transition-all"
+        >
+          {ingredients.map(ing => (
+            <option value={ing.slug} selected={ing.slug === ingredient.slug}>{ing.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Switch Converter</label>
+        <div class="flex gap-2">
+          <a href={`/cups-to-grams-${ingredient.slug}`} class="flex-1 text-center bg-canvas text-body-text border border-hairline hover:border-brand-blue rounded-lg py-2.5 text-xs font-medium font-mono">Cups → Grams</a>
+          <a href={`/tablespoons-to-grams-${ingredient.slug}`} class="flex-1 text-center bg-brand-blue/10 text-brand-blue border border-brand-blue/20 rounded-lg py-2.5 text-xs font-bold font-mono">Tbsp → Grams</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div class="space-y-4">
+        <div>
+          <label for="tbsp-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Tablespoons</label>
+          <div class="relative">
+            <input
+              id="tbsp-input"
+              type="number"
+              step="0.1"
+              value="1"
+              min="0"
+              class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">tbsp</span>
+          </div>
+        </div>
+
+        <div>
+          <label for="tsp-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Teaspoons (linked)</label>
+          <div class="relative">
+            <input
+              id="tsp-input"
+              type="number"
+              step="0.1"
+              value="3"
+              min="0"
+              class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">tsp</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-4 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight (Grams)</span>
+            <span id="grams-result" class="text-xl font-mono font-bold text-brand-blue">{defaultGrams}g</span>
+          </div>
+          <span class="text-xs font-mono font-medium text-muted-text" id="ounces-result">({defaultOunces} oz)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-Column Conversion Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Tablespoons to Grams Reference Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text font-mono text-[10px] uppercase">
+            <th class="p-3 font-semibold">Volume (Tablespoons)</th>
+            <th class="p-3 font-semibold">Weight (Grams)</th>
+            <th class="p-3 font-semibold">Weight (Ounces)</th>
+            <th class="p-3 font-semibold">Real-world Context</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline font-mono">
+          {tableRows.map(row => (
+            <tr class="hover:bg-card/50 transition-colors">
+              <td class="p-3 text-ink font-medium">{row.tbsp}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.grams}</td>
+              <td class="p-3 text-ink">{row.ounces}</td>
+              <td class="p-3 text-muted-text text-[11px]">{row.context}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Sibling Linking -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 border-t border-hairline pt-8">
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">The Math behind the Conversion</h3>
+      <div class="p-4 bg-card border border-hairline rounded-xl space-y-3 font-sans">
+        <p class="text-xs text-body-text leading-relaxed">
+          One tablespoon is exactly 1/16 of a standard US cup. To find tablespoons to grams:
+        </p>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <code class="font-mono text-sm font-semibold text-brand-blue">
+            grams = tablespoons × {ingredient.gramsPerTbsp}
+          </code>
+        </div>
+        <p class="text-xs text-body-text leading-relaxed">
+          Since there are 3 teaspoons in 1 tablespoon, multiply teaspoons by {Math.round((ingredient.gramsPerTbsp/3)*100)/100} to get grams.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">Popular Cooking Conversions</h3>
+      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+        <a href="/tablespoons-to-grams-butter" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Butter Tbsp to Grams</a>
+        <a href="/tablespoons-to-grams-sugar" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Sugar Tbsp to Grams</a>
+        <a href="/tablespoons-to-grams-salt" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Salt Tbsp to Grams</a>
+        <a href="/recipe-scale-calculator" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate col-span-2 text-center font-bold text-brand-blue">Recipe Scale Calculator</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const container = document.getElementById('tbsp-to-grams-container');
+    const factor = parseFloat(container?.getAttribute('data-factor') || '0');
+
+    const select = document.getElementById('ingredient-select') as HTMLSelectElement;
+    const tbspInput = document.getElementById('tbsp-input') as HTMLInputElement;
+    const tspInput = document.getElementById('tsp-input') as HTMLInputElement;
+    
+    const gramsRes = document.getElementById('grams-result') as HTMLSpanElement;
+    const ouncesRes = document.getElementById('ounces-result') as HTMLSpanElement;
+
+    select?.addEventListener('change', (e) => {
+      const val = (e.target as HTMLSelectElement).value;
+      window.location.href = `/tablespoons-to-grams-${val}`;
+    });
+
+    function updateFromTbsp(tbsp: number) {
+      const grams = Math.round(tbsp * factor * 100) / 100;
+      const ounces = Math.round((grams / 28.349523125) * 100) / 100;
+      
+      if (gramsRes) gramsRes.textContent = `${grams}g`;
+      if (ouncesRes) ouncesRes.textContent = `(${ounces} oz)`;
+      
+      if (tspInput) tspInput.value = (Math.round(tbsp * 3 * 10) / 10).toString();
+    }
+
+    function updateFromTsp(tsp: number) {
+      const tbsp = tsp / 3;
+      const grams = Math.round(tbsp * factor * 100) / 100;
+      const ounces = Math.round((grams / 28.349523125) * 100) / 100;
+      
+      if (gramsRes) gramsRes.textContent = `${grams}g`;
+      if (ouncesRes) ouncesRes.textContent = `(${ounces} oz)`;
+      
+      if (tbspInput) tbspInput.value = (Math.round(tbsp * 10) / 10).toString();
+    }
+
+    tbspInput?.addEventListener('input', (e) => {
+      const tbsp = parseFloat((e.target as HTMLInputElement).value) || 0;
+      updateFromTbsp(tbsp);
+    });
+
+    tspInput?.addEventListener('input', (e) => {
+      const tsp = parseFloat((e.target as HTMLInputElement).value) || 0;
+      updateFromTsp(tsp);
+    });
+  </script>
+</BaseLayout>

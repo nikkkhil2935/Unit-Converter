@@ -1,0 +1,304 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Square Footage Calculator | Room Area Estimator — Rectangle, Circle, Triangle";
+const description = "Calculate square footage for any room or area shape. Supports rectangles, circles, and triangles. Includes waste factor for flooring, tiles, and paint. Free sq ft calculator.";
+const keywords = "square footage calculator, how to calculate square footage, sq ft calculator, room area calculator, square feet calculator, calculate square feet of a room, flooring calculator, tile calculator, paint square footage";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Square Footage Calculator", url: "/square-footage-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do I calculate square footage of a room?",
+    answer: "For a rectangular room, multiply length (in feet) by width (in feet). For example, a room that is 15 feet long and 12 feet wide = 15 × 12 = 180 square feet. For L-shaped rooms, divide the room into two rectangles, calculate each separately, and add the totals."
+  },
+  {
+    question: "How many square feet in a 12x12 room?",
+    answer: "A 12×12 room contains 12 × 12 = 144 square feet. This is exactly one 'square' in roofing terminology."
+  },
+  {
+    question: "How many square feet in a 10x10 room?",
+    answer: "A 10×10 room contains 10 × 10 = 100 square feet."
+  },
+  {
+    question: "How much flooring do I need for a room?",
+    answer: "Calculate the room's square footage, then add a waste factor. For straight-lay flooring, add 5-10%. For diagonal or herringbone patterns, add 10-15%. If buying tiles, add 10% minimum for cuts and breakage."
+  },
+  {
+    question: "How do you calculate square feet from inches?",
+    answer: "Convert inches to feet first by dividing by 12, then multiply. For example, a 120-inch by 96-inch room = (120 ÷ 12) × (96 ÷ 12) = 10 × 8 = 80 square feet."
+  },
+  {
+    question: "How many square feet is an average house?",
+    answer: "The average US home is approximately 2,300 square feet. A typical bedroom is 100–150 sq ft, a living room 250–350 sq ft, and a garage 400–600 sq ft."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/square-footage-calculator"
+  categorySlug="area"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Breadcrumb Nav -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/construction-diy" class="hover:text-brand-blue transition-colors">Construction & DIY</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Square Footage Calculator</span>
+  </nav>
+
+  <!-- Title & Direct Answer -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Square Footage Calculator — Room Area Estimator</h1>
+
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl" style="border-left: 3px solid #0070f3">
+      <p class="text-base text-ink font-semibold mb-1">Area (sq ft) = Length (ft) × Width (ft)</p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        A 15 × 12 ft room = <strong>180 square feet</strong>. Use the waste factor for accurate flooring & tile orders.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Calculate the exact square footage of any room or outdoor area — rectangles, circles, or triangles. Use the <strong>waste factor</strong> dropdown to automatically account for flooring cuts, tile breakage, and pattern waste. Results are shown in both square feet and square meters for international project compatibility.
+    </p>
+  </section>
+
+  <!-- Interactive Calculator -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Shape & Dimensions</h2>
+
+      <div>
+        <label for="shape-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Area Shape</label>
+        <select id="shape-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all">
+          <option value="rectangle">Rectangle (standard room)</option>
+          <option value="circle">Circle (round patio / pool)</option>
+          <option value="triangle">Triangle</option>
+        </select>
+      </div>
+
+      <!-- Rectangle Inputs -->
+      <div id="inputs-rectangle" class="shape-inputs space-y-3">
+        <div>
+          <label for="len-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Length (feet)</label>
+          <input id="len-in" type="number" value="15" min="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+        <div>
+          <label for="wid-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Width (feet)</label>
+          <input id="wid-in" type="number" value="12" min="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+      </div>
+
+      <!-- Circle Inputs -->
+      <div id="inputs-circle" class="shape-inputs space-y-3 hidden">
+        <div>
+          <label for="rad-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Radius (feet)</label>
+          <input id="rad-in" type="number" value="7" min="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+      </div>
+
+      <!-- Triangle Inputs -->
+      <div id="inputs-triangle" class="shape-inputs space-y-3 hidden">
+        <div>
+          <label for="base-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Base (feet)</label>
+          <input id="base-in" type="number" value="10" min="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+        <div>
+          <label for="height-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Height (feet)</label>
+          <input id="height-in" type="number" value="8" min="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+        </div>
+      </div>
+
+      <div>
+        <label for="waste-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Waste / Overage Factor</label>
+        <select id="waste-in" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all">
+          <option value="0">0% (Exact area)</option>
+          <option value="5">5% (Standard wood/laminate flooring)</option>
+          <option value="10" selected>10% (Tile layout — recommended)</option>
+          <option value="15">15% (Herringbone / diagonal patterns)</option>
+          <option value="20">20% (Complex pattern / natural stone)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Calculated Area</h2>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Net Area</span>
+        <span id="area-res" class="text-3xl font-mono font-bold text-brand-blue">180 sq ft</span>
+        <span id="area-metric" class="block text-xs font-mono text-muted-text mt-1">(16.72 m²)</span>
+      </div>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Total Material to Order (with waste)</span>
+        <span id="total-res" class="text-2xl font-mono font-bold text-ink">198 sq ft</span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Square Yards</span>
+          <span id="sq-yards" class="text-sm font-mono font-bold text-muted-text">20.0 yd²</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Roofing Squares</span>
+          <span id="sq-roof" class="text-sm font-mono font-bold text-muted-text">1.8 squares</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Common Room Square Footage Reference</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase">
+            <th class="p-3 font-semibold">Room / Space</th>
+            <th class="p-3 font-semibold">Typical Dimensions</th>
+            <th class="p-3 font-semibold">Square Feet</th>
+            <th class="p-3 font-semibold">Square Meters</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {[
+            { room: "Small Bedroom", dim: "10 × 10", sqft: 100, sqm: 9.3 },
+            { room: "Standard Bedroom", dim: "12 × 12", sqft: 144, sqm: 13.4 },
+            { room: "Master Bedroom", dim: "14 × 16", sqft: 224, sqm: 20.8 },
+            { room: "Living Room", dim: "16 × 20", sqft: 320, sqm: 29.7 },
+            { room: "Kitchen", dim: "12 × 14", sqft: 168, sqm: 15.6 },
+            { room: "2-Car Garage", dim: "20 × 22", sqft: 440, sqm: 40.9 },
+            { room: "Studio Apartment", dim: "~25 × 30", sqft: 750, sqm: 69.7 },
+          ].map(r => (
+            <tr class="hover:bg-canvas/50 transition-colors">
+              <td class="p-3 font-bold text-ink">{r.room}</td>
+              <td class="p-3 text-muted-text">{r.dim} ft</td>
+              <td class="p-3 text-brand-blue font-bold">{r.sqft} sq ft</td>
+              <td class="p-3 text-muted-text">{r.sqm} m²</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">When to Add a Waste Factor</h3>
+      <p class="leading-relaxed mb-3">
+        The net area of your room is rarely the same as the amount of material you order. Every flooring, tile, or cladding project results in cut pieces and off-cuts. Standard guidance:
+      </p>
+      <ul class="space-y-1.5 leading-relaxed">
+        <li><strong>Straight-lay hardwood/laminate:</strong> +5% overage</li>
+        <li><strong>Square tile, straight pattern:</strong> +10% overage</li>
+        <li><strong>45° diagonal tile:</strong> +15% overage</li>
+        <li><strong>Herringbone/chevron:</strong> +15–20% overage</li>
+        <li><strong>Irregular/natural stone:</strong> +20% overage</li>
+      </ul>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Square Feet vs Square Meters vs Square Yards</h3>
+      <p class="leading-relaxed mb-3">
+        Different regions and materials use different area units. Flooring is sold by the square foot in the US but by the square meter in Europe and Australia. Carpet is often sold by the square yard in the US.
+      </p>
+      <div class="space-y-1 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div>1 sq ft = 0.0929 m²</div>
+        <div>1 sq m = 10.764 sq ft</div>
+        <div>1 sq yd = 9 sq ft = 0.836 m²</div>
+        <div>1 roofing square = 100 sq ft</div>
+        <div>1 acre = 43,560 sq ft</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Square Footage</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Area & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/tile-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Tile Coverage Calculator</a>
+      <a href="/paint-coverage-calculator-sq-ft-per-gallon" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Paint Coverage Calculator</a>
+      <a href="/board-feet-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Board Feet Calculator</a>
+      <a href="/mulch-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Mulch Coverage Calculator</a>
+      <a href="/area-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Area Unit Converter</a>
+    </div>
+  </section>
+
+  <script>
+    const shapeSelect = document.getElementById('shape-select') as HTMLSelectElement;
+    const wasteSelect = document.getElementById('waste-in') as HTMLSelectElement;
+    const lenIn = document.getElementById('len-in') as HTMLInputElement;
+    const widIn = document.getElementById('wid-in') as HTMLInputElement;
+    const radIn = document.getElementById('rad-in') as HTMLInputElement;
+    const baseIn = document.getElementById('base-in') as HTMLInputElement;
+    const heightIn = document.getElementById('height-in') as HTMLInputElement;
+
+    const areaRes = document.getElementById('area-res') as HTMLSpanElement;
+    const areaMetric = document.getElementById('area-metric') as HTMLSpanElement;
+    const totalRes = document.getElementById('total-res') as HTMLSpanElement;
+    const sqYards = document.getElementById('sq-yards') as HTMLSpanElement;
+    const sqRoof = document.getElementById('sq-roof') as HTMLSpanElement;
+
+    function calculate() {
+      const shape = shapeSelect.value;
+      const waste = parseFloat(wasteSelect.value) || 0;
+
+      document.querySelectorAll('.shape-inputs').forEach(el => el.classList.add('hidden'));
+      document.getElementById(`inputs-${shape}`)?.classList.remove('hidden');
+
+      let area = 0;
+      if (shape === 'rectangle') {
+        area = (parseFloat(lenIn.value) || 0) * (parseFloat(widIn.value) || 0);
+      } else if (shape === 'circle') {
+        area = Math.PI * Math.pow(parseFloat(radIn.value) || 0, 2);
+      } else if (shape === 'triangle') {
+        area = 0.5 * (parseFloat(baseIn.value) || 0) * (parseFloat(heightIn.value) || 0);
+      }
+
+      const metric = area * 0.09290304;
+      const total = area * (1 + waste / 100);
+
+      if (areaRes) areaRes.textContent = `${area.toFixed(1)} sq ft`;
+      if (areaMetric) areaMetric.textContent = `(${metric.toFixed(2)} m²)`;
+      if (totalRes) totalRes.textContent = `${total.toFixed(1)} sq ft`;
+      if (sqYards) sqYards.textContent = `${(area / 9).toFixed(1)} yd²`;
+      if (sqRoof) sqRoof.textContent = `${(area / 100).toFixed(2)} squares`;
+    }
+
+    shapeSelect?.addEventListener('change', calculate);
+    wasteSelect?.addEventListener('change', calculate);
+    lenIn?.addEventListener('input', calculate);
+    widIn?.addEventListener('input', calculate);
+    radIn?.addEventListener('input', calculate);
+    baseIn?.addEventListener('input', calculate);
+    heightIn?.addEventListener('input', calculate);
+
+    calculate();
+  </script>
+</BaseLayout>

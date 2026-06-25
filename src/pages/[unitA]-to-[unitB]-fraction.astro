@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import ConverterWidget from '../components/ConverterWidget';
+import AdBanner from '../components/AdBanner.astro';
+import { categories, convert, type Category, type Unit } from '../lib/conversions';
+import { getPairSEO, getRealWorldContext, getEquivalent } from '../utils/seo';
+import { formatAsFraction, decimalToFraction } from '../utils/fraction';
+
+export async function getStaticPaths() {
+  const paths = [];
+  const activeCategories = ['length', 'weight', 'volume', 'area'];
+  
+  for (const category of categories) {
+    if (activeCategories.includes(category.id)) {
+      const units = category.units;
+      for (let i = 0; i < units.length; i++) {
+        for (let j = 0; j < units.length; j++) {
+          if (i !== j) {
+            const fromUnit = units[i];
+            const toUnit = units[j];
+            paths.push({
+              params: {
+                unitA: fromUnit.slug,
+                unitB: toUnit.slug
+              },
+              props: {
+                category,
+                fromUnit,
+                toUnit
+              }
+            });
+          }
+        }
+      }
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  category: Category;
+  fromUnit: Unit;
+  toUnit: Unit;
+}
+
+const { category, fromUnit, toUnit } = Astro.props;
+
+const canonicalPath = `/${fromUnit.slug}-to-${toUnit.slug}-fraction`;
+
+// Dynamic titles & meta tag system to beat Google
+const title = `${fromUnit.slug} to ${toUnit.slug} | Fraction + Decimal Converter`;
+const description = `Convert ${fromUnit.name.toLowerCase()} to ${toUnit.name.toLowerCase()} with decimal and fraction outputs. Shows exact formula and reference table. Free, instant.`;
+
+const defaultVal = 1;
+const decimalResult = convert(defaultVal, fromUnit.id, toUnit.id, category.id);
+const fractionResult = toUnit.slug === 'inches' || toUnit.slug === 'feet' 
+  ? formatAsFraction(decimalResult, 16) 
+  : decimalToFraction(decimalResult, 16).displayString;
+
+// 4-column reference table values
+const tableValues = [0.125, 0.25, 0.5, 1, 2, 5, 10, 20, 50, 100];
+const tableRows = tableValues.map(val => {
+  const res = convert(val, fromUnit.id, toUnit.id, category.id);
+  const frac = toUnit.slug === 'inches' || toUnit.slug === 'feet' || fromUnit.slug === 'inches'
+    ? formatAsFraction(res, 16)
+    : decimalToFraction(res, 16).displayString;
+    
+  return {
+    from: `${val} ${fromUnit.symbol}`,
+    toDecimal: `${res.toFixed(4)} ${toUnit.symbol}`,
+    toFraction: frac,
+    context: getEquivalent(res, toUnit.slug)
+  };
+});
+
+// JSON-LD FAQs
+const faqs = [
+  {
+    question: `How many ${toUnit.name.toLowerCase()}s in 1 ${fromUnit.name.toLowerCase()}?`,
+    acceptedAnswer: {
+      "@type": "Answer",
+      "text": `1 ${fromUnit.name} equals ${decimalResult.toFixed(6)} ${toUnit.name}. In fraction form, this is approximately ${fractionResult}.`
+    }
+  },
+  {
+    question: `How do I convert ${fromUnit.name.toLowerCase()} to ${toUnit.name.toLowerCase()}?`,
+    acceptedAnswer: {
+      "@type": "Answer",
+      "text": `Multiply the ${fromUnit.name} value by ${decimalResult.toFixed(6)}. Formula: ${toUnit.symbol} = ${fromUnit.symbol} × ${decimalResult.toFixed(6)}. Use the calculator above for instant results.`
+    }
+  }
+];
+
+const jsonLdFAQ = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": faq.acceptedAnswer
+  }))
+};
+
+const siblingFrom = category.units
+  .filter(u => u.slug !== fromUnit.slug && u.slug !== toUnit.slug)
+  .map(u => ({
+    label: `Convert ${fromUnit.symbol} to ${u.symbol}`,
+    url: `/${fromUnit.slug}-to-${u.slug}-fraction`
+  }));
+
+const siblingTo = category.units
+  .filter(u => u.slug !== fromUnit.slug && u.slug !== toUnit.slug)
+  .map(u => ({
+    label: `Convert ${u.symbol} to ${toUnit.symbol}`,
+    url: `/${u.slug}-to-${toUnit.slug}-fraction`
+  }));
+
+const isPopularFractionPair = [
+  { from: "mm", to: "inches" },
+  { from: "cm", to: "inches" },
+  { from: "inches", to: "mm" },
+  { from: "inches", to: "cm" },
+  { from: "meters", to: "feet" },
+  { from: "feet", to: "meters" }
+].some(p => p.from === fromUnit.slug && p.to === toUnit.slug);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug={category.slug}
+  robots="noindex, follow"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdFAQ)} />
+  </Fragment>
+
+  <!-- Visible Breadcrumbs -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href={`/${category.slug}-converter`} class="hover:text-brand-blue transition-colors">{category.name} Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{fromUnit.symbol} to {toUnit.symbol} Fraction</span>
+  </nav>
+
+  <!-- Title & Direct Answer Block -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">
+      {fromUnit.name} to {toUnit.name} Fraction Converter
+    </h1>
+
+    <!-- Direct Answer Block (Position 0 Bait) -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 {fromUnit.name} = {decimalResult.toFixed(4)} {toUnit.name} ({fractionResult})</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Shows results as decimal AND nearest standard fraction (1/2, 1/4, 1/8, 1/16, 1/32, 1/64 increments).
+      </p>
+    </div>
+  </section>
+
+  <AdBanner slot="fraction-top" />
+
+  <!-- Converter Widget -->
+  <section class="mb-10">
+    <ConverterWidget
+      client:load
+      initialCategory={category.id}
+      initialFrom={fromUnit.id}
+      initialTo={toUnit.id}
+    />
+  </section>
+
+  <AdBanner slot="fraction-mid" />
+
+  <!-- 4-Column Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">
+      {fromUnit.name} to {toUnit.name} Decimal & Fraction Reference Matrix
+    </h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">{fromUnit.name}</th>
+            <th class="p-3 font-semibold">Decimal ({toUnit.symbol})</th>
+            <th class="p-3 font-semibold">Fraction ({toUnit.symbol})</th>
+            <th class="p-3 font-semibold">Real-world Context</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {tableRows.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-ink">{row.from}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.toDecimal}</td>
+              <td class="p-3 text-ink font-bold">{row.toFraction}</td>
+              <td class="p-3 text-muted-text font-sans">{row.context}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <AdBanner slot="fraction-grid" />
+
+  {isPopularFractionPair && (
+    <section class="mb-10 max-w-4xl bg-card border border-hairline rounded-xl p-6 transition-colors">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
+        Common {fromUnit.name} to {toUnit.name} Fraction Calculations
+      </h2>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+        {[1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 30, 45, 50, 75, 100, 120, 127, 200].map(val => (
+          <a href={`/${val}-${fromUnit.slug}-to-${toUnit.slug}-fraction`} class="px-2 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded text-center truncate">
+            {val} {fromUnit.symbol} as Fraction
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
+
+  <AdBanner slot="fraction-bottom" />
+
+  <!-- Internal Linking Sections -->
+  <section class="border-t border-hairline pt-8 pb-12 text-xs text-body-text select-none max-w-4xl">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- Reverse & Decimal Links -->
+      <div class="flex flex-col gap-6">
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Alternative Views</h3>
+          <div class="flex flex-col gap-2">
+            <a href={`/${fromUnit.slug}-to-${toUnit.slug}`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+              View Decimal Conversion details
+            </a>
+            <a href={`/${toUnit.slug}-to-${fromUnit.slug}-fraction`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Convert {toUnit.name} to {fromUnit.name} (Fraction)
+            </a>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Convert {fromUnit.name} to other units (as Fraction)</h3>
+          <div class="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto pr-1 border border-hairline rounded-lg p-2 bg-canvas">
+            {siblingFrom.map(sibling => (
+              <a href={sibling.url} class="p-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-[10px] font-mono truncate">
+                {sibling.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Convert other units to {toUnit.name} (as Fraction)</h3>
+          <div class="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto pr-1 border border-hairline rounded-lg p-2 bg-canvas">
+            {siblingTo.map(sibling => (
+              <a href={sibling.url} class="p-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-[10px] font-mono truncate">
+                {sibling.label}
+              </a>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Sibling Categories Navigation -->
+      <div class="flex flex-col gap-6">
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other Measurement Types</h3>
+          <div class="flex flex-wrap gap-2">
+            {category.relatedCategories.map(slug => (
+              <a href={`/${slug}-converter`} class="px-3 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded-full font-medium">
+                {slug.charAt(0).toUpperCase() + slug.slice(1)} Converter
+              </a>
+            ))}
+            <a href={`/${category.slug}-converter`} class="px-3 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded-full font-semibold">
+              All {category.name} Units
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</BaseLayout>

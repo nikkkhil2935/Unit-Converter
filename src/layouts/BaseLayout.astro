@@ -11,6 +11,7 @@ export interface Props {
   ogTitle?: string;
   ogDescription?: string;
   categorySlug?: string;
+  robots?: string;
 }
 
 const { 
@@ -20,7 +21,8 @@ const {
   canonicalPath, 
   ogTitle = title, 
   ogDescription = description,
-  categorySlug 
+  categorySlug,
+  robots = "index, follow"
 } = Astro.props;
 
 const path = canonicalPath || Astro.url.pathname;
@@ -92,6 +94,8 @@ if (isHomePage) {
 
     gtag('config', 'G-98S35BD1XZ');
   </script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9725731987817847"
+     crossorigin="anonymous"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
@@ -99,7 +103,7 @@ if (isHomePage) {
   <title>{title}</title>
   <meta name="description" content={description} />
   <meta name="keywords" content={keywords} />
-  <meta name="robots" content="index, follow" />
+  <meta name="robots" content={robots} />
   <meta name="theme-color" content="#000000" />
   <link rel="canonical" href={canonicalURL} />
 
@@ -147,8 +151,7 @@ if (isHomePage) {
 
   <!-- Theme and Language init: prevent flash of wrong styling -->
   <script is:inline>
-    const theme = localStorage.getItem('theme') || 
-      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    const theme = localStorage.getItem('theme') || 'light';
     document.documentElement.classList.toggle('dark', theme === 'dark');
 
     const lang = localStorage.getItem('lang') || 'en';
@@ -184,10 +187,41 @@ if (isHomePage) {
   <div class="relative flex-1 flex flex-col z-10">
     <!-- Plain background, no mesh gradient -->
     
+    <!-- Left Skyscraper Ad -->
+    <div class="side-ad-container side-ad-left">
+      <span class="text-[9px] uppercase tracking-wider text-muted-text/50 font-mono mb-1 block text-center select-none">Advertisement</span>
+      <div class="w-full bg-card border border-hairline/60 rounded-xl flex items-center justify-center p-2 min-h-[600px]">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-9725731987817847"
+             data-ad-slot="left-skyscraper"
+             data-ad-format="vertical"
+             data-full-width-responsive="false"></ins>
+      </div>
+    </div>
+
+    <!-- Right Skyscraper Ad -->
+    <div class="side-ad-container side-ad-right">
+      <span class="text-[9px] uppercase tracking-wider text-muted-text/50 font-mono mb-1 block text-center select-none">Advertisement</span>
+      <div class="w-full bg-card border border-hairline/60 rounded-xl flex items-center justify-center p-2 min-h-[600px]">
+        <ins class="adsbygoogle"
+             style="display:inline-block;width:160px;height:600px"
+             data-ad-client="ca-pub-9725731987817847"
+             data-ad-slot="right-skyscraper"
+             data-ad-format="vertical"
+             data-full-width-responsive="false"></ins>
+      </div>
+    </div>
+    
     <main class="flex-1 w-full max-w-[1100px] mx-auto px-4 relative z-10">
       <slot />
     </main>
   </div>
+
+  <script is:inline>
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
   <!-- FOOTER -->
   <footer class="border-t border-hairline bg-card mt-20 py-8 relative z-10 transition-colors duration-200">

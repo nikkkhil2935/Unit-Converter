@@ -1,0 +1,250 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Tile Coverage Calculator | Floor & Wall Tile Estimator — How Many Tiles Do I Need?";
+const description = "Calculate how many tiles you need for floor or wall tiling. Enter your room size, tile dimensions, and pattern to get exact tile count with waste allowance. Free tile estimator.";
+const keywords = "tile calculator, how many tiles do I need, tile coverage calculator, tile estimator, floor tile calculator, wall tile calculator, tiles per square foot, tile quantity calculator, subway tile calculator, 12x24 tile calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Tile Coverage Calculator", url: "/tile-coverage-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How many tiles do I need for a 100 sq ft room?",
+    answer: "With 12×12 inch tiles (1 sq ft each), you need 100 tiles + waste. With 10% waste allowance = 110 tiles. With 3×6 inch subway tiles (0.125 sq ft each), you need 800 tiles + 10% waste = 880 tiles."
+  },
+  {
+    question: "What waste factor should I use for tile?",
+    answer: "Use 5% for straight-lay patterns (parallel to walls). Use 10% for tile offsets like a 33% brick pattern. Use 15% for 45° diagonal layouts or large-format tiles. Use 15–20% for herringbone, chevron, or complex mosaic patterns."
+  },
+  {
+    question: "How do I calculate how many tiles I need?",
+    answer: "Step 1: Calculate the area of the room in square feet (length × width). Step 2: Calculate the area of one tile in square feet (tile width in inches × tile height in inches ÷ 144). Step 3: Divide room area by tile area to get base tile count. Step 4: Multiply by (1 + waste fraction). Always round up to the nearest whole tile."
+  },
+  {
+    question: "Should I buy extra tiles?",
+    answer: "Always buy at least 10% extra. Even if your calculation is exact, tiles can crack during cutting, dye lots vary between batches, and future repairs may be impossible to match if the product is discontinued. For natural stone tiles, order 15–20% extra due to higher variation between pieces."
+  },
+  {
+    question: "How many tiles are in a box?",
+    answer: "This varies by tile size and manufacturer. Subway tiles (3×6) typically come 36–64 per box. Standard 12×12 tiles come 10–15 per box (8–10 sq ft). Large format 24×24 tiles come 4–6 per box. Always check the box label which shows total area covered."
+  }
+];
+
+const tileSizes = [
+  { name: "3\" x 6\" (Subway Tile)", width: 3, length: 6 },
+  { name: "4\" x 4\" (Small Square)", width: 4, length: 4 },
+  { name: "6\" x 6\"", width: 6, length: 6 },
+  { name: "12\" x 12\" (Standard)", width: 12, length: 12 },
+  { name: "12\" x 24\" (Large Format)", width: 12, length: 24 },
+  { name: "18\" x 18\"", width: 18, length: 18 },
+  { name: "24\" x 24\" (Jumbo)", width: 24, length: 24 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/tile-coverage-calculator"
+  categorySlug="area"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/area-converter" class="hover:text-brand-blue transition-colors">Area Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Tile Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Tile Coverage Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Total Tiles = (Project Area ÷ Single Tile Area) × (1 + Waste Factor)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A 100 sq ft room tiled with standard 12"x12" tiles requires exactly 110 tiles (factoring 10% waste).
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text">Project Parameters</h2>
+      
+      <div>
+        <label for="area-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Total Area to Tile (sq ft)</label>
+        <input
+          id="area-in"
+          type="number"
+          value="100"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="tile-width" class="block text-xs font-mono text-muted-text mb-1">Tile Width (inches)</label>
+          <input id="tile-width" type="number" value="12" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="tile-length" class="block text-xs font-mono text-muted-text mb-1">Tile Length (inches)</label>
+          <input id="tile-length" type="number" value="12" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+      </div>
+
+      <div>
+        <label for="preset-select" class="block text-xs font-mono text-muted-text mb-1">Or Choose Preset Size</label>
+        <select id="preset-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-xs focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="custom">Custom Dimensions</option>
+          {tileSizes.map(t => (
+            <option value={t.name} data-w={t.width} data-l={t.length}>{t.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="waste-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Waste Margin</label>
+        <select id="waste-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="5">5% (Straight layout)</option>
+          <option value="10" selected>10% (Diagonal / Offset layout)</option>
+          <option value="15">15% (Herringbone / Complex pattern)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Tiles</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Single Tile Area</span>
+          <span id="tile-area-res" class="text-lg font-mono font-bold text-ink">1.00 sq ft</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold text-brand-blue">Total Tiles Required</span>
+          <span id="tiles-res" class="text-2xl font-mono font-bold text-brand-blue">110 tiles</span>
+          <span id="tiles-extra" class="text-xs font-mono text-muted-text block mt-1">(Includes 10 extra tiles for cutting waste)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const areaIn = document.getElementById('area-in') as HTMLInputElement;
+    const tileW = document.getElementById('tile-width') as HTMLInputElement;
+    const tileL = document.getElementById('tile-length') as HTMLInputElement;
+    const presetSelect = document.getElementById('preset-select') as HTMLSelectElement;
+    const wasteSelect = document.getElementById('waste-select') as HTMLSelectElement;
+
+    const tileAreaRes = document.getElementById('tile-area-res') as HTMLSpanElement;
+    const tilesRes = document.getElementById('tiles-res') as HTMLSpanElement;
+    const tilesExtra = document.getElementById('tiles-extra') as HTMLSpanElement;
+
+    function calculate() {
+      const area = parseFloat(areaIn.value) || 0;
+      const w = parseFloat(tileW.value) || 12;
+      const l = parseFloat(tileL.value) || 12;
+      const waste = parseFloat(wasteSelect.value) || 10;
+
+      // Area of single tile in sq ft
+      // (w * l) / 144
+      const tileArea = (w * l) / 144;
+      
+      if (tileAreaRes) tileAreaRes.textContent = `${tileArea.toFixed(3)} sq ft (${(w*l)} sq in)`;
+
+      if (tileArea <= 0 || area <= 0) return;
+
+      const rawTiles = area / tileArea;
+      const totalTiles = Math.ceil(rawTiles * (1 + waste / 100));
+      const extra = totalTiles - Math.ceil(rawTiles);
+
+      if (tilesRes) tilesRes.textContent = `${totalTiles} tiles`;
+      if (tilesExtra) tilesExtra.textContent = `(Includes ${extra} extra tiles for cutting waste)`;
+    }
+
+    presetSelect?.addEventListener('change', () => {
+      const opt = presetSelect.options[presetSelect.selectedIndex];
+      const w = opt.getAttribute('data-w');
+      const l = opt.getAttribute('data-l');
+      
+      if (w && l && tileW && tileL) {
+        tileW.value = w;
+        tileL.value = l;
+      }
+      calculate();
+    });
+
+    areaIn?.addEventListener('input', calculate);
+    tileW?.addEventListener('input', () => {
+      if (presetSelect) presetSelect.value = 'custom';
+      calculate();
+    });
+    tileL?.addEventListener('input', () => {
+      if (presetSelect) presetSelect.value = 'custom';
+      calculate();
+    });
+    wasteSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Tile Layout Patterns & Waste Factors</h3>
+      <p class="leading-relaxed mb-3">
+        The pattern you choose dramatically affects waste. Straight-lay (parallel to walls) uses the least tile, but diagonal and herringbone patterns require cutting many tiles at angles — increasing waste by 10–20%. Here's what to expect:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>Straight / grid layout</span><span class="text-brand-blue font-bold">+5% waste</span></div>
+        <div class="flex justify-between"><span>Brick / offset (33% or 50%)</span><span class="text-brand-blue font-bold">+10% waste</span></div>
+        <div class="flex justify-between"><span>45° diagonal layout</span><span class="text-brand-blue font-bold">+15% waste</span></div>
+        <div class="flex justify-between"><span>Herringbone / chevron</span><span class="text-brand-blue font-bold">+15–20% waste</span></div>
+        <div class="flex justify-between"><span>Mosaic / complex pattern</span><span class="text-brand-blue font-bold">+20% waste</span></div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Grout Joint Width Matters</h3>
+      <p class="leading-relaxed mb-3">
+        Grout joints reduce the effective coverage of each tile. A 1/8-inch grout joint on 12×12 tiles reduces the effective tile area by about 2% compared to no grout. For very large grout joints (1/2 inch on subway tiles), factor in slightly fewer tiles. Most calculators assume standard grout joints — for very wide joints, subtract 2–3% from your tile count.
+      </p>
+      <p class="leading-relaxed">
+        Additionally, rooms that aren't perfectly rectangular (L-shaped rooms, rooms with alcoves) should be measured as separate rectangles and totaled. Draw a floor plan and identify each rectangular section.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Tile Coverage</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Flooring & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/square-footage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Square Footage Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/paint-coverage-calculator-sq-ft-per-gallon" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Paint Coverage Calculator</a>
+      <a href="/mulch-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Mulch Coverage Calculator</a>
+      <a href="/board-feet-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Board Feet Calculator</a>
+      <a href="/area-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Area Unit Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

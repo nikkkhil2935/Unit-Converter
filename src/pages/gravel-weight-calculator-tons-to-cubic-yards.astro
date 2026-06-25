@@ -1,0 +1,221 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Gravel Weight Calculator | Cubic Yards to Tons";
+const description = "Convert gravel volume in cubic yards to weight in tons. Estimate aggregate needs for driveways, pathways, and landscaping.";
+const keywords = "gravel weight calculator, cubic yards to tons, gravel calculator tons, how much does gravel weigh, gravel weight per cubic yard, crushed stone calculator, aggregate calculator, gravel for driveway calculator, stone weight calculator, gravel coverage calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Gravel Weight Calculator", url: "/gravel-weight-calculator-tons-to-cubic-yards" }
+];
+
+const faqs = [
+  {
+    question: "How much does a cubic yard of gravel weigh?",
+    answer: "Standard crushed stone/gravel weighs approximately 1.4 tons (2,800 lbs) per cubic yard. Dry sand is lighter at 1.3 tons/yd³, while wet sand is heavier at 1.5 tons/yd³. Topsoil is lighter at 1.2 tons/yd³."
+  },
+  {
+    question: "How many cubic yards of gravel do I need for a driveway?",
+    answer: "For a standard 2-car driveway (16 ft wide × 20 ft long × 4\" deep), you need approximately 5 cubic yards or about 7 tons of gravel. For a 3\" base layer: ~3.7 cubic yards. Always order 10% extra to account for compaction and uneven ground."
+  },
+  {
+    question: "How do you convert tons of gravel to cubic yards?",
+    answer: "Divide the weight in tons by the material density. Formula: Cubic Yards = Tons ÷ Density (tons/yd³). Example: 10 tons of crushed stone ÷ 1.4 tons/yd³ = 7.14 cubic yards. For more precise estimates, use 1.5 tons/yd³ for wet materials."
+  },
+  {
+    question: "What type of gravel is best for a driveway?",
+    answer: "Crushed stone #57 (¾\" to 1\" size) is the most popular driveway surface — it compacts well and provides good drainage. For a finished look, consider crusher run (¼\" minus) which packs tightly. Pea gravel is decorative but doesn't compact and shifts under traffic."
+  },
+  {
+    question: "How deep should gravel be for a driveway?",
+    answer: "Minimum 4 inches (0.15 cubic yards per 100 sq ft) for a residential driveway. For heavy use or clay soil, use 6-8 inches. Install in 2-inch lifts, compacting each layer. Start with larger stone (#57) as a base and finish with crusher run or #8 stone."
+  }
+];
+
+const materialTable = [
+  { material: "Crushed Stone / Gravel", density: 1.4, lbsPerYd: 2800, usage: "Driveways, pathways, drainage" },
+  { material: "Pea Gravel", density: 1.4, lbsPerYd: 2800, usage: "Decorative, walkways, playgrounds" },
+  { material: "Crusher Run (¼\" minus)", density: 1.5, lbsPerYd: 3000, usage: "Driveway base, compacted fill" },
+  { material: "Dry Sand", density: 1.3, lbsPerYd: 2600, usage: "Mortar, concrete, sandboxes" },
+  { material: "Wet Sand", density: 1.5, lbsPerYd: 3000, usage: "Masonry, paving, fill" },
+  { material: "Topsoil", density: 1.2, lbsPerYd: 2400, usage: "Gardens, landscaping, lawn topdressing" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/gravel-weight-calculator-tons-to-cubic-yards"
+  categorySlug="weight"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/weight-converter" class="hover:text-brand-blue transition-colors">Weight Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Gravel Weight</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Gravel Weight Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Standard Gravel Weight = 1.4 Tons per Cubic Yard</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A project requiring 10 cubic yards of crushed stone weighs approximately 14 tons.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert gravel volume in cubic yards to weight in tons. Estimate aggregate needs for driveways, pathways, and landscaping projects.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Project Volume</h2>
+      
+      <div>
+        <label for="yards-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Volume (Cubic Yards)</label>
+        <input
+          id="yards-in"
+          type="number"
+          value="10"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div>
+        <label for="material-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Gravel/Aggregate Type</label>
+        <select id="material-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="1.4" selected>Crushed Stone / Gravel - 1.4 tons/yd³</option>
+          <option value="1.3">Dry Sand - 1.3 tons/yd³</option>
+          <option value="1.5">Wet Sand - 1.5 tons/yd³</option>
+          <option value="1.2">Topsoil - 1.2 tons/yd³</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Estimated Weight</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight in Tons</span>
+        <span id="tons-res" class="text-lg font-mono font-bold text-brand-blue">14.0 tons</span>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight in Pounds</span>
+        <span id="lbs-res" class="text-lg font-mono font-bold text-ink">28,000 lbs</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Material Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Aggregate Material Density Reference</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Material</th>
+            <th class="p-3 font-semibold">Density (tons/yd³)</th>
+            <th class="p-3 font-semibold">Lbs per Cubic Yard</th>
+            <th class="p-3 font-semibold">Typical Application</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {materialTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.material}</td>
+              <td class="p-3 text-ink">{row.density}</td>
+              <td class="p-3 text-ink">{row.lbsPerYd.toLocaleString()} lbs</td>
+              <td class="p-3 text-muted-text font-sans">{row.usage}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const yardsIn = document.getElementById('yards-in') as HTMLInputElement;
+    const materialSelect = document.getElementById('material-select') as HTMLSelectElement;
+
+    const tonsRes = document.getElementById('tons-res') as HTMLSpanElement;
+    const lbsRes = document.getElementById('lbs-res') as HTMLSpanElement;
+
+    function calculate() {
+      const yards = parseFloat(yardsIn.value) || 0;
+      const density = parseFloat(materialSelect.value) || 1.4; // tons per cubic yard
+
+      const tons = yards * density;
+      const lbs = tons * 2000;
+
+      if (tonsRes) tonsRes.textContent = `${tons.toFixed(1)} tons`;
+      if (lbsRes) lbsRes.textContent = `${Math.round(lbs).toLocaleString()} lbs`;
+    }
+
+    yardsIn?.addEventListener('input', calculate);
+    materialSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Gravel Weight by Type</h3>
+      <p class="leading-relaxed mb-3">
+        Gravel weight varies significantly by stone type, moisture content, and compaction. <strong>Crushed stone</strong> (angular) is denser than <strong>pea gravel</strong> (rounded) because angular particles interlock and pack tighter. Moisture adds 10-20% to dry weight.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Standard crushed stone:</strong> 1.4 tons/yd³ (2,800 lbs)</div>
+        <div><strong>Pea gravel:</strong> 1.3-1.4 tons/yd³ (2,600-2,800 lbs)</div>
+        <div><strong>Limestone (#57):</strong> 1.45 tons/yd³ (2,900 lbs)</div>
+        <div><strong>Bank run gravel:</strong> 1.5 tons/yd³ (3,000 lbs)</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Ordering and Delivery Tips</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Always order 10% extra</strong> to account for compaction, uneven ground, and waste. A standard dump truck holds 10-15 cubic yards (14-21 tons) for a full load. Partial loads may incur surcharges.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Spread before delivery:</strong> Know exactly where to dump — gravel cannot be moved easily once placed. Mark delivery area with stakes. Ask the driver to spread while dumping for even distribution. For small areas, order bagged material from home centers instead.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Gravel Weight</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/mulch-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Mulch Coverage Calculator</a>
+      <a href="/concrete-volume-calculator-bags-to-cubic-feet" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Volume Calculator</a>
+      <a href="/concrete-mix-ratio-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Mix Ratio</a>
+      <a href="/paint-coverage-calculator-sq-ft-per-gallon" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Paint Coverage Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

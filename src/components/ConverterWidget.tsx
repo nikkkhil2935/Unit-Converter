@@ -129,9 +129,8 @@ export default function ConverterWidget({
     }
   }, [activeCategory]);
 
-  // 4. Synchronization and URL State
+  // 4. Initialization and mount sync
   useEffect(() => {
-    // Read history and favorites from LocalStorage on mount
     try {
       const savedHistory = localStorage.getItem("converter_history");
       if (savedHistory) setHistory(JSON.parse(savedHistory));
@@ -141,37 +140,29 @@ export default function ConverterWidget({
     } catch (e) {
       console.error("Failed to read from localStorage", e);
     }
+
+    // Parse 'v' from URL parameter on mount
+    const params = new URLSearchParams(window.location.search);
+    const vParam = params.get("v");
+    const initVal = vParam ? parseFloat(vParam) : (initialValue ?? 1);
+    
+    // Resolve units and active category
+    const cat = categories.find(c => c.id === activeCategory.id) || categories[0];
+    const fUnit = initialFrom 
+      ? (cat.units.find(u => u.id === initialFrom || u.symbol.toLowerCase() === initialFrom.toLowerCase()) || cat.units[0])
+      : cat.units[0];
+    const tUnit = initialTo
+      ? (cat.units.find(u => u.id === initialTo || u.symbol.toLowerCase() === initialTo.toLowerCase()) || cat.units[1] || cat.units[0])
+      : (cat.units[1] || cat.units[0]);
+
+    if (vParam && !isNaN(initVal)) {
+      setFromValue(vParam);
+      setLastEdited("from");
+    }
+
+    const result = convert(initVal, fUnit.id, tUnit.id, cat.id);
+    setToValue(isNaN(result) ? "" : formatResult(result));
   }, []);
-
-  // Recalculate conversion when inputs change
-  useEffect(() => {
-    const fromNum = parseFloat(fromValue);
-    if (isNaN(fromNum)) {
-      setToValue("");
-      return;
-    }
-
-    if (lastEdited === "from") {
-      const result = convert(fromNum, fromUnit.id, toUnit.id, activeCategory.id);
-      if (isNaN(result)) {
-        setToValue("");
-      } else {
-        setToValue(formatResult(result));
-      }
-    } else {
-      const toNum = parseFloat(toValue);
-      if (isNaN(toNum)) {
-        setFromValue("");
-        return;
-      }
-      const result = convert(toNum, toUnit.id, fromUnit.id, activeCategory.id);
-      if (isNaN(result)) {
-        setFromValue("");
-      } else {
-        setFromValue(formatResult(result));
-      }
-    }
-  }, [fromValue, toValue, fromUnit, toUnit, activeCategory, lastEdited]);
 
   // Sync favorites check
   useEffect(() => {
@@ -184,16 +175,25 @@ export default function ConverterWidget({
     setIsFavorite(favorited);
   }, [favorites, activeCategory, fromUnit, toUnit]);
 
-  // Update URL state dynamically (only the query parameter v=...)
+  // Update URL state dynamically (debounced to 300ms)
   useEffect(() => {
-    const valueStr = lastEdited === "from" ? fromValue : toValue;
-    const valueNum = parseFloat(valueStr);
-    if (!isNaN(valueNum)) {
-      const url = new URL(window.location.href);
-      url.searchParams.set("v", valueNum.toString());
-      window.history.replaceState({}, "", url.toString());
-    }
-  }, [fromValue, toValue, lastEdited]);
+    const handler = setTimeout(() => {
+      const valueStr = lastEdited === "from" ? fromValue : toValue;
+      const valueNum = parseFloat(valueStr);
+      if (!isNaN(valueNum)) {
+        const url = new URL(window.location.href);
+        const pathParts = url.pathname.split('/').filter(Boolean);
+        const lastPart = pathParts[pathParts.length - 1] || "";
+        if (lastPart.includes('-to-')) {
+          url.pathname = url.pathname.replace(lastPart, `${fromUnit.slug}-to-${toUnit.slug}`);
+        }
+        url.searchParams.set("v", valueNum.toString());
+        window.history.replaceState({}, "", url.toString());
+      }
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [fromValue, toValue, fromUnit, toUnit, lastEdited]);
 
   // 5. Helper function to format result nicely without huge floating point errors
   const formatResult = (val: number): string => {
@@ -215,17 +215,77 @@ export default function ConverterWidget({
     setToUnit(secondaryUnit);
     setFromValue("1");
     setLastEdited("from");
+
+    const result = convert(1, primaryUnit.id, secondaryUnit.id, category.id);
+    setToValue(isNaN(result) ? "" : formatResult(result));
+  };
+
+  const handleFromValueChange = (val: string) => {
+    setFromValue(val);
+    setLastEdited("from");
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+      setToValue("");
+    } else {
+      const result = convert(num, fromUnit.id, toUnit.id, activeCategory.id);
+      setToValue(isNaN(result) ? "" : formatResult(result));
+    }
+  };
+
+  const handleToValueChange = (val: string) => {
+    setToValue(val);
+    setLastEdited("to");
+    const num = parseFloat(val);
+    if (isNaN(num)) {
+      setFromValue("");
+    } else {
+      const result = convert(num, toUnit.id, fromUnit.id, activeCategory.id);
+      setFromValue(isNaN(result) ? "" : formatResult(result));
+    }
+  };
+
+  const handleFromUnitChange = (unit: Unit) => {
+    setFromUnit(unit);
+    if (lastEdited === "from") {
+      const num = parseFloat(fromValue);
+      if (!isNaN(num)) {
+        const result = convert(num, unit.id, toUnit.id, activeCategory.id);
+        setToValue(isNaN(result) ? "" : formatResult(result));
+      }
+    } else {
+      const num = parseFloat(toValue);
+      if (!isNaN(num)) {
+        const result = convert(num, toUnit.id, unit.id, activeCategory.id);
+        setFromValue(isNaN(result) ? "" : formatResult(result));
+      }
+    }
+  };
+
+  const handleToUnitChange = (unit: Unit) => {
+    setToUnit(unit);
+    if (lastEdited === "from") {
+      const num = parseFloat(fromValue);
+      if (!isNaN(num)) {
+        const result = convert(num, fromUnit.id, unit.id, activeCategory.id);
+        setToValue(isNaN(result) ? "" : formatResult(result));
+      }
+    } else {
+      const num = parseFloat(toValue);
+      if (!isNaN(num)) {
+        const result = convert(num, unit.id, fromUnit.id, activeCategory.id);
+        setFromValue(isNaN(result) ? "" : formatResult(result));
+      }
+    }
   };
 
   const handleSwap = () => {
     const prevFromUnit = fromUnit;
     setFromUnit(toUnit);
     setToUnit(prevFromUnit);
-    
-    // We swap the values based on who was last edited
+
     if (lastEdited === "from") {
       setFromValue(toValue);
-      setLastEdited("to"); // shift edit target
+      setLastEdited("to");
     } else {
       setToValue(fromValue);
       setLastEdited("from");
@@ -459,8 +519,7 @@ export default function ConverterWidget({
                   onChange={(e) => {
                     const val = e.target.value;
                     if (isValidNumberInput(val)) {
-                      setFromValue(val);
-                      setLastEdited("from");
+                      handleFromValueChange(val);
                     }
                   }}
                   placeholder="0"
@@ -470,7 +529,7 @@ export default function ConverterWidget({
                   value={fromUnit.id}
                   onChange={(e) => {
                     const unit = activeCategory.units.find(u => u.id === e.target.value);
-                    if (unit) setFromUnit(unit);
+                    if (unit) handleFromUnitChange(unit);
                   }}
                   className="bg-transparent border-0 border-l border-hairline px-3 text-xs font-medium text-body-text focus:outline-none cursor-pointer pr-8 max-w-[130px] sm:max-w-[200px] truncate"
                 >
@@ -509,8 +568,7 @@ export default function ConverterWidget({
                   onChange={(e) => {
                     const val = e.target.value;
                     if (isValidNumberInput(val)) {
-                      setToValue(val);
-                      setLastEdited("to");
+                      handleToValueChange(val);
                     }
                   }}
                   placeholder="0"
@@ -520,7 +578,7 @@ export default function ConverterWidget({
                   value={toUnit.id}
                   onChange={(e) => {
                     const unit = activeCategory.units.find(u => u.id === e.target.value);
-                    if (unit) setToUnit(unit);
+                    if (unit) handleToUnitChange(unit);
                   }}
                   className="bg-transparent border-0 border-l border-hairline px-3 text-xs font-medium text-body-text focus:outline-none cursor-pointer pr-8 max-w-[130px] sm:max-w-[200px] truncate"
                 >

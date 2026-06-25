@@ -1,0 +1,331 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Shoe Size Converter US to EU | Men's & Women's Chart";
+const description = "Convert shoe sizes between US, EU, UK, and centimeters (CM). Includes comprehensive conversion charts for Men's and Women's footwear. Free, instant, and mobile-friendly.";
+
+const menSizes = [
+  { us: "6.0", uk: "5.5", eu: "39", cm: "24.0", inches: "9.4" },
+  { us: "6.5", uk: "6.0", eu: "39.5", cm: "24.4", inches: "9.6" },
+  { us: "7.0", uk: "6.5", eu: "40", cm: "24.8", inches: "9.8" },
+  { us: "7.5", uk: "7.0", eu: "40.5", cm: "25.1", inches: "9.9" },
+  { us: "8.0", uk: "7.5", eu: "41", cm: "25.4", inches: "10.0" },
+  { us: "8.5", uk: "8.0", eu: "41.5", cm: "25.7", inches: "10.1" },
+  { us: "9.0", uk: "8.5", eu: "42", cm: "26.0", inches: "10.2" },
+  { us: "9.5", uk: "9.0", eu: "42.5", cm: "26.7", inches: "10.5" },
+  { us: "10.0", uk: "9.5", eu: "43", cm: "27.0", inches: "10.6" },
+  { us: "10.5", uk: "10.0", eu: "44", cm: "27.3", inches: "10.7" },
+  { us: "11.0", uk: "10.5", eu: "44.5", cm: "27.9", inches: "11.0" },
+  { us: "11.5", uk: "11.0", eu: "45", cm: "28.3", inches: "11.1" },
+  { us: "12.0", uk: "11.5", eu: "46", cm: "28.6", inches: "11.3" },
+  { us: "13.0", uk: "12.5", eu: "47.5", cm: "29.4", inches: "11.6" }
+];
+
+const womenSizes = [
+  { us: "5.0", uk: "3.0", eu: "35-36", cm: "21.6", inches: "8.5" },
+  { us: "5.5", uk: "3.5", eu: "36", cm: "22.2", inches: "8.7" },
+  { us: "6.0", uk: "4.0", eu: "36-37", cm: "22.5", inches: "8.9" },
+  { us: "6.5", uk: "4.5", eu: "37", cm: "23.0", inches: "9.1" },
+  { us: "7.0", uk: "5.0", eu: "37-38", cm: "23.5", inches: "9.3" },
+  { us: "7.5", uk: "5.5", eu: "38", cm: "23.8", inches: "9.4" },
+  { us: "8.0", uk: "6.0", eu: "38-39", cm: "24.1", inches: "9.5" },
+  { us: "8.5", uk: "6.5", eu: "39", cm: "24.6", inches: "9.7" },
+  { us: "9.0", uk: "7.0", eu: "39-40", cm: "25.1", inches: "9.9" },
+  { us: "9.5", uk: "7.5", eu: "40", cm: "25.4", inches: "10.0" },
+  { us: "10.0", uk: "8.0", eu: "40-41", cm: "25.9", inches: "10.2" },
+  { us: "10.5", uk: "8.5", eu: "41", cm: "26.2", inches: "10.3" },
+  { us: "11.0", uk: "9.0", eu: "41-42", cm: "26.7", inches: "10.5" }
+];
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Length Converter", url: "/length-converter" },
+  { name: "Shoe Size Converter", url: "/shoe-size-converter-us-to-eu" }
+];
+
+const faqs = [
+  {
+    question: "What is a US Men's size 9 in EU?",
+    answer: "A US Men's size 9 is equivalent to an EU size 42 (inner length of approximately 26.0 cm)."
+  },
+  {
+    question: "How do I convert US Women's shoe sizes to EU?",
+    answer: "Generally, you add 30 or 31 to your US Women's size. For example, a US Women's size 7 is equivalent to an EU size 37-38 (23.5 cm)."
+  },
+  {
+    question: "Are US and UK shoe sizes the same?",
+    answer: "No, US shoe sizes are slightly smaller than UK shoe sizes. For Men's, the UK size is typically 0.5 size smaller than US. For Women's, the UK size is typically 2 sizes smaller."
+  }
+];
+
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Convert Shoe Size US to EU",
+  "description": "Quick guide on converting Men's and Women's US shoe sizes to European (EU) sizes.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Select your Gender / Category",
+      "text": "Choose whether you are converting Men's or Women's shoe sizes, as conversions differ."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Select the US Shoe Size",
+      "text": "Choose your standard US/US-Canada shoe size from the dropdown list."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Read the EU and UK equivalents",
+      "text": "The calculator instantly displays the correct EU size, UK size, and physical length in centimeters."
+    }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+  </Fragment>
+
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Shoe Size Converter US to EU</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl select-text">
+      <p class="text-base text-ink mb-1">
+        <strong>US Men's 9 = EU 42 | US Women's 7 = EU 37-38</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        EU shoe sizes are unisex, but US Men's and Women's sizes differ. To convert Men's US to EU, US 9 converts to EU 42. Women's US 7 converts to EU 37-38.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Converter -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Select Shoe Category & Size</h2>
+      
+      <!-- Gender Toggle -->
+      <div>
+        <span class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-2">Category</span>
+        <div class="flex gap-2">
+          <button 
+            type="button" 
+            id="cat-men" 
+            class="flex-1 py-2 text-xs font-mono font-bold rounded-lg border border-brand-blue bg-brand-blue/10 text-brand-blue transition-colors focus:outline-none"
+          >
+            Men's
+          </button>
+          <button 
+            type="button" 
+            id="cat-women" 
+            class="flex-1 py-2 text-xs font-mono font-semibold rounded-lg border border-hairline bg-canvas hover:bg-card text-ink transition-colors focus:outline-none"
+          >
+            Women's
+          </button>
+        </div>
+      </div>
+
+      <!-- Size Dropdown -->
+      <div>
+        <label for="shoe-select" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1.5">US Shoe Size</label>
+        <select id="shoe-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono">
+          {menSizes.map(s => (
+            <option value={s.us} data-uk={s.uk} data-eu={s.eu} data-cm={s.cm} data-in={s.inches}>US {s.us}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Conversions</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">EU Size</span>
+          <span id="eu-res" class="text-lg font-mono font-bold text-brand-blue">39</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">UK Size</span>
+          <span id="uk-res" class="text-lg font-mono font-bold text-ink">5.5</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">Foot Length (Approx.)</span>
+        <span id="len-res" class="text-sm font-mono font-bold text-ink">24.0 cm (9.4 inches)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Side-by-Side Reference Charts -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <!-- Men's Table -->
+    <div>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Men's Shoe Size Chart</h2>
+      <div class="overflow-hidden border border-hairline rounded-xl">
+        <table class="w-full border-collapse text-left text-xs font-mono">
+          <thead>
+            <tr class="bg-card border-b border-hairline text-muted-text text-[9px] uppercase font-mono">
+              <th class="p-2.5 font-semibold">US Men</th>
+              <th class="p-2.5 font-semibold">Europe (EU)</th>
+              <th class="p-2.5 font-semibold">United Kingdom (UK)</th>
+              <th class="p-2.5 font-semibold">Length (cm / in)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hairline">
+            {menSizes.map(s => (
+              <tr class="hover:bg-card/40 transition-colors">
+                <td class="p-2.5 font-bold text-brand-blue">US {s.us}</td>
+                <td class="p-2.5 text-ink font-semibold">{s.eu}</td>
+                <td class="p-2.5 text-ink">UK {s.uk}</td>
+                <td class="p-2.5 text-muted-text text-[11px]">{s.cm} cm / {s.inches}"</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Women's Table -->
+    <div>
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Women's Shoe Size Chart</h2>
+      <div class="overflow-hidden border border-hairline rounded-xl">
+        <table class="w-full border-collapse text-left text-xs font-mono">
+          <thead>
+            <tr class="bg-card border-b border-hairline text-muted-text text-[9px] uppercase font-mono">
+              <th class="p-2.5 font-semibold">US Women</th>
+              <th class="p-2.5 font-semibold">Europe (EU)</th>
+              <th class="p-2.5 font-semibold">United Kingdom (UK)</th>
+              <th class="p-2.5 font-semibold">Length (cm / in)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-hairline">
+            {womenSizes.map(s => (
+              <tr class="hover:bg-card/40 transition-colors">
+                <td class="p-2.5 font-bold text-brand-blue">US {s.us}</td>
+                <td class="p-2.5 text-ink font-semibold">{s.eu}</td>
+                <td class="p-2.5 text-ink">UK {s.uk}</td>
+                <td class="p-2.5 text-muted-text text-[11px]">{s.cm} cm / {s.inches}"</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion UI -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    import { type LanguageCode } from '../lib/translations';
+    
+    const menSizes = [
+      { us: "6.0", uk: "5.5", eu: "39", cm: "24.0", inches: "9.4" },
+      { us: "6.5", uk: "6.0", eu: "39.5", cm: "24.4", inches: "9.6" },
+      { us: "7.0", uk: "6.5", eu: "40", cm: "24.8", inches: "9.8" },
+      { us: "7.5", uk: "7.0", eu: "40.5", cm: "25.1", inches: "9.9" },
+      { us: "8.0", uk: "7.5", eu: "41", cm: "25.4", inches: "10.0" },
+      { us: "8.5", uk: "8.0", eu: "41.5", cm: "25.7", inches: "10.1" },
+      { us: "9.0", uk: "8.5", eu: "42", cm: "26.0", inches: "10.2" },
+      { us: "9.5", uk: "9.0", eu: "42.5", cm: "26.7", inches: "10.5" },
+      { us: "10.0", uk: "9.5", eu: "43", cm: "27.0", inches: "10.6" },
+      { us: "10.5", uk: "10.0", eu: "44", cm: "27.3", inches: "10.7" },
+      { us: "11.0", uk: "10.5", eu: "44.5", cm: "27.9", inches: "11.0" },
+      { us: "11.5", uk: "11.0", eu: "45", cm: "28.3", inches: "11.1" },
+      { us: "12.0", uk: "11.5", eu: "46", cm: "28.6", inches: "11.3" },
+      { us: "13.0", uk: "12.5", eu: "47.5", cm: "29.4", inches: "11.6" }
+    ];
+
+    const womenSizes = [
+      { us: "5.0", uk: "3.0", eu: "35-36", cm: "21.6", inches: "8.5" },
+      { us: "5.5", uk: "3.5", eu: "36", cm: "22.2", inches: "8.7" },
+      { us: "6.0", uk: "4.0", eu: "36-37", cm: "22.5", inches: "8.9" },
+      { us: "6.5", uk: "4.5", eu: "37", cm: "23.0", inches: "9.1" },
+      { us: "7.0", uk: "5.0", eu: "37-38", cm: "23.5", inches: "9.3" },
+      { us: "7.5", uk: "5.5", eu: "38", cm: "23.8", inches: "9.4" },
+      { us: "8.0", uk: "6.0", eu: "38-39", cm: "24.1", inches: "9.5" },
+      { us: "8.5", uk: "6.5", eu: "39", cm: "24.6", inches: "9.7" },
+      { us: "9.0", uk: "7.0", eu: "39-40", cm: "25.1", inches: "9.9" },
+      { us: "9.5", uk: "7.5", eu: "40", cm: "25.4", inches: "10.0" },
+      { us: "10.0", uk: "8.0", eu: "40-41", cm: "25.9", inches: "10.2" },
+      { us: "10.5", uk: "8.5", eu: "41", cm: "26.2", inches: "10.3" },
+      { us: "11.0", uk: "9.0", eu: "41-42", cm: "26.7", inches: "10.5" }
+    ];
+
+    let currentCategory = "men";
+    const btnMen = document.getElementById('cat-men') as HTMLButtonElement;
+    const btnWomen = document.getElementById('cat-women') as HTMLButtonElement;
+    const shoeSelect = document.getElementById('shoe-select') as HTMLSelectElement;
+
+    const euRes = document.getElementById('eu-res') as HTMLSpanElement;
+    const ukRes = document.getElementById('uk-res') as HTMLSpanElement;
+    const lenRes = document.getElementById('len-res') as HTMLSpanElement;
+
+    function populateOptions() {
+      const list = currentCategory === "men" ? menSizes : womenSizes;
+      shoeSelect.innerHTML = "";
+      list.forEach(s => {
+        const opt = document.createElement('option');
+        opt.value = s.us;
+        opt.setAttribute('data-uk', s.uk);
+        opt.setAttribute('data-eu', s.eu);
+        opt.setAttribute('data-cm', s.cm);
+        opt.setAttribute('data-in', s.inches);
+        opt.textContent = `US ${s.us}`;
+        shoeSelect.appendChild(opt);
+      });
+      updateResults();
+    }
+
+    function updateResults() {
+      if (shoeSelect.options.length === 0) return;
+      const opt = shoeSelect.options[shoeSelect.selectedIndex];
+      const uk = opt.getAttribute('data-uk') || "";
+      const eu = opt.getAttribute('data-eu') || "";
+      const cm = opt.getAttribute('data-cm') || "";
+      const inches = opt.getAttribute('data-in') || "";
+
+      if (euRes) euRes.textContent = eu;
+      if (ukRes) ukRes.textContent = uk;
+      if (lenRes) lenRes.textContent = `${cm} cm (${inches} inches)`;
+    }
+
+    btnMen?.addEventListener('click', () => {
+      if (currentCategory === "men") return;
+      currentCategory = "men";
+      btnMen.classList.add('bg-brand-blue/10', 'text-brand-blue', 'border-brand-blue');
+      btnMen.classList.remove('bg-canvas', 'text-ink', 'border-hairline');
+      btnWomen.classList.add('bg-canvas', 'text-ink', 'border-hairline');
+      btnWomen.classList.remove('bg-brand-blue/10', 'text-brand-blue', 'border-brand-blue');
+      populateOptions();
+    });
+
+    btnWomen?.addEventListener('click', () => {
+      if (currentCategory === "women") return;
+      currentCategory = "women";
+      btnWomen.classList.add('bg-brand-blue/10', 'text-brand-blue', 'border-brand-blue');
+      btnWomen.classList.remove('bg-canvas', 'text-ink', 'border-hairline');
+      btnMen.classList.add('bg-canvas', 'text-ink', 'border-hairline');
+      btnMen.classList.remove('bg-brand-blue/10', 'text-brand-blue', 'border-brand-blue');
+      populateOptions();
+    });
+
+    shoeSelect?.addEventListener('change', updateResults);
+
+    // Initial setup
+    populateOptions();
+  </script>
+</BaseLayout>

@@ -1,0 +1,352 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Tire Size Calculator & Speedometer Comparison";
+const description = "Compare two tire sizes to calculate differences in width, sidewall height, overall diameter, circumference, and speedometer error. Free, instant, and accurate.";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Length Converter", url: "/length-converter" },
+  { name: "Tire Size Calculator", url: "/tire-size-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What does a tire size like 205/55R16 mean?",
+    answer: "205 is the section width in millimeters. 55 is the aspect ratio, meaning the sidewall height is 55% of the width. 16 is the diameter of the wheel rim in inches."
+  },
+  {
+    question: "How does changing tire size affect the speedometer?",
+    answer: "If you install a tire with a larger overall diameter, it has a larger circumference and covers more distance per revolution. This makes your speedometer read slower than your actual speed."
+  },
+  {
+    question: "How do you calculate overall tire diameter?",
+    answer: "Overall Diameter = (Rim Diameter × 25.4) + 2 × (Width × Aspect Ratio / 100). To get the result in inches, divide the final value by 25.4."
+  }
+];
+
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Compare Tire Sizes",
+  "description": "Step-by-step guide to calculating tire dimension differences and speedometer variance.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Enter Tire 1 dimensions",
+      "text": "Input the width, aspect ratio, and rim diameter for your current or stock tire (e.g. 205, 55, 16)."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Enter Tire 2 dimensions",
+      "text": "Input the dimensions of the new tire size you want to compare."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Review the comparison matrix",
+      "text": "Check the diameter, width, circumference differences, and see the speedometer percentage offset."
+    }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+  </Fragment>
+
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Tire Size Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl select-text">
+      <p class="text-base text-ink mb-1">
+        <strong>Tire Diameter Formula: Dia = (Rim × 25.4) + (Width × Ratio × 0.02) mm</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        For a 205/55R16 tire: overall diameter is 24.9 inches (631.9 mm), sidewall height is 4.4 inches (112.8 mm), and circumference is 78.2 inches (1985.2 mm).
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Dual Tire Calculator -->
+  <section class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+    <!-- Tire 1 Form -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Tire 1 (Current / Stock)</h2>
+      
+      <div>
+        <label for="w1" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Width (mm)</label>
+        <input type="number" id="w1" value="205" min="100" max="400" step="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+
+      <div>
+        <label for="a1" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Aspect Ratio (%)</label>
+        <input type="number" id="a1" value="55" min="20" max="95" step="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+
+      <div>
+        <label for="r1" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Rim Diameter (inches)</label>
+        <input type="number" id="r1" value="16" min="10" max="30" step="1" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+    </div>
+
+    <!-- Tire 2 Form -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Tire 2 (New / Compare)</h2>
+      
+      <div>
+        <label for="w2" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Width (mm)</label>
+        <input type="number" id="w2" value="225" min="100" max="400" step="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+
+      <div>
+        <label for="a2" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Aspect Ratio (%)</label>
+        <input type="number" id="a2" value="50" min="20" max="95" step="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+
+      <div>
+        <label for="r2" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1">Rim Diameter (inches)</label>
+        <input type="number" id="r2" value="17" min="10" max="30" step="1" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono" />
+      </div>
+    </div>
+
+    <!-- Live Outputs & Differences -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+      <div>
+        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Dimension Differences</h2>
+        
+        <div class="space-y-2.5 text-xs font-mono">
+          <div class="flex justify-between border-b border-hairline pb-1.5">
+            <span class="text-muted-text">Width Diff:</span>
+            <span id="diff-width" class="font-bold text-ink">-</span>
+          </div>
+          <div class="flex justify-between border-b border-hairline pb-1.5">
+            <span class="text-muted-text">Sidewall Diff:</span>
+            <span id="diff-sidewall" class="font-bold text-ink">-</span>
+          </div>
+          <div class="flex justify-between border-b border-hairline pb-1.5">
+            <span class="text-muted-text">Diameter Diff:</span>
+            <span id="diff-diameter" class="font-bold text-ink">-</span>
+          </div>
+          <div class="flex justify-between border-b border-hairline pb-1.5">
+            <span class="text-muted-text">Circumference Diff:</span>
+            <span id="diff-circ" class="font-bold text-ink">-</span>
+          </div>
+          <div class="flex justify-between">
+            <span class="text-muted-text">Speedometer Error:</span>
+            <span id="diff-speed" class="font-bold text-brand-blue">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg text-xs leading-relaxed font-sans text-muted-text">
+        <strong>Speedometer reading:</strong> when traveling at <span class="font-bold text-ink">60 mph</span> on Tire 1, you will actually be traveling at <span id="actual-speed" class="font-bold text-brand-blue">- mph</span> on Tire 2.
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete Comparison Matrix -->
+  <section class="mb-10">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Tire Comparison Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[9px] uppercase font-mono">
+            <th class="p-3 font-semibold">Dimension</th>
+            <th class="p-3 font-semibold">Tire 1</th>
+            <th class="p-3 font-semibold">Tire 2</th>
+            <th class="p-3 font-semibold">Difference</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          <tr class="hover:bg-card/40 transition-colors">
+            <td class="p-3 font-semibold text-muted-text">Section Width</td>
+            <td id="m1-width" class="p-3 text-ink">-</td>
+            <td id="m2-width" class="p-3 text-ink">-</td>
+            <td id="md-width" class="p-3 font-bold text-ink">-</td>
+          </tr>
+          <tr class="hover:bg-card/40 transition-colors">
+            <td class="p-3 font-semibold text-muted-text">Sidewall Height</td>
+            <td id="m1-sidewall" class="p-3 text-ink">-</td>
+            <td id="m2-sidewall" class="p-3 text-ink">-</td>
+            <td id="md-sidewall" class="p-3 font-bold text-ink">-</td>
+          </tr>
+          <tr class="hover:bg-card/40 transition-colors">
+            <td class="p-3 font-semibold text-muted-text">Overall Diameter</td>
+            <td id="m1-diameter" class="p-3 text-ink">-</td>
+            <td id="m2-diameter" class="p-3 text-ink">-</td>
+            <td id="md-diameter" class="p-3 font-bold text-ink">-</td>
+          </tr>
+          <tr class="hover:bg-card/40 transition-colors">
+            <td class="p-3 font-semibold text-muted-text">Circumference</td>
+            <td id="m1-circ" class="p-3 text-ink">-</td>
+            <td id="m2-circ" class="p-3 text-ink">-</td>
+            <td id="md-circ" class="p-3 font-bold text-ink">-</td>
+          </tr>
+          <tr class="hover:bg-card/40 transition-colors">
+            <td class="p-3 font-semibold text-muted-text">Revs per Mile (km)</td>
+            <td id="m1-revs" class="p-3 text-ink">-</td>
+            <td id="m2-revs" class="p-3 text-ink">-</td>
+            <td id="md-revs" class="p-3 font-bold text-ink">-</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion UI -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const w1El = document.getElementById('w1') as HTMLInputElement;
+    const a1El = document.getElementById('a1') as HTMLInputElement;
+    const r1El = document.getElementById('r1') as HTMLInputElement;
+
+    const w2El = document.getElementById('w2') as HTMLInputElement;
+    const a2El = document.getElementById('a2') as HTMLInputElement;
+    const r2El = document.getElementById('r2') as HTMLInputElement;
+
+    // Small diff indicators
+    const dWidth = document.getElementById('diff-width') as HTMLSpanElement;
+    const dSidewall = document.getElementById('diff-sidewall') as HTMLSpanElement;
+    const dDiameter = document.getElementById('diff-diameter') as HTMLSpanElement;
+    const dCirc = document.getElementById('diff-circ') as HTMLSpanElement;
+    const dSpeed = document.getElementById('diff-speed') as HTMLSpanElement;
+    const actSpeed = document.getElementById('actual-speed') as HTMLSpanElement;
+
+    // Matrix fields
+    const m1Width = document.getElementById('m1-width') as HTMLTableCellElement;
+    const m2Width = document.getElementById('m2-width') as HTMLTableCellElement;
+    const mdWidth = document.getElementById('md-width') as HTMLTableCellElement;
+
+    const m1Sidewall = document.getElementById('m1-sidewall') as HTMLTableCellElement;
+    const m2Sidewall = document.getElementById('m2-sidewall') as HTMLTableCellElement;
+    const mdSidewall = document.getElementById('md-sidewall') as HTMLTableCellElement;
+
+    const m1Diameter = document.getElementById('m1-diameter') as HTMLTableCellElement;
+    const m2Diameter = document.getElementById('m2-diameter') as HTMLTableCellElement;
+    const mdDiameter = document.getElementById('md-diameter') as HTMLTableCellElement;
+
+    const m1Circ = document.getElementById('m1-circ') as HTMLTableCellElement;
+    const m2Circ = document.getElementById('m2-circ') as HTMLTableCellElement;
+    const mdCirc = document.getElementById('md-circ') as HTMLTableCellElement;
+
+    const m1Revs = document.getElementById('m1-revs') as HTMLTableCellElement;
+    const m2Revs = document.getElementById('m2-revs') as HTMLTableCellElement;
+    const mdRevs = document.getElementById('md-revs') as HTMLTableCellElement;
+
+    function calculateTire(w: number, a: number, r: number) {
+      const sidewallMm = w * (a / 100);
+      const rimMm = r * 25.4;
+      const diameterMm = rimMm + (2 * sidewallMm);
+      const circMm = diameterMm * Math.PI;
+
+      const sidewallIn = sidewallMm / 25.4;
+      const diameterIn = diameterMm / 25.4;
+      const circIn = diameterIn * Math.PI;
+
+      const revsMile = 63360 / circIn;
+      const revsKm = 1000000 / circMm;
+
+      return {
+        widthMm: w,
+        widthIn: w / 25.4,
+        sidewallMm,
+        sidewallIn,
+        diameterMm,
+        diameterIn,
+        circMm,
+        circIn,
+        revsMile,
+        revsKm
+      };
+    }
+
+    function formatDiff(diffVal: number, unit: string, percent: number) {
+      const sign = diffVal >= 0 ? '+' : '';
+      const color = diffVal > 0 ? 'text-green-600 dark:text-green-400' : (diffVal < 0 ? 'text-red-500' : 'text-ink');
+      return `<span class="${color}">${sign}${diffVal.toFixed(1)} ${unit} (${sign}${percent.toFixed(1)}%)</span>`;
+    }
+
+    function update() {
+      const w1 = parseFloat(w1El.value) || 0;
+      const a1 = parseFloat(a1El.value) || 0;
+      const r1 = parseFloat(r1El.value) || 0;
+
+      const w2 = parseFloat(w2El.value) || 0;
+      const a2 = parseFloat(a2El.value) || 0;
+      const r2 = parseFloat(r2El.value) || 0;
+
+      if (!w1 || !a1 || !r1 || !w2 || !a2 || !r2) return;
+
+      const t1 = calculateTire(w1, a1, r1);
+      const t2 = calculateTire(w2, a2, r2);
+
+      const diffW = t2.widthMm - t1.widthMm;
+      const pctW = (diffW / t1.widthMm) * 100;
+
+      const diffS = t2.sidewallMm - t1.sidewallMm;
+      const pctS = (diffS / t1.sidewallMm) * 100;
+
+      const diffD = t2.diameterMm - t1.diameterMm;
+      const pctD = (diffD / t1.diameterMm) * 100;
+
+      const diffC = t2.circMm - t1.circMm;
+      const pctC = (diffC / t1.circMm) * 100;
+
+      const diffR = t2.revsMile - t1.revsMile;
+      const pctR = (diffR / t1.revsMile) * 100;
+
+      // Update sidebar differences
+      if (dWidth) dWidth.innerHTML = `${diffW.toFixed(0)} mm (${diffW >= 0 ? '+' : ''}${pctW.toFixed(1)}%)`;
+      if (dSidewall) dSidewall.innerHTML = `${(diffS/25.4).toFixed(1)}" (${diffS >= 0 ? '+' : ''}${pctS.toFixed(1)}%)`;
+      if (dDiameter) dDiameter.innerHTML = `${(diffD/25.4).toFixed(1)}" (${diffD >= 0 ? '+' : ''}${pctD.toFixed(1)}%)`;
+      if (dCirc) dCirc.innerHTML = `${(diffC/25.4).toFixed(1)}" (${diffC >= 0 ? '+' : ''}${pctC.toFixed(1)}%)`;
+
+      const speedErr = pctD; // Diameter diff equals speedo error pct
+      const sign = speedErr >= 0 ? '+' : '';
+      if (dSpeed) {
+        const color = speedErr > 0.05 ? 'text-green-600 dark:text-green-400' : (speedErr < -0.05 ? 'text-red-500' : 'text-ink');
+        dSpeed.innerHTML = `<span class="${color}">${sign}${speedErr.toFixed(2)}%</span>`;
+      }
+
+      const actualS = 60 * (t2.diameterMm / t1.diameterMm);
+      if (actSpeed) actSpeed.textContent = `${actualS.toFixed(1)} mph`;
+
+      // Update comparison matrix table
+      m1Width.textContent = `${t1.widthMm} mm (${t1.widthIn.toFixed(1)}")`;
+      m2Width.textContent = `${t2.widthMm} mm (${t2.widthIn.toFixed(1)}")`;
+      mdWidth.innerHTML = formatDiff(diffW, 'mm', pctW);
+
+      m1Sidewall.textContent = `${t1.sidewallMm.toFixed(1)} mm (${t1.sidewallIn.toFixed(1)}")`;
+      m2Sidewall.textContent = `${t2.sidewallMm.toFixed(1)} mm (${t2.sidewallIn.toFixed(1)}")`;
+      mdSidewall.innerHTML = formatDiff(diffS, 'mm', pctS);
+
+      m1Diameter.textContent = `${t1.diameterMm.toFixed(1)} mm (${t1.diameterIn.toFixed(1)}")`;
+      m2Diameter.textContent = `${t2.diameterMm.toFixed(1)} mm (${t2.diameterIn.toFixed(1)}")`;
+      mdDiameter.innerHTML = formatDiff(diffD, 'mm', pctD);
+
+      m1Circ.textContent = `${t1.circMm.toFixed(1)} mm (${t1.circIn.toFixed(1)}")`;
+      m2Circ.textContent = `${t2.circMm.toFixed(1)} mm (${t2.circIn.toFixed(1)}")`;
+      mdCirc.innerHTML = formatDiff(diffC, 'mm', pctC);
+
+      m1Revs.textContent = `${t1.revsMile.toFixed(0)} / ${t1.revsKm.toFixed(0)}`;
+      m2Revs.textContent = `${t2.revsMile.toFixed(0)} / ${t2.revsKm.toFixed(0)}`;
+      mdRevs.innerHTML = formatDiff(diffR, 'revs', pctR);
+    }
+
+    [w1El, a1El, r1El, w2El, a2El, r2El].forEach(el => {
+      el?.addEventListener('input', update);
+    });
+
+    update();
+  </script>
+</BaseLayout>

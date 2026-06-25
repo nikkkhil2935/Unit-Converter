@@ -1,0 +1,183 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+const title = "pH to Hydrogen Concentration Calculator | [H+] mol/L";
+const description = "Calculate hydrogen ion concentration [H+] in moles per liter from pH. Includes acid-base reference scales.";
+const keywords = "ph to hydrogen concentration calculator, ph to h+ conversion, hydrogen ion concentration calculator, ph to molarity, ph calculation formula, acid base calculator, ph scale chart, hydrogen ion concentration, ph to moles per liter, what is ph";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Science & Lab", url: "/scientific-lab" },
+  { name: "pH to [H+]", url: "/ph-to-hydrogen-concentration-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do you convert pH to hydrogen ion concentration?",
+    answer: "Use the formula [H+] = 10^(-pH) mol/L. Example: pH 3 → [H+] = 10^(-3) = 0.001 mol/L = 1.0 × 10⁻³ mol/L. This is the inverse of pH = −log₁₀[H+]."
+  },
+  {
+    question: "What is the pH of pure water?",
+    answer: "Pure water at 25°C has a pH of exactly 7.0 (neutral), corresponding to [H+] = 1.0 × 10⁻⁷ mol/L. At higher temperatures, water autoionizes more, so pH decreases slightly — but remains neutral because [H+] still equals [OH−]."
+  },
+  {
+    question: "What does a pH value tell you?",
+    answer: "pH indicates how acidic or basic a solution is on a logarithmic scale from 0 to 14. Each pH unit represents a 10× change in hydrogen ion concentration. pH < 7 is acidic, pH = 7 is neutral, pH > 7 is basic (alkaline)."
+  },
+  {
+    question: "What is the relationship between pH and pOH?",
+    answer: "pH + pOH = 14 at 25°C. pOH = −log₁₀[OH⁻]. For neutral water: pH = 7, pOH = 7. For acidic solution: pH < 7, pOH > 7. For basic solution: pH > 7, pOH < 7."
+  },
+  {
+    question: "How accurate are pH meters?",
+    answer: "Laboratory pH meters achieve ±0.01 pH accuracy with proper calibration. Handheld units are typically ±0.05 to ±0.1 pH. Calibration with buffer solutions (pH 4.0, 7.0, 10.0) is essential. Temperature compensation improves accuracy — the Nernst equation shows pH response changes with temperature."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/ph-to-hydrogen-concentration-calculator"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">pH to [H+]</span>
+  </nav>
+
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="density" className="w-8 h-8 text-brand-blue" />
+      <span>pH to Hydrogen Concentration Calculator</span>
+    </h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Hydrogen Ion Concentration: [H+] = 10^(-pH) mol/L</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A pH of 7 (neutral pure water) corresponds to [H+] = 1.0 × 10^-7 mol/L.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">pH Input</h2>
+      
+      <div>
+        <label for="ph-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">pH Value (0 to 14)</label>
+        <input
+          id="ph-input"
+          type="number"
+          step="0.01"
+          value="7"
+          min="0"
+          max="14"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Concentration</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold">Hydrogen Ion [H+]</span>
+        <span id="h-res" class="text-lg font-mono font-bold text-brand-blue">1.0e-7 mol/L</span>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold font-bold text-muted-text">Hydroxide Ion [OH-]</span>
+        <span id="oh-res" class="text-lg font-mono font-bold text-ink">1.0e-7 mol/L</span>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const phInput = document.getElementById('ph-input') as HTMLInputElement;
+    const hRes = document.getElementById('h-res') as HTMLSpanElement;
+    const ohRes = document.getElementById('oh-res') as HTMLSpanElement;
+
+    function calculate() {
+      const ph = parseFloat(phInput.value);
+      if (isNaN(ph) || ph < 0 || ph > 14) {
+        if (hRes) hRes.textContent = "Invalid";
+        if (ohRes) ohRes.textContent = "Invalid";
+        return;
+      }
+
+      // [H+] = 10^-pH
+      const hConc = Math.pow(10, -ph);
+      // [OH-] = 10^-(14 - pH)
+      const ohConc = Math.pow(10, -(14 - ph));
+
+      const formatSci = (v: number) => v.toExponential(3);
+
+      if (hRes) hRes.textContent = `${formatSci(hConc)} mol/L`;
+      if (ohRes) ohRes.textContent = `${formatSci(ohConc)} mol/L`;
+    }
+
+    phInput?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding the pH Scale</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>pH</strong> stands for "potential of hydrogen" and is a logarithmic measure of hydrogen ion [H+] concentration in a solution. The scale runs from 0 to 14, where each unit represents a 10-fold change in [H+].
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>pH 0:</strong> [H+] = 1.0 mol/L (strong acid, battery acid)</div>
+        <div><strong>pH 7:</strong> [H+] = 10⁻⁷ mol/L (neutral, pure water)</div>
+        <div><strong>pH 14:</strong> [H+] = 10⁻¹⁴ mol/L (strong base, lye)</div>
+        <div><strong>Log scale:</strong> pH 3 is 10× more acidic than pH 4</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">pH in Everyday Applications</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Water treatment:</strong> Municipal water targets pH 6.5-8.5 for safety and pipe protection. <strong>Swimming pools:</strong> Ideal pH is 7.2-7.8 to minimize chlorine odor and eye irritation. <strong>Agriculture:</strong> Soil pH 6.0-7.0 optimizes nutrient availability for most crops.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Food & Beverage:</strong> Stomach acid (pH 1-3) aids digestion. Coffee is pH 4.8-5.2. Baking soda solutions (pH 8-9) neutralize acid spills. <strong>Medicine:</strong> Blood pH is tightly regulated at 7.35-7.45 — deviations below 6.8 or above 7.8 are life-threatening.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — pH Conversion</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Science Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PPM to mg/L Converter</a>
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/osmolality-to-osmolarity-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Osmolality Converter</a>
+      <a href="/brix-to-specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Brix to SG Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

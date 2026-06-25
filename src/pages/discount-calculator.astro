@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+const title = "Discount Calculator | Calculate Sale Price & Savings";
+const description = "Calculate final discounted retail sale prices, total dollars saved, and total receipt cost including sales tax percentages.";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Finance & Business", url: "/finance-business" },
+  { name: "Discount Calculator", url: "/discount-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do you calculate a discount?",
+    answer: "To calculate a discount, multiply the original price by the discount percentage rate in decimal form: Discount Amount = Original Price × (Discount % / 100). The final sale price is the original price minus this discount amount."
+  },
+  {
+    question: "How do you apply double discounts?",
+    answer: "For stacking discounts (like a 20% off item plus a 10% off loyalty coupon), first apply the 20% discount to find the initial sale price. Then, apply the 10% discount to that newly calculated price. Do not add the percentages together (20% + 10% = 30% is incorrect as it yields a slightly different amount)."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="discount calculator, sale price calculator, calculate discount, savings calculator, shopping calculator"
+  canonicalPath="/discount-calculator"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="finance" className="w-8 h-8 text-brand-blue" />
+      <span>Discount Calculator</span>
+    </h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Sale Price = Original Price × (1 - Discount Rate)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A $100.00 jacket with a 20% discount costs $80.00, saving you exactly $20.00.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Find out how much you save during retail sales events. Enter original retail values, markdown rates, and local tax rates in the tool below to see your final checkout cost.
+    </p>
+  </section>
+
+  <!-- Interactive Scaler Widget -->
+  <section class="mb-10 max-w-2xl bg-card border border-hairline rounded-2xl p-6 transition-colors">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Interactive Discount Calculator</h2>
+
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="sm:col-span-1">
+          <label for="price-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Original Price ($)</label>
+          <input
+            id="price-input"
+            type="number"
+            value="80"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="discount-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Discount Rate (%)</label>
+          <input
+            id="discount-input"
+            type="number"
+            value="25"
+            min="0"
+            max="100"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+        <div class="sm:col-span-1">
+          <label for="tax-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Sales Tax Rate (%)</label>
+          <input
+            id="tax-input"
+            type="number"
+            value="0"
+            step="0.01"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-hairline">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">You Save</span>
+            <span id="savings-result" class="text-xl font-mono font-bold text-brand-blue">$20.00</span>
+          </div>
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Sale Price (Net)</span>
+            <span id="sale-price-result" class="text-xl font-mono font-bold text-ink">$60.00</span>
+          </div>
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total (With Tax)</span>
+            <span id="total-result" class="text-xl font-mono font-bold text-ink">$60.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formula Details & Reference Table -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-hairline pt-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">How Discounts are Calculated</h3>
+      <p class="leading-relaxed mb-3">
+        Calculating markdown price deductions is straightforward. Follow these steps:
+      </p>
+      <ul class="list-decimal pl-4 space-y-2">
+        <li>Determine the dollar value of the savings: `Savings = Original Price × (Discount % / 100)`.</li>
+        <li>Subtract the savings from the original price to find the sale price: `Sale Price = Original Price - Savings`.</li>
+        <li>If sales tax applies, calculate tax on the sale price: `Tax = Sale Price × (Tax % / 100)`.</li>
+        <li>Add tax to find the final total: `Total = Sale Price + Tax`.</li>
+      </ul>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Examples of Sale Discounts</h3>
+      <table class="w-full text-left font-mono text-[10px] border border-hairline border-collapse mt-2">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text">
+            <th class="p-1.5 border-r border-hairline">Original Price</th>
+            <th class="p-1.5 border-r border-hairline">Discount %</th>
+            <th class="p-1.5 border-r border-hairline">You Save</th>
+            <th class="p-1.5">Sale Price</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          <tr>
+            <td class="p-1.5 border-r border-hairline">$100.00</td>
+            <td class="p-1.5 border-r border-hairline">10%</td>
+            <td class="p-1.5 border-r border-hairline">$10.00</td>
+            <td class="p-1.5">$90.00</td>
+          </tr>
+          <tr>
+            <td class="p-1.5 border-r border-hairline">$50.00</td>
+            <td class="p-1.5 border-r border-hairline">20%</td>
+            <td class="p-1.5 border-r border-hairline">$10.00</td>
+            <td class="p-1.5">$40.00</td>
+          </tr>
+          <tr>
+            <td class="p-1.5 border-r border-hairline">$80.00</td>
+            <td class="p-1.5 border-r border-hairline">25%</td>
+            <td class="p-1.5 border-r border-hairline">$20.00</td>
+            <td class="p-1.5">$60.00</td>
+          </tr>
+          <tr>
+            <td class="p-1.5 border-r border-hairline">$120.00</td>
+            <td class="p-1.5 border-r border-hairline">30%</td>
+            <td class="p-1.5 border-r border-hairline">$36.00</td>
+            <td class="p-1.5">$84.00</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <!-- Related Sibling Tools Navigation -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Finance Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/simple-interest-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Simple Interest Calculator</a>
+      <a href="/compound-interest-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Compound Interest Calculator</a>
+      <a href="/sales-tax-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Sales Tax Calculator</a>
+      <a href="/salary-to-hourly-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Salary to Hourly Converter</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const priceInput = document.getElementById('price-input') as HTMLInputElement;
+    const discountInput = document.getElementById('discount-input') as HTMLInputElement;
+    const taxInput = document.getElementById('tax-input') as HTMLInputElement;
+    
+    const savingsResult = document.getElementById('savings-result') as HTMLSpanElement;
+    const salePriceResult = document.getElementById('sale-price-result') as HTMLSpanElement;
+    const totalResult = document.getElementById('total-result') as HTMLSpanElement;
+
+    function calculate() {
+      const price = parseFloat(priceInput.value) || 0;
+      const discount = parseFloat(discountInput.value) || 0;
+      const tax = parseFloat(taxInput.value) || 0;
+
+      const savings = price * (discount / 100);
+      const salePrice = price - savings;
+      const taxAmount = salePrice * (tax / 100);
+      const total = salePrice + taxAmount;
+
+      if (savingsResult) savingsResult.textContent = `$${savings.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (salePriceResult) salePriceResult.textContent = `$${salePrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (totalResult) totalResult.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    priceInput?.addEventListener('input', calculate);
+    discountInput?.addEventListener('input', calculate);
+    taxInput?.addEventListener('input', calculate);
+  </script>
+</BaseLayout>

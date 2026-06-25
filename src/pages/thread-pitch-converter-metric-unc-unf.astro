@@ -1,0 +1,220 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Thread Pitch Converter Metric UNC UNF | TPI lookup Table";
+const description = "Convert thread pitch between metric (pitch in mm) and imperial Threads Per Inch (TPI). Look up standard UNC and UNF bolt specs.";
+const keywords = "thread pitch converter, metric to unc unf, tpi to pitch mm, thread pitch calculator, bolt thread converter, metric imperial thread, screw thread pitch chart, threads per inch calculator, thread size lookup, metric thread pitch table";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Thread Pitch Converter", url: "/thread-pitch-converter-metric-unc-unf" }
+];
+
+const faqs = [
+  {
+    question: "How do you convert TPI to metric pitch?",
+    answer: "Divide 25.4 by the TPI (Threads Per Inch) value to get pitch in millimeters. Formula: Pitch (mm) = 25.4 / TPI. Example: 20 TPI → 25.4 / 20 = 1.27 mm pitch."
+  },
+  {
+    question: "What is the difference between UNC and UNF threads?",
+    answer: "UNC (Unified National Coarse) has fewer threads per inch with larger pitch spacing, making it stronger in soft materials and faster to assemble. UNF (Unified National Fine) has more threads per inch, providing better vibration resistance and finer adjustment capability."
+  },
+  {
+    question: "What is thread pitch on a metric bolt?",
+    answer: "Metric thread pitch is the distance in millimeters between adjacent thread crests. For example, M8 × 1.25 means the bolt has 1.25mm between each thread. Common pitches: M6 (1.0mm), M8 (1.25mm), M10 (1.5mm), M12 (1.75mm)."
+  },
+  {
+    question: "Can I mix metric and imperial threads?",
+    answer: "No — metric and imperial (UNC/UNF) threads are incompatible and will damage the threads if forced. The thread angle differs: metric uses 60° profile, UNC/UNF also uses 60° but the pitch and thread form dimensions are different. Always match bolt and nut thread types exactly."
+  },
+  {
+    question: "How do I identify unknown thread pitch?",
+    answer: "Use a thread pitch gauge to measure directly. For metric bolts, measure the distance between 10 threads and divide by 10. For imperial, count threads per inch with a gauge. Alternatively, measure the bolt major diameter and compare to standard pitch charts."
+  }
+];
+
+const standardThreads = [
+  { size: "1/4\"-20 UNC", type: "Coarse", tpi: 20, pitch: 1.270 },
+  { size: "1/4\"-28 UNF", type: "Fine", tpi: 28, pitch: 0.907 },
+  { size: "3/8\"-16 UNC", type: "Coarse", tpi: 16, pitch: 1.588 },
+  { size: "3/8\"-24 UNF", type: "Fine", tpi: 24, pitch: 1.058 },
+  { size: "1/2\"-13 UNC", type: "Coarse", tpi: 13, pitch: 1.954 },
+  { size: "1/2\"-20 UNF", type: "Fine", tpi: 20, pitch: 1.270 },
+  { size: "M6 x 1.00", type: "Metric", tpi: 25.4, pitch: 1.000 },
+  { size: "M8 x 1.25", type: "Metric", tpi: 20.3, pitch: 1.250 },
+  { size: "M10 x 1.50", type: "Metric", tpi: 16.9, pitch: 1.500 },
+  { size: "M12 x 1.75", type: "Metric", tpi: 14.5, pitch: 1.750 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/thread-pitch-converter-metric-unc-unf"
+  categorySlug="length"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Thread Pitch Converter</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Thread Pitch Converter Metric UNC UNF</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Pitch (mm) = 25.4 ÷ Threads Per Inch (TPI)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A standard 1/4"-20 UNC bolt has 20 threads per inch, which equals a pitch of 1.27 mm.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert thread pitch between metric millimeter dimensions and imperial Threads Per Inch (TPI). Look up standard structural fasteners.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Pitch Converter</h2>
+      
+      <div>
+        <label for="tpi-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Threads Per Inch (TPI)</label>
+        <div class="relative">
+          <input
+            id="tpi-in"
+            type="number"
+            step="any"
+            value="20"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">TPI</span>
+        </div>
+      </div>
+
+      <div>
+        <label for="pitch-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Pitch in Millimeters (mm)</label>
+        <div class="relative">
+          <input
+            id="pitch-in"
+            type="number"
+            step="any"
+            value="1.27"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">mm</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Pitch Definition</h3>
+      <p class="text-xs text-body-text leading-relaxed">
+        <strong>Metric pitch:</strong> The linear distance between two adjacent thread peaks in millimeters. E.g., a 1.50 pitch means peaks are 1.5mm apart.
+        <br/><br/>
+        <strong>Imperial pitch:</strong> Expressed as Threads Per Inch (TPI). To find the peak-to-peak distance, compute 1/TPI. E.g., 20 TPI means peaks are 0.05" (1.27mm) apart.
+      </p>
+    </div>
+  </section>
+
+  <!-- Reference Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Thread Pitch Lookups</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Thread Designation</th>
+            <th class="p-3 font-semibold">Thread Category</th>
+            <th class="p-3 font-semibold">Threads Per Inch (TPI)</th>
+            <th class="p-3 font-semibold">Pitch in mm</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {standardThreads.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.size}</td>
+              <td class="p-3 text-ink font-sans">{row.type}</td>
+              <td class="p-3 text-ink">{row.tpi}</td>
+              <td class="p-3 text-muted-text">{row.pitch} mm</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const tpiIn = document.getElementById('tpi-in') as HTMLInputElement;
+    const pitchIn = document.getElementById('pitch-in') as HTMLInputElement;
+
+    tpiIn?.addEventListener('input', () => {
+      const tpi = parseFloat(tpiIn.value);
+      if (tpi > 0 && pitchIn) {
+        pitchIn.value = Number((25.4 / tpi).toFixed(4)).toString();
+      }
+    });
+
+    pitchIn?.addEventListener('input', () => {
+      const pitch = parseFloat(pitchIn.value);
+      if (pitch > 0 && tpiIn) {
+        tpiIn.value = Number((25.4 / pitch).toFixed(4)).toString();
+      }
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Metric vs Imperial Thread Systems</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Metric threads</strong> (M-series) are specified by diameter and pitch in millimeters (e.g., M10 × 1.5). <strong>Unified threads</strong> (UNC/UNF) are specified by diameter in inches and threads per inch (e.g., 3/8"-16 UNC). Both use a 60° thread profile angle.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Formula:</strong> Pitch (mm) = 25.4 / TPI</div>
+        <div><strong>Reverse:</strong> TPI = 25.4 / Pitch (mm)</div>
+        <div><strong>Example:</strong> M10 × 1.5 → TPI = 25.4/1.5 = 16.9</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Choosing Between Coarse and Fine Threads</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>UNC (Coarse)</strong> threads are preferred for: quick assembly, soft materials (aluminum, cast iron), dirty/corroded environments, and general-purpose applications. They are more resistant to cross-threading and damage.
+      </p>
+      <p class="leading-relaxed">
+        <strong>UNF (Fine)</strong> threads are preferred for: precision adjustments, vibration-prone environments (automotive, aerospace), thin-walled sections, and applications requiring higher fatigue strength. Fine threads have ~15% higher tensile strength than coarse at the same diameter.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Thread Pitch</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/torque-converter-ft-lb-to-nm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Torque Converter</a>
+      <a href="/bolt-torque-spec-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Bolt Torque Spec Calculator</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/pipe-size-converter-nominal-to-actual" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Pipe Size Converter</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

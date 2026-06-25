@@ -1,0 +1,104 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Seconds to Hours Minutes Seconds Converter | Seconds to HMS";
+const description = "Convert seconds to hours, minutes, and seconds (HMS) instantly. Useful for video editing, sports timing, and calculations.";
+
+const commonSeconds = [
+  { total: 60, h: 0, m: 1, s: 0, desc: "1 minute" },
+  { total: 300, h: 0, m: 5, s: 0, desc: "5 minutes" },
+  { total: 1800, h: 0, m: 30, s: 0, desc: "30 minutes (Half hour)" },
+  { total: 3600, h: 1, m: 0, s: 0, desc: "1 hour" },
+  { total: 5400, h: 1, m: 30, s: 0, desc: "1.5 hours" },
+  { total: 7200, h: 2, m: 0, s: 0, desc: "2 hours" },
+  { total: 86400, h: 24, m: 0, s: 0, desc: "24 hours (1 day)" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="time">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/time-converter" class="hover:text-brand-blue transition-colors">Time Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Seconds to HMS</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Seconds to Hours, Minutes, and Seconds Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>3600 seconds = 1 hour 0 minutes 0 seconds</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Formula: Hours = floor(seconds ÷ 3600). Minutes = floor((seconds % 3600) ÷ 60). Seconds = seconds % 60.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text">Input Seconds</h2>
+      
+      <div>
+        <label for="seconds-in" class="block text-xs font-mono text-muted-text mb-1">Total Seconds</label>
+        <input id="seconds-in" type="number" value="3600" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Equivalent Time</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Calculated Time (HMS)</span>
+        <span id="hms-res" class="text-xl font-mono font-bold text-brand-blue">1h 0m 0s</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text font-mono">Seconds to HMS Lookup Table</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Total Seconds</th>
+            <th class="p-3 font-semibold">Description</th>
+            <th class="p-3 font-semibold">HMS Equivalent</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonSeconds.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.total.toLocaleString()} s</td>
+              <td class="p-3 text-ink font-sans">{row.desc}</td>
+              <td class="p-3 text-muted-text font-bold">{row.h}h {row.m}m {row.s}s</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const secondsIn = document.getElementById('seconds-in') as HTMLInputElement;
+    const hmsRes = document.getElementById('hms-res') as HTMLSpanElement;
+
+    function calculate() {
+      const totalSeconds = parseFloat(secondsIn.value) || 0;
+
+      const h = Math.floor(totalSeconds / 3600);
+      const m = Math.floor((totalSeconds - h * 3600) / 60);
+      const s = Math.round((totalSeconds - h * 3600 - m * 60) * 100) / 100;
+
+      if (hmsRes) hmsRes.textContent = `${h}h ${m}m ${s}s`;
+    }
+
+    secondsIn?.addEventListener('input', calculate);
+  </script>
+</BaseLayout>

@@ -1,0 +1,366 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { ingredients, type Ingredient } from '../data/ingredientDensity';
+
+export async function getStaticPaths() {
+  return ingredients.map(ing => ({
+    params: { ingredient: ing.slug },
+    props: { ingredient: ing }
+  }));
+}
+
+interface Props {
+  ingredient: Ingredient;
+}
+
+const { ingredient } = Astro.props;
+
+// Calculate default values for standard display
+const cupsToGrams = (cups: number) => {
+  return Math.round(cups * ingredient.gramsPerCup * 100) / 100;
+};
+
+const cupsToGramsPacked = (cups: number) => {
+  if (!ingredient.gramsPerCupPacked) return null;
+  return Math.round(cups * ingredient.gramsPerCupPacked * 100) / 100;
+};
+
+const defaultGrams = cupsToGrams(1);
+const defaultOunces = Math.round((defaultGrams / 28.349523125) * 100) / 100;
+
+const packedText = ingredient.gramsPerCupPacked 
+  ? ` or ${cupsToGramsPacked(1)}g packed` 
+  : '';
+
+// Dynamic title & metadata following exact SEO Architecture rules
+const title = `Cups to Grams: ${ingredient.name} | Actual Density Calculator`;
+const description = `1 cup of ${ingredient.name.toLowerCase()} equals ${defaultGrams}g (${defaultOunces} oz)${packedText}. Select your exact ingredients for precise baking weights. Free, instant, no signup.`;
+
+// SEO H1
+const h1 = `Cups to Grams: ${ingredient.name} Conversion`;
+
+// Pull all math and conditional strings out of template literals
+const packedVal1 = cupsToGramsPacked(1);
+const faqAnswer1Suffix = ingredient.gramsPerCupPacked 
+  ? ` If packed, 1 cup of ${ingredient.name} weighs approximately ${packedVal1} grams.` 
+  : '.';
+const faqAnswer1 = `1 cup of ${ingredient.name} is equivalent to ${defaultGrams} grams (or ${defaultOunces} ounces) when spooned.${faqAnswer1Suffix}`;
+
+const twoCupsGrams = cupsToGrams(2);
+const twoCupsOz = Math.round((twoCupsGrams / 28.3495) * 100) / 100;
+const packedVal2 = cupsToGramsPacked(2);
+const faqAnswer3Suffix = ingredient.gramsPerCupPacked 
+  ? ` or ${packedVal2} grams if packed.` 
+  : '.';
+const faqAnswer3 = `2 cups of ${ingredient.name} is equal to ${twoCupsGrams} grams (${twoCupsOz} oz)${faqAnswer3Suffix}`;
+
+const faqs = [
+  {
+    question: `How many grams in 1 cup of ${ingredient.name}?`,
+    answer: faqAnswer1
+  },
+  {
+    question: `How do I convert cups of ${ingredient.name} to grams?`,
+    answer: `To convert cups of ${ingredient.name} to grams, multiply the number of cups by ${ingredient.gramsPerCup}. For example, 2 cups of ${ingredient.name} is ${cupsToGrams(2)} grams. Formula: grams = cups × ${ingredient.gramsPerCup}.`
+  },
+  {
+    question: `What is 2 cups of ${ingredient.name} in grams?`,
+    answer: faqAnswer3
+  }
+];
+
+// Reference table increments
+const tableValues = [0.25, 0.33, 0.5, 0.67, 0.75, 1, 1.5, 2, 3, 4];
+const tableRows = tableValues.map(val => {
+  const grams = cupsToGrams(val);
+  const oz = Math.round((grams / 28.349523125) * 100) / 100;
+  
+  let context = `Standard recipe amount for ${ingredient.name.toLowerCase()}`;
+  if (val === 0.25) context = "Quarter cup size";
+  if (val === 0.5) context = "Half cup size";
+  if (val === 1) context = "One full cup base";
+  if (val === 2) context = "Double recipe batch";
+
+  const packedGrams = cupsToGramsPacked(val);
+  const packedStr = packedGrams ? ` / Packed: ${packedGrams}g` : '';
+
+  return {
+    cups: `${val} cup${val !== 1 ? 's' : ''}`,
+    grams: `${grams}g${packedStr}`,
+    ounces: `${oz} oz`,
+    context
+  };
+});
+
+// JSON-LD schemas
+const jsonLdFAQ = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": faqs.map(faq => ({
+    "@type": "Question",
+    "name": faq.question,
+    "acceptedAnswer": {
+      "@type": "Answer",
+      "text": faq.answer
+    }
+  }))
+};
+
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": `How to Convert ${ingredient.name} from Cups to Grams`,
+  "description": `Baking guide to convert cups of ${ingredient.name} to grams based on density.`,
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Identify the ingredient state",
+      "text": `Determine if your recipe calls for spooned/sifted or packed ${ingredient.name.toLowerCase()}.`
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Enter the number of cups",
+      "text": "Input the cups value into the calculator above."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Read the exact weight in grams",
+      "text": `Multiply the cups by ${ingredient.gramsPerCup} (or ${ingredient.gramsPerCupPacked || ingredient.gramsPerCup} if packed) to get the grams.`
+    }
+  ]
+};
+
+const jsonLdBreadcrumb = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://myunitconverter.app"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Cooking",
+      "item": "https://myunitconverter.app/cooking-converter"
+    },
+    {
+      "@type": "ListItem",
+      "position": 3,
+      "name": `Cups to Grams ${ingredient.name}`,
+      "item": `https://myunitconverter.app/cups-to-grams-${ingredient.slug}`
+    }
+  ]
+};
+
+// Secondary answer string
+const secondaryAnswer = ingredient.gramsPerCupPacked
+  ? `Packed state: 1 cup of ${ingredient.name.toLowerCase()} = ${ingredient.gramsPerCupPacked} grams.`
+  : `Based on standard dry density factors for ${ingredient.name.toLowerCase()}.`;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug="cooking"
+>
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdFAQ)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdBreadcrumb)} />
+  </Fragment>
+
+  <!-- Visible Breadcrumbs -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/cooking-converter" class="hover:text-brand-blue transition-colors">Cooking Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{ingredient.name} Cups to Grams</span>
+  </nav>
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">{h1}</h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 cup of {ingredient.name} = {defaultGrams} grams ({defaultOunces} oz)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        {secondaryAnswer}
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert cups to grams for <strong>{ingredient.name}</strong> instantly. Baking requires high precision, and using cups can cause significant errors due to density variations. Our calculator uses the true density of {ingredient.name.toLowerCase()} for the most accurate conversions.
+    </p>
+  </section>
+
+  <!-- Interactive Baking Calculator Widget -->
+  <section 
+    id="cups-to-grams-container"
+    data-factor={ingredient.gramsPerCup}
+    data-factor-packed={ingredient.gramsPerCupPacked || '0'}
+    class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl"
+  >
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Interactive Cups to Grams Converter</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div>
+        <label for="ingredient-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Select Ingredient</label>
+        <select
+          id="ingredient-select"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-medium transition-all"
+        >
+          {ingredients.map(ing => (
+            <option value={ing.slug} selected={ing.slug === ingredient.slug}>{ing.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Conversion Direction</label>
+        <div class="flex gap-2">
+          <a href={`/cups-to-grams-${ingredient.slug}`} class="flex-1 text-center bg-brand-blue/10 text-brand-blue border border-brand-blue/20 rounded-lg py-2.5 text-xs font-bold font-mono">Cups → Grams</a>
+          <a href={`/grams-to-cups-${ingredient.slug}`} class="flex-1 text-center bg-canvas text-body-text border border-hairline hover:border-brand-blue rounded-lg py-2.5 text-xs font-medium font-mono">Grams → Cups</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="cups-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Amount in Cups</label>
+        <div class="relative">
+          <input
+            id="cups-input"
+            type="number"
+            step="0.01"
+            value="1"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">cups</span>
+        </div>
+      </div>
+
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight (Spooned/Sifted)</span>
+            <span id="grams-result" class="text-xl font-mono font-bold text-brand-blue">{defaultGrams}g</span>
+          </div>
+          <span class="text-xs font-mono font-medium text-muted-text" id="ounces-result">({defaultOunces} oz)</span>
+        </div>
+
+        {ingredient.gramsPerCupPacked && (
+          <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center" id="packed-container">
+            <div>
+              <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight (Packed)</span>
+              <span id="grams-packed-result" class="text-xl font-mono font-bold text-ink">{cupsToGramsPacked(1)}g</span>
+            </div>
+            <span class="text-xs font-mono font-medium text-muted-text" id="ounces-packed-result">({Math.round((cupsToGramsPacked(1)! / 28.349523125) * 100) / 100} oz)</span>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- 4-Column Conversion Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Cups to Grams Reference Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text font-mono text-[10px] uppercase">
+            <th class="p-3 font-semibold">Volume (Cups)</th>
+            <th class="p-3 font-semibold">Weight (Grams)</th>
+            <th class="p-3 font-semibold">Weight (Ounces)</th>
+            <th class="p-3 font-semibold">Real-world Context</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline font-mono">
+          {tableRows.map(row => (
+            <tr class="hover:bg-card/50 transition-colors">
+              <td class="p-3 text-ink font-medium">{row.cups}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.grams}</td>
+              <td class="p-3 text-ink">{row.ounces}</td>
+              <td class="p-3 text-muted-text text-[11px]">{row.context}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Formula & Sibling Linking -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 border-t border-hairline pt-8">
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">The Math behind the Conversion</h3>
+      <div class="p-4 bg-card border border-hairline rounded-xl space-y-3 font-sans">
+        <p class="text-xs text-body-text leading-relaxed">
+          Weight is calculated by multiplying volume by ingredient density:
+        </p>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <code class="font-mono text-sm font-semibold text-brand-blue">
+            grams = cups × {ingredient.gramsPerCup}
+          </code>
+        </div>
+        <p class="text-xs text-body-text leading-relaxed">
+          Since cups measure volume and grams measure weight, the cup size varies for each ingredient. For instance, a cup of sugar weights 200g, whereas a cup of flour weighs only 120g.
+        </p>
+      </div>
+    </section>
+
+    <section>
+      <h3 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">Popular Cooking Conversions</h3>
+      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+        <a href="/cups-to-grams-butter" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Butter Cups to Grams</a>
+        <a href="/cups-to-grams-sugar" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Sugar Cups to Grams</a>
+        <a href="/cups-to-grams-milk" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Milk Cups to Grams</a>
+        <a href="/cups-to-grams-honey" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate">Honey Cups to Grams</a>
+        <a href="/recipe-scale-calculator" class="p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded truncate col-span-2 text-center font-bold text-brand-blue">Recipe Scale Calculator</a>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const container = document.getElementById('cups-to-grams-container');
+    const factor = parseFloat(container?.getAttribute('data-factor') || '0');
+    const factorPacked = parseFloat(container?.getAttribute('data-factor-packed') || '0');
+
+    const select = document.getElementById('ingredient-select') as HTMLSelectElement;
+    const input = document.getElementById('cups-input') as HTMLInputElement;
+    
+    const gramsRes = document.getElementById('grams-result') as HTMLSpanElement;
+    const ouncesRes = document.getElementById('ounces-result') as HTMLSpanElement;
+    
+    const gramsPackedRes = document.getElementById('grams-packed-result') as HTMLSpanElement;
+    const ouncesPackedRes = document.getElementById('ounces-packed-result') as HTMLSpanElement;
+
+    select?.addEventListener('change', (e) => {
+      const val = (e.target as HTMLSelectElement).value;
+      window.location.href = `/cups-to-grams-${val}`;
+    });
+
+    input?.addEventListener('input', (e) => {
+      const cups = parseFloat((e.target as HTMLInputElement).value) || 0;
+      
+      const grams = Math.round(cups * factor * 100) / 100;
+      const ounces = Math.round((grams / 28.349523125) * 100) / 100;
+      
+      if (gramsRes) gramsRes.textContent = `${grams}g`;
+      if (ouncesRes) ouncesRes.textContent = `(${ounces} oz)`;
+
+      if (factorPacked > 0 && gramsPackedRes && ouncesPackedRes) {
+        const pGrams = Math.round(cups * factorPacked * 100) / 100;
+        const pOunces = Math.round((pGrams / 28.349523125) * 100) / 100;
+        gramsPackedRes.textContent = `${pGrams}g`;
+        ouncesPackedRes.textContent = `(${pOunces} oz)`;
+      }
+    });
+  </script>
+</BaseLayout>

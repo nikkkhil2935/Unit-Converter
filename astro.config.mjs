@@ -64,7 +64,7 @@ export default defineConfig({
     '/gram-to-ounce': '/grams-to-ounces',
     '/ounce-to-gram': '/ounces-to-grams',
     '/mph-to-kmh': '/mph-to-kph',
-    '/kph-to-mph': '/kph-to-mph',
+    '/kmh-to-mph': '/kph-to-mph',
     '/acres-to-sq-ft': '/acres-to-sqft',
     '/square-foot-to-acre': '/sqft-to-acres',
     '/megabyte-to-gigabyte': '/mb-to-gb',

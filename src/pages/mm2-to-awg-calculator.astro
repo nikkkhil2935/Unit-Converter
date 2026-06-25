@@ -1,0 +1,144 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "mm² to AWG Wire Gauge Calculator | Cross-Section Area";
+const description = "Convert metric wire cross-section area in square millimeters (mm²) to American Wire Gauge (AWG) equivalents. Free online engineering utility.";
+
+const faqs = [
+  {
+    question: "How do you convert mm² to AWG?",
+    answer: "To convert mm² to AWG, calculate diameter d = 2 × √(area/π), then compute AWG = 36 - 39 × log92(d / 0.127). The result is rounded to the nearest standard AWG wire gauge size."
+  },
+  {
+    question: "What AWG is 4 mm²?",
+    answer: "A cross-section of 4 mm² corresponds closest to 11 AWG or 12 AWG standard wire size."
+  }
+];
+
+const awgTable = [
+  { mm2: 1.5, awgClosest: "16 AWG (1.31 mm²)", diameter: "1.29 mm" },
+  { mm2: 2.5, awgClosest: "14 AWG (2.08 mm²)", diameter: "1.63 mm" },
+  { mm2: 4.0, awgClosest: "12 AWG (3.31 mm²)", diameter: "2.05 mm" },
+  { mm2: 6.0, awgClosest: "10 AWG (5.26 mm²)", diameter: "2.59 mm" },
+  { mm2: 10.0, awgClosest: "8 AWG (8.37 mm²)", diameter: "3.26 mm" },
+  { mm2: 16.0, awgClosest: "6 AWG (13.30 mm²)", diameter: "4.11 mm" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">mm² to AWG</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">mm² to AWG Wire Gauge Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>6 mm² ≈ 10 AWG (Closest Standard Equivalent)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Exact AWG value: 9.4 AWG.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert standard metric cable cross-sectional area (mm²) to the nearest American Wire Gauge (AWG) equivalents.
+    </p>
+  </section>
+
+  <!-- Calculator Widget -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive mm² to AWG Converter</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="mm2-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Area in mm²</label>
+        <input
+          id="mm2-input"
+          type="number"
+          step="0.01"
+          value="6"
+          min="0.01"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Calculated AWG</span>
+          <span id="awg-result" class="text-xl font-mono font-bold text-brand-blue">9.4 AWG</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Closest Wire size</span>
+          <span id="closest-result" class="text-xl font-mono font-bold text-ink">10 AWG</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Standard Equivalents Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Metric to Imperial Wire Equivalents</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Metric Size (mm²)</th>
+            <th class="p-3 font-semibold">Closest AWG Size</th>
+            <th class="p-3 font-semibold">Nominal Diameter</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {awgTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.mm2} mm²</td>
+              <td class="p-3 text-ink">{row.awgClosest}</td>
+              <td class="p-3 text-muted-text">{row.diameter}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const mm2Input = document.getElementById('mm2-input') as HTMLInputElement;
+    const awgResult = document.getElementById('awg-result') as HTMLSpanElement;
+    const closestResult = document.getElementById('closest-result') as HTMLSpanElement;
+
+    function mm2ToAwg(area: number) {
+      if (area <= 0 || isNaN(area)) return null;
+      
+      const diameter = 2 * Math.sqrt(area / Math.PI);
+      const awg = 36 - 39 * (Math.log(diameter / 0.127) / Math.log(92));
+      const rounded = Math.round(awg);
+      
+      let closestStr = `${rounded} AWG`;
+      if (rounded === -3) closestStr = "4/0 AWG";
+      else if (rounded === -2) closestStr = "3/0 AWG";
+      else if (rounded === -1) closestStr = "2/0 AWG";
+      else if (rounded === 0) closestStr = "1/0 AWG";
+
+      return {
+        awg: Math.round(awg * 10) / 10,
+        closest: closestStr
+      };
+    }
+
+    mm2Input?.addEventListener('input', () => {
+      const val = parseFloat(mm2Input.value);
+      const res = mm2ToAwg(val);
+      if (res && awgResult && closestResult) {
+        awgResult.textContent = `${res.awg} AWG`;
+        closestResult.textContent = res.closest;
+      } else {
+        if (awgResult) awgResult.textContent = 'Invalid';
+        if (closestResult) closestResult.textContent = 'Invalid';
+      }
+    });
+  </script>
+</BaseLayout>

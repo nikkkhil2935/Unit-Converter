@@ -1,0 +1,261 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Concrete Mix Ratio Calculator | M15 M20 M25 Cement Sand Gravel Volume";
+const description = "Calculate cement bags, sand, and gravel quantities for concrete mix ratios M15, M20, M25, M30. Enter slab dimensions and mix grade to get exact material quantities in kg and m³.";
+const keywords = "concrete mix ratio calculator, M20 concrete mix ratio, concrete calculator, cement calculator, how many bags of concrete, cement sand gravel ratio, M20 mix design, concrete volume calculator, C25 concrete mix, concrete material calculator";
+
+const faqs = [
+  {
+    question: "What is the concrete mix ratio for M20?",
+    answer: "The nominal mix ratio for M20 grade concrete is 1:1.5:3, which translates to 1 part cement, 1.5 parts sand (fine aggregate), and 3 parts gravel (coarse aggregate) by volume."
+  },
+  {
+    question: "Why is dry concrete volume multiplied by 1.54?",
+    answer: "Dry concrete ingredients contain air voids. When water is added and the mixture is compacted, the volume shrinks by about 30-35%. To get 1 cubic meter of wet concrete, you need about 1.54 cubic meters of dry ingredients."
+  }
+];
+
+const mixDesigns = [
+  { name: "M25 (1:1:2)", ratio: [1, 1, 2], strength: "25 MPa (3625 PSI)", usage: "Heavy-duty foundations, columns, beams" },
+  { name: "M20 (1:1.5:3)", ratio: [1, 1.5, 3], strength: "20 MPa (2900 PSI)", usage: "Slabs, driveways, beams" },
+  { name: "M15 (1:2:4)", ratio: [1, 2, 4], strength: "15 MPa (2175 PSI)", usage: "Patios, paths, non-structural slabs" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="volume">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/volume-converter" class="hover:text-brand-blue transition-colors">Volume Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Concrete Mix Ratio</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Concrete Mix Ratio Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Dry Concrete Volume = Wet Volume × 1.54 Factor</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: 1 m³ of wet concrete requires about 1.54 m³ of dry materials to compensate for compaction voids.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Estimate dry materials (bags of cement, tons of sand and gravel) required for slabs, walls, or columns based on nominal engineering mix designs.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Project Dimensions</h2>
+      
+      <div>
+        <label for="mix-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Mix Grade (Cement:Sand:Gravel)</label>
+        <select id="mix-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="m20" data-c="1" data-s="1.5" data-g="3">M20 (1:1.5:3) - Standard Slabs</option>
+          <option value="m25" data-c="1" data-s="1" data-g="2">M25 (1:1:2) - Structural Columns</option>
+          <option value="m15" data-c="1" data-s="2" data-g="4">M15 (1:2:4) - Patios / Paths</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label for="len-in" class="block text-xs font-mono text-muted-text mb-1">Length (m)</label>
+          <input id="len-in" type="number" value="4" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="wid-in" class="block text-xs font-mono text-muted-text mb-1">Width (m)</label>
+          <input id="wid-in" type="number" value="4" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="dep-in" class="block text-xs font-mono text-muted-text mb-1">Depth (m)</label>
+          <input id="dep-in" type="number" value="0.1" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+      </div>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Calculated Wet Volume</span>
+        <span id="wet-vol-res" class="text-base font-mono font-bold text-ink">1.60 m³</span>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Materials</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Cement (50kg bags)</span>
+            <span id="cement-bags" class="text-lg font-mono font-bold text-brand-blue">13.5 bags</span>
+          </div>
+          <span id="cement-kg" class="text-xs font-mono text-muted-text">(675 kg)</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Sand (Fine Aggregate)</span>
+            <span id="sand-tons" class="text-lg font-mono font-bold text-ink">1.13 tons</span>
+          </div>
+          <span id="sand-m3" class="text-xs font-mono text-muted-text">(0.70 m³)</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Gravel (Coarse Aggregate)</span>
+            <span id="gravel-tons" class="text-lg font-mono font-bold text-ink">1.97 tons</span>
+          </div>
+          <span id="gravel-m3" class="text-xs font-mono text-muted-text">(1.41 m³)</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Mix Design Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Concrete Mix Design Specs</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Mix Design</th>
+            <th class="p-3 font-semibold">Strength Rating</th>
+            <th class="p-3 font-semibold">Typical Application</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {mixDesigns.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.name}</td>
+              <td class="p-3 text-ink">{row.strength}</td>
+              <td class="p-3 text-muted-text font-sans">{row.usage}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const mixSelect = document.getElementById('mix-select') as HTMLSelectElement;
+    
+    const lenIn = document.getElementById('len-in') as HTMLInputElement;
+    const widIn = document.getElementById('wid-in') as HTMLInputElement;
+    const depIn = document.getElementById('dep-in') as HTMLInputElement;
+
+    const wetVolRes = document.getElementById('wet-vol-res') as HTMLSpanElement;
+    const cementBags = document.getElementById('cement-bags') as HTMLSpanElement;
+    const cementKg = document.getElementById('cement-kg') as HTMLSpanElement;
+    const sandTons = document.getElementById('sand-tons') as HTMLSpanElement;
+    const sandM3 = document.getElementById('sand-m3') as HTMLSpanElement;
+    const gravelTons = document.getElementById('gravel-tons') as HTMLSpanElement;
+    const gravelM3 = document.getElementById('gravel-m3') as HTMLSpanElement;
+
+    function calculate() {
+      const len = parseFloat(lenIn.value) || 0;
+      const wid = parseFloat(widIn.value) || 0;
+      const dep = parseFloat(depIn.value) || 0;
+
+      const wetVol = len * wid * dep;
+      if (wetVolRes) wetVolRes.textContent = `${wetVol.toFixed(2)} m³`;
+
+      // Dry Volume = wet * 1.54
+      const dryVol = wetVol * 1.54;
+
+      // Ratio values
+      const opt = mixSelect.options[mixSelect.selectedIndex];
+      const cPart = parseFloat(opt.getAttribute('data-c') || '1');
+      const sPart = parseFloat(opt.getAttribute('data-s') || '1.5');
+      const gPart = parseFloat(opt.getAttribute('data-g') || '3');
+      const sum = cPart + sPart + gPart;
+
+      // Volume of each component
+      const cVol = (cPart / sum) * dryVol;
+      const sVol = (sPart / sum) * dryVol;
+      const gVol = (gPart / sum) * dryVol;
+
+      // Weight conversions
+      // Cement: 1440 kg/m³
+      const cWeight = cVol * 1440;
+      const bags = cWeight / 50;
+
+      // Sand: 1600 kg/m³
+      const sWeight = sVol * 1600;
+      const sTonsVal = sWeight / 1000; // metric tons
+
+      // Gravel: 1400 kg/m³
+      const gWeight = gVol * 1400;
+      const gTonsVal = gWeight / 1000; // metric tons
+
+      if (cementBags) cementBags.textContent = `${bags.toFixed(1)} bags`;
+      if (cementKg) cementKg.textContent = `(${Math.round(cWeight)} kg)`;
+
+      if (sandTons) sandTons.textContent = `${sTonsVal.toFixed(2)} tons`;
+      if (sandM3) sandM3.textContent = `(${sVol.toFixed(2)} m³)`;
+
+      if (gravelTons) gravelTons.textContent = `${gTonsVal.toFixed(2)} tons`;
+      if (gravelM3) gravelM3.textContent = `(${gVol.toFixed(2)} m³)`;
+    }
+
+    mixSelect?.addEventListener('change', calculate);
+    lenIn?.addEventListener('input', calculate);
+    widIn?.addEventListener('input', calculate);
+    depIn?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding Concrete Mix Grades</h3>
+      <p class="leading-relaxed mb-3">
+        Concrete mix grades (M10, M15, M20, M25, M30...) refer to the characteristic compressive strength of concrete at 28 days in N/mm² (MPa). The "M" stands for Mix, and the number is the minimum 28-day cube strength:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>M15 (1:2:4)</span><span class="text-brand-blue font-bold">15 MPa — PCC, non-structural</span></div>
+        <div class="flex justify-between"><span>M20 (1:1.5:3)</span><span class="text-brand-blue font-bold">20 MPa — RCC slabs, beams</span></div>
+        <div class="flex justify-between"><span>M25 (1:1:2)</span><span class="text-brand-blue font-bold">25 MPa — foundations, columns</span></div>
+        <div class="flex justify-between"><span>M30 (designed)</span><span class="text-brand-blue font-bold">30 MPa — bridges, heavy loads</span></div>
+        <div class="flex justify-between"><span>M35+</span><span class="text-brand-blue font-bold">≥35 MPa — high-performance</span></div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Water-Cement Ratio & Workability</h3>
+      <p class="leading-relaxed mb-3">
+        The water-cement (w/c) ratio is critical for concrete strength. Lower w/c = stronger, less permeable concrete. Higher w/c = more workable but weaker. The IS code recommends:
+      </p>
+      <ul class="space-y-1.5 leading-relaxed">
+        <li>• <strong>M15–M20:</strong> w/c ratio max 0.55 (normal environment)</li>
+        <li>• <strong>M25–M30:</strong> w/c ratio max 0.50 (moderate exposure)</li>
+        <li>• <strong>M35+:</strong> w/c ratio max 0.45 (severe/marine exposure)</li>
+      </ul>
+      <p class="leading-relaxed mt-3">
+        Typical water requirement: 185–200 liters per m³ for M20. Reducing water by using superplasticizers allows maintaining workability while keeping low w/c.
+      </p>
+    </section>
+  </div>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/concrete-volume-calculator-bags-to-cubic-feet" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Volume (Bags)</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/gravel-weight-calculator-tons-to-cubic-yards" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Gravel Weight Calculator</a>
+      <a href="/square-footage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Square Footage Calculator</a>
+      <a href="/volume-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Volume Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

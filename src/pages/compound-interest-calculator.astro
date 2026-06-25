@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+const title = "Compound Interest Calculator | Investment Growth & Balance Formula";
+const description = "Calculate compound interest returns, final balance, and total interest earned with annual, monthly, quarterly, or daily compounding. Instant formula breakdown included.";
+const keywords = "compound interest calculator, compound interest formula, how to calculate compound interest, compound interest monthly, APY calculator, investment growth calculator, A = P(1 + r/n)^nt, compounding frequency, interest earned calculator, savings growth calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Finance & Business", url: "/finance-business" },
+  { name: "Compound Interest Calculator", url: "/compound-interest-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is compound interest and the formula?",
+    answer: "Compound interest is interest calculated on the initial principal AND on the accumulated interest of previous periods. Formula: A = P(1 + r/n)^(nt), where A = final amount, P = principal, r = annual interest rate (decimal), n = compounding frequency per year, t = time in years. Example: $1,000 at 5% compounded monthly for 3 years = $1,161.47."
+  },
+  {
+    question: "How does monthly compounding compare to annual compounding?",
+    answer: "Monthly compounding (n=12) yields slightly more than annual compounding (n=1) because interest is added to the principal 12 times per year, so you earn interest on your interest more frequently. The difference is captured by the Annual Percentage Yield (APY): a 5% rate compounded monthly gives an APY of 5.116%, while annual gives exactly 5%."
+  },
+  {
+    question: "What is the Rule of 72 for compound interest?",
+    answer: "The Rule of 72 estimates how long it takes to double your money: divide 72 by the annual interest rate. At 6% interest: 72 ÷ 6 = 12 years to double. At 8%: 72 ÷ 8 = 9 years. This works best for rates between 4–20%."
+  },
+  {
+    question: "What is the difference between APR and APY?",
+    answer: "APR (Annual Percentage Rate) is the nominal interest rate without accounting for compounding. APY (Annual Percentage Yield) includes the effect of compounding within the year — it's the effective annual rate. APY = (1 + APR/n)^n - 1. APY is always >= APR and is the more meaningful figure for comparing savings accounts."
+  },
+  {
+    question: "How much does $10,000 grow at 7% compound interest over 20 years?",
+    answer: "At 7% compounded annually: A = $10,000 × (1.07)^20 = $38,696.84. The investment nearly quadruples. At 7% compounded monthly it grows slightly more to $40,062.20, showing the significant long-term impact of compounding frequency."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="compound interest calculator, compound interest, compound interest formula, interest growth calculator, interest compounded monthly"
+  canonicalPath="/compound-interest-calculator"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="finance" className="w-8 h-8 text-brand-blue" />
+      <span>Compound Interest Calculator</span>
+    </h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>A = P(1 + r/n)<sup>nt</sup></strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A $1,000 principal at a 5% interest rate compounded monthly for 3 years grows to $1,161.47, earning $161.47 in interest.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Estimate investment growth or standard credit card balances. Select your compounding frequency (daily, monthly, quarterly, or annually) and see results instantly.
+    </p>
+  </section>
+
+  <!-- Interactive Scaler Widget -->
+  <section class="mb-10 max-w-2xl bg-card border border-hairline rounded-2xl p-6 transition-colors">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Interactive Compound Interest Calculator</h2>
+
+    <div class="space-y-4">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="principal-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Principal Amount ($)</label>
+          <input
+            id="principal-input"
+            type="number"
+            value="1000"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+        <div>
+          <label for="rate-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Annual Interest Rate (%)</label>
+          <input
+            id="rate-input"
+            type="number"
+            value="5"
+            step="0.01"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="time-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Time Period (Years)</label>
+          <input
+            id="time-input"
+            type="number"
+            value="3"
+            step="0.1"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+        <div>
+          <label for="frequency-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Compounding Frequency</label>
+          <select
+            id="frequency-select"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-medium transition-all"
+          >
+            <option value="12">Compounded Monthly (12x/year)</option>
+            <option value="1">Compounded Annually (1x/year)</option>
+            <option value="4">Compounded Quarterly (4x/year)</option>
+            <option value="2">Compounded Semi-Annually (2x/year)</option>
+            <option value="365">Compounded Daily (365x/year)</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-hairline">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Interest Earned</span>
+            <span id="interest-result" class="text-xl font-mono font-bold text-brand-blue">$161.47</span>
+          </div>
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total Balance</span>
+            <span id="total-result" class="text-xl font-mono font-bold text-ink">$1,161.47</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formula Details & Reference Table -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-hairline pt-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">How Compound Interest Works</h3>
+      <p class="leading-relaxed mb-3">
+        In compound interest, the interest earned in each compounding cycle is added back into the principal balance. In the next cycle, interest is calculated based on this larger balance.
+      </p>
+      <div class="p-3 bg-card border border-hairline rounded-lg font-mono mb-3">
+        A = P × (1 + r/n)<sup>n×t</sup>
+      </div>
+      <p class="leading-relaxed">
+        Because your balance grows larger in each period, interest earnings accelerate, leading to compounding exponential returns over long periods.
+      </p>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Compounding Frequency</h3>
+      <p class="leading-relaxed mb-3">
+        The number of compounding cycles per year (n) determines how often interest is paid out:
+      </p>
+      <ul class="list-disc pl-4 space-y-1">
+        <li><strong>Annually (n = 1):</strong> Interest paid once per year.</li>
+        <li><strong>Quarterly (n = 4):</strong> Interest paid every 3 months.</li>
+        <li><strong>Monthly (n = 12):</strong> Interest paid every month (standard savings accounts).</li>
+        <li><strong>Daily (n = 365):</strong> Interest paid every single day (highest return).</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- Related Sibling Tools Navigation -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Finance Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/simple-interest-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Simple Interest Calculator</a>
+      <a href="/sales-tax-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Sales Tax Calculator</a>
+      <a href="/discount-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Discount Calculator</a>
+      <a href="/salary-to-hourly-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Salary to Hourly Converter</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const principalInput = document.getElementById('principal-input') as HTMLInputElement;
+    const rateInput = document.getElementById('rate-input') as HTMLInputElement;
+    const timeInput = document.getElementById('time-input') as HTMLInputElement;
+    const frequencySelect = document.getElementById('frequency-select') as HTMLSelectElement;
+    
+    const interestResult = document.getElementById('interest-result') as HTMLSpanElement;
+    const totalResult = document.getElementById('total-result') as HTMLSpanElement;
+
+    function calculate() {
+      const p = parseFloat(principalInput.value) || 0;
+      const r = parseFloat(rateInput.value) || 0;
+      const t = parseFloat(timeInput.value) || 0;
+      const n = parseInt(frequencySelect.value) || 12;
+
+      const total = p * Math.pow(1 + (r / 100) / n, n * t);
+      const interest = total - p;
+
+      if (interestResult) interestResult.textContent = `$${interest.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      if (totalResult) totalResult.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    }
+
+    principalInput?.addEventListener('input', calculate);
+    rateInput?.addEventListener('input', calculate);
+    timeInput?.addEventListener('input', calculate);
+    frequencySelect?.addEventListener('change', calculate);
+
+    // Initial calculation on load
+    calculate();
+  </script>
+</BaseLayout>

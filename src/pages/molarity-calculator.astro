@@ -1,0 +1,284 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Molarity Calculator | Solution Concentration Solver — Moles, Grams, Liters";
+const description = "Calculate solution molarity (mol/L), solute mass, or volume online. Includes preset compounds (NaCl, NaOH, HCl, Glucose). Free chemistry lab tool with formula explanation.";
+const keywords = "molarity calculator, how to calculate molarity, molarity formula, moles per liter, concentration calculator, how to find molarity, molarity from grams, molarity to grams, NaCl molarity, dilution calculator chemistry";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Scientific & Lab", url: "/scientific-lab" },
+  { name: "Molarity Calculator", url: "/molarity-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is molarity?",
+    answer: "Molarity (M) is the number of moles of solute dissolved in one liter of solution. It is the most common unit of concentration in chemistry. For example, a 1 M NaCl solution contains 1 mole (58.44 grams) of sodium chloride per liter of solution."
+  },
+  {
+    question: "What is the molarity formula?",
+    answer: "Molarity (M) = Moles of Solute (n) ÷ Volume of Solution (L). Since moles = mass (g) ÷ molar mass (g/mol), the full formula is: M = mass (g) ÷ [molar mass (g/mol) × volume (L)]."
+  },
+  {
+    question: "How do you calculate molarity from grams?",
+    answer: "Step 1: Find the molar mass of the compound (sum of atomic masses). Step 2: Divide the mass in grams by the molar mass to get moles. Step 3: Divide moles by the volume of solution in liters. Example: 5.85g NaCl (molar mass = 58.5) in 100mL water = 0.1 moles ÷ 0.1L = 1.0 M."
+  },
+  {
+    question: "What is the difference between molarity and molality?",
+    answer: "Molarity (M) = moles solute per liter of solution. Molality (m) = moles solute per kilogram of solvent. Molarity depends on temperature (volume changes with temperature), while molality is temperature-independent. For high-precision work at varying temperatures, use molality."
+  },
+  {
+    question: "How do you dilute a solution to a target molarity?",
+    answer: "Use the dilution formula: M₁V₁ = M₂V₂. If you have a 10 M stock solution and need 500 mL of 1 M solution: V₁ = (1 M × 500 mL) ÷ 10 M = 50 mL stock solution, diluted to 500 mL total with solvent."
+  }
+];
+
+const compounds = [
+  { name: "Sodium Chloride (NaCl)", mw: 58.44 },
+  { name: "Sodium Hydroxide (NaOH)", mw: 40.00 },
+  { name: "Glucose (C6H12O6)", mw: 180.16 },
+  { name: "Sucrose (C12H22O11)", mw: 342.30 },
+  { name: "Hydrochloric Acid (HCl)", mw: 36.46 },
+  { name: "Sulfuric Acid (H2SO4)", mw: 98.08 },
+  { name: "Acetic Acid (CH3COOH)", mw: 60.05 },
+  { name: "Potassium Chloride (KCl)", mw: 74.55 },
+  { name: "Calcium Chloride (CaCl2)", mw: 110.98 },
+  { name: "Sodium Bicarbonate (NaHCO3)", mw: 84.01 }
+];
+---
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/molarity-calculator"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Molarity Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Molarity Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Molarity (M) = Mass (g) ÷ [Molar Mass (g/mol) × Volume (L)]</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: Dissolving 58.44g of NaCl (1 mole) in 1 Liter of water yields a 1.0 M (molar) solution.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Calculate concentration parameters for chemical solutions. Solve for molarity, solute mass, molecular weight, or final solution volume.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Parameters</h2>
+      
+      <div>
+        <label for="solve-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Solve For</label>
+        <select id="solve-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="molarity">Molarity (M or mol/L)</option>
+          <option value="mass">Solute Mass (grams)</option>
+          <option value="volume">Solution Volume (mL)</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="compound-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Preset Compound (optional)</label>
+        <select id="compound-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="custom" data-mw="">Custom / Manual Entry</option>
+          {compounds.map(c => (
+            <option value={c.name} data-mw={c.mw}>{c.name} - {c.mw} g/mol</option>
+          ))}
+        </select>
+      </div>
+
+      <!-- Mass Input -->
+      <div id="div-mass" class="var-input">
+        <label for="mass-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Mass of Solute (grams)</label>
+        <input id="mass-input" type="number" value="5.84" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+      </div>
+
+      <!-- Molar Mass Input -->
+      <div id="div-mw" class="var-input">
+        <label for="mw-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Solute Molar Mass (g/mol)</label>
+        <input id="mw-input" type="number" value="58.44" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+      </div>
+
+      <!-- Volume Input -->
+      <div id="div-volume" class="var-input">
+        <label for="volume-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Solution Volume (mL)</label>
+        <input id="volume-input" type="number" value="100" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+      </div>
+
+      <!-- Molarity Input (Only shown if solving for other things) -->
+      <div id="div-molarity" class="var-input hidden">
+        <label for="molarity-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1">Molarity (mol/L)</label>
+        <input id="molarity-input" type="number" value="1" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono" />
+      </div>
+    </div>
+
+    <!-- Output Box -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Result</h2>
+        <div class="p-4 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono" id="res-label">Calculated Molarity</span>
+          <span id="result-span" class="text-2xl font-mono font-bold text-brand-blue">1.00 M</span>
+        </div>
+      </div>
+      
+      <p class="text-xs text-muted-text leading-relaxed mt-4">
+        Molarity is standard temperature-dependent concentration because volume expands/contracts slightly. For temperature-independent calculations, use Molality (moles solute per kg solvent).
+      </p>
+    </div>
+  </section>
+
+  <script>
+    const solveSelect = document.getElementById('solve-select') as HTMLSelectElement;
+    const compoundSelect = document.getElementById('compound-select') as HTMLSelectElement;
+
+    const massInput = document.getElementById('mass-input') as HTMLInputElement;
+    const mwInput = document.getElementById('mw-input') as HTMLInputElement;
+    const volumeInput = document.getElementById('volume-input') as HTMLInputElement;
+    const molarityInput = document.getElementById('molarity-input') as HTMLInputElement;
+
+    const divMass = document.getElementById('div-mass') as HTMLDivElement;
+    const divMw = document.getElementById('div-mw') as HTMLDivElement;
+    const divVolume = document.getElementById('div-volume') as HTMLDivElement;
+    const divMolarity = document.getElementById('div-molarity') as HTMLDivElement;
+
+    const resLabel = document.getElementById('res-label') as HTMLSpanElement;
+    const resultSpan = document.getElementById('result-span') as HTMLSpanElement;
+
+    function handleSolveChange() {
+      const solve = solveSelect.value;
+
+      // Reset hidden states
+      divMass.classList.remove('hidden');
+      divMw.classList.remove('hidden');
+      divVolume.classList.remove('hidden');
+      divMolarity.classList.remove('hidden');
+
+      if (solve === 'molarity') {
+        divMolarity.classList.add('hidden');
+        if (resLabel) resLabel.textContent = "Calculated Molarity";
+      } else if (solve === 'mass') {
+        divMass.classList.add('hidden');
+        if (resLabel) resLabel.textContent = "Required Solute Mass";
+      } else if (solve === 'volume') {
+        divVolume.classList.add('hidden');
+        if (resLabel) resLabel.textContent = "Required Volume";
+      }
+
+      calculate();
+    }
+
+    function calculate() {
+      const solve = solveSelect.value;
+      const mw = parseFloat(mwInput.value) || 1;
+
+      if (solve === 'molarity') {
+        const mass = parseFloat(massInput.value) || 0;
+        const volMl = parseFloat(volumeInput.value) || 1;
+        const volL = volMl / 1000;
+
+        const molarity = mass / (mw * volL);
+        if (resultSpan) resultSpan.textContent = `${molarity.toFixed(3)} M (mol/L)`;
+      } else if (solve === 'mass') {
+        const molarity = parseFloat(molarityInput.value) || 0;
+        const volMl = parseFloat(volumeInput.value) || 0;
+        const volL = volMl / 1000;
+
+        const mass = molarity * mw * volL;
+        if (resultSpan) resultSpan.textContent = `${mass.toFixed(3)} grams`;
+      } else if (solve === 'volume') {
+        const molarity = parseFloat(molarityInput.value) || 1;
+        const mass = parseFloat(massInput.value) || 0;
+
+        const volL = mass / (molarity * mw);
+        const volMl = volL * 1000;
+        if (resultSpan) resultSpan.textContent = `${volMl.toFixed(1)} mL`;
+      }
+    }
+
+    compoundSelect?.addEventListener('change', () => {
+      const opt = compoundSelect.options[compoundSelect.selectedIndex];
+      const mw = opt.getAttribute('data-mw');
+      if (mw && mwInput) {
+        mwInput.value = mw;
+      }
+      calculate();
+    });
+
+    solveSelect?.addEventListener('change', handleSolveChange);
+    massInput?.addEventListener('input', calculate);
+    mwInput?.addEventListener('input', calculate);
+    volumeInput?.addEventListener('input', calculate);
+    molarityInput?.addEventListener('input', calculate);
+
+    // Initial render
+    handleSolveChange();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding Molarity in Chemistry</h3>
+      <p class="leading-relaxed mb-3">
+        Molarity (M) is the standard unit of concentration in analytical chemistry, biochemistry, and pharmaceutical research. A solution's molarity tells you exactly how many moles of solute (the dissolved substance) are present per liter of solution. This is critical for preparing reagents, running titrations, making buffer solutions, and ensuring reproducible experimental results.
+      </p>
+      <p class="leading-relaxed">
+        Common lab concentrations: 1 M HCl is standard for acid-base titrations. 0.9% w/v NaCl (≈ 0.154 M) is physiological saline used in medicine. Phosphate Buffered Saline (PBS) for cell culture is typically 10 mM phosphate buffer.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Common Molar Masses Reference</h3>
+      <div class="space-y-1 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>NaCl (Sodium Chloride)</span><span class="text-brand-blue font-bold">58.44 g/mol</span></div>
+        <div class="flex justify-between"><span>NaOH (Sodium Hydroxide)</span><span class="text-brand-blue font-bold">40.00 g/mol</span></div>
+        <div class="flex justify-between"><span>HCl (Hydrochloric Acid)</span><span class="text-brand-blue font-bold">36.46 g/mol</span></div>
+        <div class="flex justify-between"><span>H₂SO₄ (Sulfuric Acid)</span><span class="text-brand-blue font-bold">98.08 g/mol</span></div>
+        <div class="flex justify-between"><span>Glucose (C₆H₁₂O₆)</span><span class="text-brand-blue font-bold">180.16 g/mol</span></div>
+        <div class="flex justify-between"><span>NaHCO₃ (Baking Soda)</span><span class="text-brand-blue font-bold">84.01 g/mol</span></div>
+        <div class="flex justify-between"><span>CaCl₂ (Calcium Chloride)</span><span class="text-brand-blue font-bold">110.98 g/mol</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Molarity</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Scientific & Lab Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concentration ppm/mg·L</a>
+      <a href="/ph-to-hydrogen-concentration-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">pH to H⁺ Concentration</a>
+      <a href="/spectrophotometry-absorbance-to-transmittance" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Absorbance/Transmittance</a>
+      <a href="/osmolality-to-osmolarity-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Osmolality/Osmolarity</a>
+      <a href="/brix-to-specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Brix to Specific Gravity</a>
+      <a href="/volume-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Volume Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>
+

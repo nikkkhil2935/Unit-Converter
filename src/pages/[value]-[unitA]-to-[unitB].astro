@@ -1,0 +1,158 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdBanner from '../components/AdBanner.astro';
+import { getCategory, convert, type Category, type Unit } from '../lib/conversions';
+
+export async function getStaticPaths() {
+  const paths = [];
+  const popularPairs = [
+    { from: "cm", to: "inches", cat: "length" },
+    { from: "inches", to: "cm", cat: "length" },
+    { from: "kg", to: "lbs", cat: "weight" },
+    { from: "lbs", to: "kg", cat: "weight" },
+    { from: "celsius", to: "fahrenheit", cat: "temperature" },
+    { from: "fahrenheit", to: "celsius", cat: "temperature" },
+    { from: "mm", to: "inches", cat: "length" },
+    { from: "inches", to: "mm", cat: "length" },
+    { from: "meters", to: "feet", cat: "length" },
+    { from: "feet", to: "meters", cat: "length" },
+    { from: "km", to: "miles", cat: "length" },
+    { from: "miles", to: "km", cat: "length" }
+  ];
+
+  const values = [1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 45, 50, 75, 100, 120, 150, 180, 200, 250, 500];
+
+  for (const pair of popularPairs) {
+    const category = getCategory(pair.cat);
+    if (category) {
+      const fromUnit = category.units.find(u => u.slug === pair.from);
+      const toUnit = category.units.find(u => u.slug === pair.to);
+      if (fromUnit && toUnit) {
+        for (const val of values) {
+          paths.push({
+            params: {
+              value: val.toString(),
+              unitA: fromUnit.slug,
+              unitB: toUnit.slug
+            },
+            props: {
+              category,
+              fromUnit,
+              toUnit,
+              val
+            }
+          });
+        }
+      }
+    }
+  }
+  return paths;
+}
+
+interface Props {
+  category: Category;
+  fromUnit: Unit;
+  toUnit: Unit;
+  val: number;
+}
+
+const { category, fromUnit, toUnit, val } = Astro.props;
+
+const decimalResult = convert(val, fromUnit.id, toUnit.id, category.id);
+
+// Title & Meta tags following the Title Formula
+const title = `${val} ${fromUnit.slug} to ${toUnit.slug} | Decimal + Equivalents Result`;
+const description = `What is ${val} ${fromUnit.name.toLowerCase()} in ${toUnit.name.toLowerCase()}? The result is ${decimalResult.toFixed(4)} ${toUnit.symbol}. Free, instant.`;
+
+// Setup list of other pre-generated values for pagination/loop backlinks
+const otherValues = [1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 45, 50, 75, 100, 120, 150, 180, 200, 250, 500].filter(v => v !== val);
+
+const isPopularFractionPair = [
+  { from: "mm", to: "inches" },
+  { from: "cm", to: "inches" },
+  { from: "inches", to: "mm" },
+  { from: "inches", to: "cm" },
+  { from: "meters", to: "feet" },
+  { from: "feet", to: "meters" }
+].some(p => p.from === fromUnit.slug && p.to === toUnit.slug);
+
+const fractionValuesList = [1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 30, 45, 50, 75, 100, 120, 127, 200];
+const hasCounterpartFraction = isPopularFractionPair && fractionValuesList.includes(val);
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug={category.slug}
+  robots="noindex, follow"
+>
+  <!-- Visible Breadcrumbs -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href={`/${category.slug}-converter`} class="hover:text-brand-blue transition-colors">{category.name} Converter</a>
+    <span>/</span>
+    <a href={`/${fromUnit.slug}-to-${toUnit.slug}`} class="hover:text-brand-blue transition-colors">{fromUnit.symbol} to {toUnit.symbol}</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{val} {fromUnit.symbol}</span>
+  </nav>
+
+  <AdBanner slot="value-top" />
+
+  <!-- Title & Direct Answer Block -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">
+      {val} {fromUnit.name} to {toUnit.name}
+    </h1>
+
+    <!-- Direct Answer Block (Snippet Bait) -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>{val} {fromUnit.symbol} = {decimalResult.toFixed(4)} {toUnit.symbol}</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        To convert {fromUnit.name.toLowerCase()}s to {toUnit.name.toLowerCase()}s, multiply by {Number((decimalResult / val).toFixed(6))}.
+      </p>
+    </div>
+
+    <AdBanner slot="value-mid" />
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert {val} {fromUnit.name.toLowerCase()}s to {toUnit.name.toLowerCase()}s with precision. This page displays the exact decimal conversion.
+    </p>
+  </section>
+
+  <div class="mt-8 pt-8 border-t border-hairline flex flex-col gap-6 select-none max-w-2xl">
+    <div class="flex flex-wrap gap-4 text-xs font-semibold">
+      <a href={`/${fromUnit.slug}-to-${toUnit.slug}`} class="inline-flex items-center text-brand-blue hover:underline gap-1 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Go to main details page
+      </a>
+      {hasCounterpartFraction && (
+        <a href={`/${val}-${fromUnit.slug}-to-${toUnit.slug}-fraction`} class="inline-flex items-center text-brand-blue hover:underline gap-1 cursor-pointer">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+          </svg>
+          View as Fraction equivalent
+        </a>
+      )}
+    </div>
+
+    <AdBanner slot="value-list" format="rectangle" />
+
+    <div>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other values for {fromUnit.name} to {toUnit.name}</h3>
+      <div class="flex flex-wrap gap-1.5 text-[9px] font-mono">
+        {otherValues.map(v => (
+          <a href={`/${v}-${fromUnit.slug}-to-${toUnit.slug}`} class="px-2 py-1 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded">
+            {v} {fromUnit.symbol}
+          </a>
+        ))}
+      </div>
+    </div>
+
+    <AdBanner slot="value-bottom" />
+  </div>
+</BaseLayout>

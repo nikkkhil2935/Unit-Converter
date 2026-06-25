@@ -84,3 +84,27 @@
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background-color: var(--text-muted);
 }
+
+/* Sidebar ads placement on wide viewports */
+.side-ad-container {
+  display: none;
+  position: fixed;
+  top: 100px;
+  width: 160px;
+  height: 600px;
+  z-index: 40;
+}
+
+@media (min-width: 1480px) and (min-height: 700px) {
+  .side-ad-container {
+    display: block;
+  }
+}
+
+.side-ad-left {
+  left: calc(50% - 550px - 160px - 24px);
+}
+
+.side-ad-right {
+  left: calc(50% + 550px + 24px);
+}

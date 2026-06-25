@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Mulch Coverage Calculator | Cubic Yards Estimator";
+const description = "Calculate the volume of mulch, soil, or compost needed in cubic yards or bags based on garden surface area and spread depth.";
+const keywords = "mulch calculator, cubic yards of mulch, mulch coverage calculator, how much mulch do i need, mulch for garden bed, mulch depth calculator, bags of mulch calculator, yard mulch calculator, mulch volume formula, mulch yardage calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Mulch Coverage Calculator", url: "/mulch-coverage-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do you calculate mulch needed in cubic yards?",
+    answer: "Formula: Cubic Yards = (Area in sq ft × Depth in inches) ÷ 324. Example: 324 sq ft garden × 3 inches deep ÷ 324 = 3.0 cubic yards of mulch."
+  },
+  {
+    question: "How many bags of mulch equal a cubic yard?",
+    answer: "Most bagged mulch comes in 2 cubic foot bags. One cubic yard = 27 cubic feet, so you need 13-14 bags per cubic yard. Bulk delivery is typically cheaper for projects larger than 3 cubic yards."
+  },
+  {
+    question: "What is the best mulch depth for flower beds?",
+    answer: "For new flower beds: 3 inches of mulch is recommended — it suppresses weeds, retains moisture, and insulates roots. For top-up of existing beds: 1-2 inches annually. For vegetable gardens: 2 inches is sufficient. Never exceed 4 inches — it can suffocate plant roots."
+  },
+  {
+    question: "What type of mulch is best for my garden?",
+    answer: "Hardwood bark mulch: long-lasting, good for ornamental beds. Pine straw: acidic — great for azaleas, blueberries. Cedar mulch: insect-repellent properties. Rubber mulch: very long-lasting but doesn't improve soil. Compost: adds nutrients but decomposes quickly. Choose based on your priorities."
+  },
+  {
+    question: "When should I apply fresh mulch?",
+    answer: "Apply mulch in spring after soil has warmed up (typically April-May in most regions). Reapply annually as organic mulches decompose. Avoid mulching against tree trunks — keep 3-6 inches of clearance to prevent rot and pest damage."
+  }
+];
+
+const depthTable = [
+  { depth: "1 inch", yardsPer100SqFt: "0.009", bestFor: "Annual top-up, established beds" },
+  { depth: "2 inches", yardsPer100SqFt: "0.019", bestFor: "Vegetable gardens, pathways" },
+  { depth: "3 inches", yardsPer100SqFt: "0.028", bestFor: "New flower beds, weed suppression" },
+  { depth: "4 inches", yardsPer100SqFt: "0.037", bestFor: "Heavy mulching, erosion control" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/mulch-coverage-calculator"
+  categorySlug="volume"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/volume-converter" class="hover:text-brand-blue transition-colors">Volume Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Mulch Coverage</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Mulch Coverage Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Mulch Volume (Cubic Yards) = [Area (sq ft) × Depth (inches)] ÷ 324</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A 324 sq ft flower bed spread at 3 inches deep requires exactly 3.0 cubic yards of mulch.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Calculate the volume of mulch, soil, or compost needed in cubic yards or bags based on garden surface area and spread depth.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text">Coverage Parameters</h2>
+      
+      <div>
+        <label for="area-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Surface Area (sq ft)</label>
+        <input
+          id="area-in"
+          type="number"
+          value="100"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div>
+        <label for="depth-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Spread Depth (inches)</label>
+        <select id="depth-in" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="1">1 inch (Top-up)</option>
+          <option value="2">2 inches (Standard weed control)</option>
+          <option value="3" selected>3 inches (Recommended new bed)</option>
+          <option value="4">4 inches (Heavy mulch layer)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Mulch</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Volume in Cubic Yards</span>
+          <span id="yard-res" class="text-lg font-mono font-bold text-brand-blue">0.93 cubic yards</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Equivalent 2 Cubic Foot Bags</span>
+          <span id="bag-res" class="text-lg font-mono font-bold text-ink">13 bags</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Depth Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Mulch Depth Guide</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Spread Depth</th>
+            <th class="p-3 font-semibold">Cubic Yards per 100 sq ft</th>
+            <th class="p-3 font-semibold">Best Application</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {depthTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.depth}</td>
+              <td class="p-3 text-ink">{row.yardsPer100SqFt} yd³</td>
+              <td class="p-3 text-muted-text font-sans">{row.bestFor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const areaIn = document.getElementById('area-in') as HTMLInputElement;
+    const depthSelect = document.getElementById('depth-in') as HTMLSelectElement;
+
+    const yardRes = document.getElementById('yard-res') as HTMLSpanElement;
+    const bagRes = document.getElementById('bag-res') as HTMLSpanElement;
+
+    function calculate() {
+      const area = parseFloat(areaIn.value) || 0;
+      const depth = parseFloat(depthSelect.value) || 3;
+
+      // Cubic yards = (Area * (depth/12)) / 27 = (Area * depth) / 324
+      const cubicYards = (area * depth) / 324;
+      
+      // 1 cubic yard = 27 cubic feet
+      const cubicFeet = cubicYards * 27;
+      const bags2cf = cubicFeet / 2;
+
+      if (yardRes) yardRes.textContent = `${cubicYards.toFixed(2)} cubic yards`;
+      if (bagRes) bagRes.textContent = `${Math.ceil(bags2cf)} bags (2 cu ft each)`;
+    }
+
+    areaIn?.addEventListener('input', calculate);
+    depthSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Types of Mulch and Their Benefits</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Organic mulches</strong> (bark, wood chips, straw, leaves) decompose over time, adding organic matter to soil. They improve soil structure, water retention, and microbial activity. Reapply annually as they break down.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Hardwood bark:</strong> 2-3 year lifespan, neutral pH</div>
+        <div><strong>Cedar chips:</strong> insect-repellent, 3-5 year lifespan</div>
+        <div><strong>Pine straw:</strong> acidic, great for acid-loving plants</div>
+        <div><strong>Compost:</strong> nutrient-rich, decomposes in 1 year</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Mulching Best Practices</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Don't "volcano mulch" trees:</strong> Piling mulch against the trunk causes rot, harbors pests, and can kill the tree. Keep mulch 3-6 inches away from trunks and stems.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Edge beds first:</strong> A clean edge (4-6 inches deep) prevents mulch from washing onto lawn or walkways and creates a professional look. Apply pre-emergent herbicide before mulching to prevent weed seeds from germinating beneath the mulch layer.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Mulch Coverage</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/gravel-weight-calculator-tons-to-cubic-yards" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Gravel Weight Calculator</a>
+      <a href="/paint-coverage-calculator-sq-ft-per-gallon" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Paint Coverage Calculator</a>
+      <a href="/tile-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Tile Coverage Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/concrete-volume-calculator-bags-to-cubic-feet" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Volume Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

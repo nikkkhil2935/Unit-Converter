@@ -1,0 +1,127 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Ring Size Converter US to UK | Diameter Lookup Chart";
+const description = "Convert ring sizes from US/Canada (numbers) to UK/Australia (letters) and find inner diameters in millimeters and inches.";
+
+const sizes = [
+  { us: "5.0", uk: "J 1/2", dia: 15.7 },
+  { us: "5.5", uk: "L", dia: 16.1 },
+  { us: "6.0", uk: "M", dia: 16.5 },
+  { us: "6.5", uk: "N", dia: 16.9 },
+  { us: "7.0", uk: "O", dia: 17.3 },
+  { us: "7.5", uk: "P", dia: 17.7 },
+  { us: "8.0", uk: "Q", dia: 18.1 },
+  { us: "8.5", uk: "R", dia: 18.5 },
+  { us: "9.0", uk: "S", dia: 18.9 },
+  { us: "9.5", uk: "T", dia: 19.4 },
+  { us: "10.0", uk: "U", dia: 19.8 },
+  { us: "11.0", uk: "W", dia: 20.6 }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Ring Size Converter</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Ring Size Converter: US to UK</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>US Size 6 = UK Size M (Diameter: 16.5 mm / 0.65 inches)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Common women's size is US 6/7. Common men's size is US 9/10.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Select Size</h2>
+      
+      <div>
+        <label for="us-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">US / Canada Size</label>
+        <select id="us-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {sizes.map(s => (
+            <option value={s.us} data-uk={s.uk} data-dia={s.dia}>US Size {s.us}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Equivalents</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">UK / Australia Size</span>
+        <span id="uk-res" class="text-lg font-mono font-bold text-brand-blue">J 1/2</span>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Inside Diameter</span>
+        <span id="dia-res" class="text-base font-mono font-bold text-ink">15.7 mm (0.62 inches)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text font-mono">Ring Size Conversion Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">US / Canada Size</th>
+            <th class="p-3 font-semibold">UK / Australia Size</th>
+            <th class="p-3 font-semibold">Inside Diameter (mm)</th>
+            <th class="p-3 font-semibold">Inside Diameter (in)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {sizes.map(s => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">US {s.us}</td>
+              <td class="p-3 text-ink">UK {s.uk}</td>
+              <td class="p-3 text-ink">{s.dia} mm</td>
+              <td class="p-3 text-muted-text">{(s.dia/25.4).toFixed(2)}"</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const usSelect = document.getElementById('us-select') as HTMLSelectElement;
+    
+    const ukRes = document.getElementById('uk-res') as HTMLSpanElement;
+    const diaRes = document.getElementById('dia-res') as HTMLSpanElement;
+
+    function update() {
+      const opt = usSelect.options[usSelect.selectedIndex];
+      const uk = opt.getAttribute('data-uk');
+      const dia = parseFloat(opt.getAttribute('data-dia') || '0');
+
+      if (ukRes && uk) ukRes.textContent = uk;
+      if (diaRes && dia) {
+        const inches = dia / 25.4;
+        diaRes.textContent = `${dia} mm (${inches.toFixed(2)} inches)`;
+      }
+    }
+
+    usSelect?.addEventListener('change', update);
+
+    // Initial load
+    update();
+  </script>
+</BaseLayout>

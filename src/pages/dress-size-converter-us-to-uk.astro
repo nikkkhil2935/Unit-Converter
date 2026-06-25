@@ -1,0 +1,205 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Dress Size Converter US to UK | Women's Size Chart";
+const description = "Convert women's dress sizes between US, UK, and Europe (EU). Includes standard measurements for bust, waist, and hips. Free, instant, and mobile-friendly.";
+
+const sizes = [
+  { us: "0", uk: "4", eu: "32", bust: "30\" (76 cm)", waist: "23\" (58 cm)", hip: "32.5\" (82.5 cm)" },
+  { us: "2", uk: "6", eu: "34", bust: "31.5\" (80 cm)", waist: "24.5\" (62 cm)", hip: "34\" (86.5 cm)" },
+  { us: "4", uk: "8", eu: "36", bust: "32.5\" (83 cm)", waist: "25.5\" (65 cm)", hip: "35\" (89 cm)" },
+  { us: "6", uk: "10", eu: "38", bust: "34\" (86.5 cm)", waist: "27\" (68.5 cm)", hip: "36.5\" (93 cm)" },
+  { us: "8", uk: "12", eu: "40", bust: "35.5\" (90 cm)", waist: "28.5\" (72.5 cm)", hip: "38\" (96.5 cm)" },
+  { us: "10", uk: "14", eu: "42", bust: "37\" (94 cm)", waist: "30\" (76 cm)", hip: "39.5\" (100 cm)" },
+  { us: "12", uk: "16", eu: "44", bust: "38.5\" (98 cm)", waist: "31.5\" (80 cm)", hip: "41\" (104 cm)" },
+  { us: "14", uk: "18", eu: "46", bust: "40.5\" (103 cm)", waist: "33.5\" (85 cm)", hip: "43\" (109 cm)" },
+  { us: "16", uk: "20", eu: "48", bust: "42.5\" (108 cm)", waist: "35.5\" (90 cm)", hip: "45\" (114 cm)" },
+  { us: "18", uk: "22", eu: "50", bust: "44.5\" (113 cm)", waist: "37.5\" (95 cm)", hip: "47\" (119 cm)" },
+  { us: "20", uk: "24", eu: "52", bust: "46.5\" (118 cm)", waist: "39.5\" (100 cm)", hip: "49\" (124 cm)" }
+];
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Length Converter", url: "/length-converter" },
+  { name: "Dress Size Converter", url: "/dress-size-converter-us-to-uk" }
+];
+
+const faqs = [
+  {
+    question: "What is a US dress size 6 in the UK?",
+    answer: "A US dress size 6 is equivalent to a UK size 10 (which corresponds to an EU size 38)."
+  },
+  {
+    question: "How do US women's sizes compare to UK?",
+    answer: "UK dress sizes are generally 2 sizes larger than US dress sizes. For example, if you wear a US size 8, you would typically need a UK size 12."
+  },
+  {
+    question: "Is US dress size the same as EU dress size?",
+    answer: "No, European dress sizes use a different system (typically measuring in centimeters). A US size 4 is equivalent to an EU size 36, and a US size 10 is an EU size 42."
+  }
+];
+
+const jsonLdHowTo = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to Convert Dress Size US to UK",
+  "description": "Step-by-step guide to converting women's dress sizes from US to UK and EU systems.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "name": "Select your US Dress Size",
+      "text": "Choose your US dress size from the dropdown selection list."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Read the UK and EU equivalents",
+      "text": "The converter immediately displays the corresponding UK and EU dress sizes."
+    },
+    {
+      "@type": "HowToStep",
+      "name": "Check standard measurements",
+      "text": "Review the bust, waist, and hip measurement equivalents to ensure a proper fit."
+    }
+  ]
+};
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <Fragment slot="head">
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLdHowTo)} />
+  </Fragment>
+
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Dress Size Converter US to UK</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl select-text">
+      <p class="text-base text-ink mb-1">
+        <strong>US Size 6 = UK Size 10 (Europe: EU 38)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        To convert women's dress sizes from US to UK, add 4 to the US size. US 6 plus 4 equals UK 10.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Converter -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Select US Size</h2>
+      
+      <div>
+        <label for="size-select" class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-1.5">US Dress Size</label>
+        <select id="size-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue font-mono">
+          {sizes.map(s => (
+            <option value={s.us} data-uk={s.uk} data-eu={s.eu} data-bust={s.bust} data-waist={s.waist} data-hip={s.hip}>US Size {s.us}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text font-mono">Conversions & Measurements</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">UK Size</span>
+          <span id="uk-res" class="text-lg font-mono font-bold text-brand-blue">4</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">EU Size</span>
+          <span id="eu-res" class="text-lg font-mono font-bold text-ink">32</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg space-y-1">
+        <span class="block text-[9px] font-bold text-muted-text uppercase font-mono">Standard Body Measurements</span>
+        <div class="grid grid-cols-3 text-xs font-mono text-ink">
+          <div>
+            <span class="block text-[8px] text-muted-text uppercase">Bust</span>
+            <span id="bust-res">30" (76 cm)</span>
+          </div>
+          <div>
+            <span class="block text-[8px] text-muted-text uppercase">Waist</span>
+            <span id="waist-res">23" (58 cm)</span>
+          </div>
+          <div>
+            <span class="block text-[8px] text-muted-text uppercase">Hips</span>
+            <span id="hip-res">32.5" (82.5 cm)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Complete Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">US to UK & EU Dress Size Conversion Table</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[9px] uppercase font-mono">
+            <th class="p-3 font-semibold">US Size</th>
+            <th class="p-3 font-semibold">UK Size</th>
+            <th class="p-3 font-semibold">Europe (EU) Size</th>
+            <th class="p-3 font-semibold">Bust</th>
+            <th class="p-3 font-semibold">Waist</th>
+            <th class="p-3 font-semibold">Hips</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {sizes.map(s => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">US {s.us}</td>
+              <td class="p-3 text-ink font-semibold">UK {s.uk}</td>
+              <td class="p-3 text-ink">EU {s.eu}</td>
+              <td class="p-3 text-muted-text">{s.bust}</td>
+              <td class="p-3 text-muted-text">{s.waist}</td>
+              <td class="p-3 text-muted-text">{s.hip}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- FAQs Accordion UI -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const sizeSelect = document.getElementById('size-select') as HTMLSelectElement;
+    const ukRes = document.getElementById('uk-res') as HTMLSpanElement;
+    const euRes = document.getElementById('eu-res') as HTMLSpanElement;
+    const bustRes = document.getElementById('bust-res') as HTMLSpanElement;
+    const waistRes = document.getElementById('waist-res') as HTMLSpanElement;
+    const hipRes = document.getElementById('hip-res') as HTMLSpanElement;
+
+    function update() {
+      if (!sizeSelect || sizeSelect.options.length === 0) return;
+      const opt = sizeSelect.options[sizeSelect.selectedIndex];
+      const uk = opt.getAttribute('data-uk') || "";
+      const eu = opt.getAttribute('data-eu') || "";
+      const bust = opt.getAttribute('data-bust') || "";
+      const waist = opt.getAttribute('data-waist') || "";
+      const hip = opt.getAttribute('data-hip') || "";
+
+      if (ukRes) ukRes.textContent = uk;
+      if (euRes) euRes.textContent = eu;
+      if (bustRes) bustRes.textContent = bust;
+      if (waistRes) waistRes.textContent = waist;
+      if (hipRes) hipRes.textContent = hip;
+    }
+
+    sizeSelect?.addEventListener('change', update);
+    update();
+  </script>
+</BaseLayout>

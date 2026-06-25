@@ -1,0 +1,112 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Ideal Bread Proofing Temperature | Sourdough Yeast Guide";
+const description = "Recommended temperatures for proofing yeast and sourdough bread. Learn how temperature affects rising time and lactic acid fermentation.";
+
+const temps = [
+  { stage: "Yeast Dormant State", temp: "Below 1°C (34°F)", description: "Yeast is inactive. Used for cold fermentation (retarding) in refrigerators." },
+  { stage: "Sourdough Cold Retard", temp: "4°C - 8°C (39°F - 46°F)", description: "Slows yeast activity while lactic acid bacteria continue to build flavor." },
+  { stage: "Standard Dough Fermentation", temp: "24°C - 28°C (75°F - 82°F)", description: "Optimum balance between yeast carbon dioxide production and gluten strength." },
+  { stage: "Yeast Growth Limit", temp: "38°C - 42°C (100°F - 108°F)", description: "Fastest rising time, but risk of off-flavors and weak gluten structure." },
+  { stage: "Yeast Dies (Thermal Death)", temp: "Above 55°C (130°F)", description: "Yeast cells are destroyed. Bread rising stops during baking." }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="temperature">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Bread Proofing Temperature</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Bread Proofing & Fermentation Temperatures</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Ideal Yeast Proofing Temp = 24°C to 28°C (75°F to 82°F)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Sourdough rises best at 26°C (78°F) to cultivate acetic and lactic acid flavors harmoniously.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      A quick guide to baker's fermentation stages. Understand how ambient temperature affects rising times and dough acidity levels.
+    </p>
+  </section>
+
+  <!-- Interactive Estimator -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Rising Time Estimator</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="room-temp" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Ambient Dough Temp (°C)</label>
+        <input
+          id="room-temp"
+          type="number"
+          value="24"
+          min="0"
+          max="50"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Estimated Rising Speed</span>
+        <span id="speed-res" class="text-lg font-mono font-bold text-brand-blue">Optimal (1.5 - 2 hours)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Yeast Activity Spectrum</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Fermentation Stage</th>
+            <th class="p-3 font-semibold">Temperature Threshold</th>
+            <th class="p-3 font-semibold">Biochemical Effect</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {temps.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-bold text-brand-blue">{row.stage}</td>
+              <td class="p-3 text-ink font-bold">{row.temp}</td>
+              <td class="p-3 text-muted-text font-sans">{row.description}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const roomTemp = document.getElementById('room-temp') as HTMLInputElement;
+    const speedRes = document.getElementById('speed-res') as HTMLSpanElement;
+
+    function estimateSpeed(c: number): string {
+      if (c <= 4) return "Dormant (Infinite rise time)";
+      if (c <= 10) return "Very Slow (12 - 24 hours)";
+      if (c <= 18) return "Slow (4 - 8 hours)";
+      if (c <= 23) return "Normal (2 - 3 hours)";
+      if (c <= 28) return "Optimal (1.5 - 2 hours)";
+      if (c <= 38) return "Fast (1 hour) - Risk of off-flavor";
+      if (c <= 50) return "Extremely Fast - Yeast damage likely";
+      return "Yeast Dead (Thermal Death)";
+    }
+
+    roomTemp?.addEventListener('input', () => {
+      const c = parseFloat(roomTemp.value) || 0;
+      if (speedRes) speedRes.textContent = estimateSpeed(c);
+    });
+  </script>
+</BaseLayout>

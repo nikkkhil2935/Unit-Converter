@@ -1,0 +1,111 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryIcon from '../components/CategoryIcon';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+
+const title = "Scientific & Lab Calculators — Molarity, pH, Spectrophotometry";
+const description = "Free online scientific and lab calculators. Calculate molarity, convert concentrations from ppm to mg/L, solve pH to H+ ion concentration, and evaluate specific gravity.";
+
+const crumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Scientific & Lab', url: '/scientific-lab' }
+];
+
+const tools = [
+  { label: "Molarity Calculator", href: "/molarity-calculator", desc: "Calculate solution molarity, mass, or volume based on solute molecular weight." },
+  { label: "Concentration ppm/mgL", href: "/concentration-converter-ppm-to-mgL", desc: "Convert solution concentrations between Parts Per Million (PPM) and Milligrams Per Liter (mg/L)." },
+  { label: "pH to H+ Concentration", href: "/ph-to-hydrogen-concentration-calculator", desc: "Convert pH values to hydrogen ion concentration [H+] or hydroxide ion [OH-] concentration." },
+  { label: "Absorbance/Transmittance", href: "/spectrophotometry-absorbance-to-transmittance", desc: "Convert between spectrophotometer absorbance and percent light transmittance." },
+  { label: "Osmolality/Osmolarity", href: "/osmolality-to-osmolarity-converter", desc: "Calculate and convert between osmotic concentration scales for clinical chemistry." },
+  { label: "Brix to Specific Gravity", href: "/brix-to-specific-gravity-calculator", desc: "Convert sugar concentration Brix ratings to specific gravity (SG) for brewing or fermentation." },
+  { label: "ABV to Proof Converter", href: "/proof-to-abv-alcohol-converter", desc: "Convert alcohol concentration by volume (ABV) to standard proof ratings." },
+  { label: "Specific Gravity Calc", href: "/specific-gravity-calculator", desc: "Calculate specific gravity based on substance density compared to pure water." }
+];
+
+const faqs = [
+  {
+    question: "What is molarity and how is it calculated?",
+    answer: "Molarity (M) is the concentration of a solute in a solution, defined as the number of moles of solute per liter of solution. The formula is Molarity = moles of solute / liters of solution, where moles = mass (g) / molar mass (g/mol)."
+  },
+  {
+    question: "How do you convert pH to hydrogen ion concentration?",
+    answer: "pH is defined as the negative logarithm (base 10) of the hydrogen ion activity: pH = -log10[H+]. To find the concentration [H+], use the inverse formula: [H+] = 10^(-pH)."
+  },
+  {
+    question: "Is ppm (parts per million) the same as mg/L (milligrams per liter)?",
+    answer: "For dilute aqueous solutions (where water has a density of approximately 1 g/mL), 1 ppm is equal to 1 mg/L. For denser or lighter solvents, you must divide the mg/L concentration by the solvent's specific gravity to find the correct PPM rating."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="scientific calculators, laboratory calculator, molarity calculator, ppm to mg/L, pH converter, specific gravity calculator, spectrophotometer converter"
+  canonicalPath="/scientific-lab"
+  ogTitle={title}
+  ogDescription={description}
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title Section -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2 flex items-center gap-2.5">
+      <CategoryIcon id="volume" className="w-8 h-8 text-brand-blue" />
+      <span>Scientific & Lab Calculators</span>
+    </h1>
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Accurate chemical and laboratory calculation utilities for molarity prep, concentration conversions, acid-base pH scaling, and spectrophotometry conversions.
+    </p>
+  </section>
+
+  <!-- Tools Grid -->
+  <section class="mb-10 select-none">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tools.map(tool => (
+        <a
+          href={tool.href}
+          class="group block p-5 rounded-xl border border-hairline bg-card hover:border-brand-blue transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between cursor-pointer"
+        >
+          <div>
+            <h2 class="font-semibold text-sm text-ink mb-2 group-hover:text-brand-blue transition-colors duration-200">
+              {tool.label}
+            </h2>
+            <p class="text-xs text-body-text mb-4 leading-relaxed line-clamp-3">
+              {tool.desc}
+            </p>
+          </div>
+          <span
+            class="inline-flex items-center text-[10px] font-semibold text-brand-blue opacity-80 group-hover:opacity-100 transition-opacity mt-auto pt-2"
+          >
+            Open calculator
+            <svg class="ml-1 w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Related Specialist Categories -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text select-none">
+    <h3 class="font-semibold text-ink mb-3">Other Specialist Calculators</h3>
+    <div class="flex flex-wrap gap-4">
+      <a href="/cooking-baking" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Cooking & Baking</a>
+      <a href="/engineering-trade" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Engineering & Trade</a>
+      <a href="/construction-diy" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Construction & DIY</a>
+      <a href="/sizing-automotive" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Sizing & Automotive</a>
+      <a href="/finance-business" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Finance & Business</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 transition-colors mb-10 select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+      Scientific & Lab FAQs
+    </h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+</BaseLayout>

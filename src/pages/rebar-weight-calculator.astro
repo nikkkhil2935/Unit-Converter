@@ -1,0 +1,234 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Rebar Weight Calculator | Reinforcing Bar Weight per Meter & Total Weight";
+const description = "Calculate rebar weight per meter using the d²/162 formula. Supports imperial bar sizes (#3–#8) and metric diameters (10–25mm). Get total weight for concrete reinforcement schedules.";
+const keywords = "rebar weight calculator, rebar weight per meter, rebar weight formula, #4 rebar weight, #5 rebar weight, metric rebar weight, reinforcing bar weight, d2/162 rebar, steel rebar kg per meter, rebar weight chart";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Rebar Weight Calculator", url: "/rebar-weight-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is the formula for rebar weight per meter?",
+    answer: "The weight of steel rebar in kg per meter: Weight = d² ÷ 162, where d is the nominal diameter in millimeters. This formula derives from: weight = cross-section area × density = (πd²/4) × 7850 kg/m³ ÷ 1,000,000 = d²/162. Example: 16mm rebar = 16²/162 = 1.58 kg/m."
+  },
+  {
+    question: "How much does a #4 rebar weigh?",
+    answer: "A standard #4 imperial rebar (1/2 inch diameter, 12.7mm) weighs 0.668 lbs per foot or 0.994 kg/m. A 20-foot stick of #4 rebar weighs approximately 13.4 lbs (6.07 kg)."
+  },
+  {
+    question: "How much does a #5 rebar weigh?",
+    answer: "A #5 rebar (5/8 inch diameter, 15.88mm) weighs 1.043 lbs per foot or 1.55 kg/m. A standard 20-foot stick weighs approximately 20.9 lbs (9.47 kg)."
+  },
+  {
+    question: "What is the weight of 10mm rebar per meter?",
+    answer: "10mm metric rebar weighs 10² ÷ 162 = 0.617 kg/m (0.415 lbs/ft). A 6-meter standard bar weighs approximately 3.70 kg."
+  },
+  {
+    question: "How do I calculate total rebar weight for a project?",
+    answer: "1. List all rebar sizes and their total linear lengths. 2. Calculate weight per meter for each size using d²/162. 3. Multiply unit weight by total length. 4. Sum all weights. Add 5–10% for lap splices and cutting waste."
+  }
+];
+
+const rebarData = [
+  { size: "#3 (3/8\")", d: 9.53, wpm: 0.56, wpf: 0.376 },
+  { size: "#4 (1/2\")", d: 12.7, wpm: 0.99, wpf: 0.668 },
+  { size: "#5 (5/8\")", d: 15.88, wpm: 1.55, wpf: 1.043 },
+  { size: "#6 (3/4\")", d: 19.05, wpm: 2.24, wpf: 1.502 },
+  { size: "#8 (1\")", d: 25.4, wpm: 3.97, wpf: 2.670 },
+  { size: "10mm (Metric)", d: 10, wpm: 0.617, wpf: 0.415 },
+  { size: "12mm (Metric)", d: 12, wpm: 0.888, wpf: 0.597 },
+  { size: "16mm (Metric)", d: 16, wpm: 1.58, wpf: 1.061 },
+  { size: "20mm (Metric)", d: 20, wpm: 2.47, wpf: 1.661 },
+  { size: "25mm (Metric)", d: 25, wpm: 3.85, wpf: 2.591 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/rebar-weight-calculator"
+  categorySlug="weight"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/weight-converter" class="hover:text-brand-blue transition-colors">Weight Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Rebar Weight Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Rebar Weight Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Metric Rebar Weight Formula: Weight (kg/m) = d² ÷ 162</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A 12mm metric rebar weighs approximately 0.89 kg per meter (0.60 lbs/ft).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Estimate reinforcing steel bar weights for concrete reinforcement schedules. Supports imperial sizes (#3 to #11) and metric diameters.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Parameters</h2>
+      
+      <div>
+        <label for="rebar-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Bar Size Designation</label>
+        <select id="rebar-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {rebarData.map(r => (
+            <option value={r.size} data-d={r.d} data-wpm={r.wpm}>{r.size}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="len-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Total Length (meters)</label>
+        <input
+          id="len-in"
+          type="number"
+          value="12"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Calculated Weight</h2>
+        <div class="space-y-4">
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total Weight</span>
+            <span id="weight-kg" class="text-2xl font-mono font-bold text-brand-blue">10.6 kg</span>
+            <span id="weight-lbs" class="text-sm font-mono text-muted-text ml-2">(23.4 lbs)</span>
+          </div>
+
+          <div class="p-4 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Unit Weight</span>
+            <span id="unit-weight-res" class="text-base font-mono font-bold text-ink">0.89 kg/m</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Rebar Dimensions & Weights</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Bar Designation</th>
+            <th class="p-3 font-semibold">Nominal Diameter (mm)</th>
+            <th class="p-3 font-semibold">Unit Weight (kg/m)</th>
+            <th class="p-3 font-semibold">Unit Weight (lbs/ft)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {rebarData.map(r => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{r.size}</td>
+              <td class="p-3 text-ink">{r.d} mm</td>
+              <td class="p-3 text-ink">{r.wpm} kg/m</td>
+              <td class="p-3 text-muted-text">{r.wpf} lbs/ft</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const rebarSelect = document.getElementById('rebar-select') as HTMLSelectElement;
+    const lenIn = document.getElementById('len-in') as HTMLInputElement;
+
+    const weightKg = document.getElementById('weight-kg') as HTMLSpanElement;
+    const weightLbs = document.getElementById('weight-lbs') as HTMLSpanElement;
+    const unitWeightRes = document.getElementById('unit-weight-res') as HTMLSpanElement;
+
+    function calculate() {
+      const opt = rebarSelect.options[rebarSelect.selectedIndex];
+      const length = parseFloat(lenIn.value) || 0;
+      const wpm = parseFloat(opt.getAttribute('data-wpm') || '0');
+
+      if (!wpm) return;
+
+      const totalKg = wpm * length;
+      const totalLbs = totalKg * 2.2046226218;
+
+      if (weightKg) weightKg.textContent = `${totalKg.toFixed(1)} kg`;
+      if (weightLbs) weightLbs.textContent = `(${totalLbs.toFixed(1)} lbs)`;
+      if (unitWeightRes) unitWeightRes.textContent = `${wpm.toFixed(3)} kg/m`;
+    }
+
+    rebarSelect?.addEventListener('change', calculate);
+    lenIn?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Rebar in Concrete Construction</h3>
+      <p class="leading-relaxed mb-3">
+        Reinforcing steel bars (rebar) are embedded in concrete to provide tensile strength. Concrete is strong in compression but weak in tension — rebar compensates by carrying tensile loads. Together they form reinforced concrete (RC), the dominant structural material in modern construction.
+      </p>
+      <p class="leading-relaxed">
+        In structural engineering, rebar schedules (bar bending schedules in the UK, rebar lists in the US) list all bar sizes, shapes, and quantities for a project. Accurately calculating rebar weight is essential for procurement, cost estimation, and shipping logistics.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Rebar Formula Derivation</h3>
+      <p class="leading-relaxed mb-3">
+        The d²/162 formula comes from: Weight = Cross-section Area × Length × Density
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div>Area = π × (d/2)² = πd²/4</div>
+        <div>= πd²/4 × 7850 kg/m³ ÷ 1,000,000 (mm² → m²)</div>
+        <div>= d² × 7850π ÷ 4,000,000</div>
+        <div class="text-brand-blue font-bold">≈ d² ÷ 162.2 ≈ d² ÷ 162</div>
+        <div class="text-muted-text mt-1">Valid for mild steel density = 7850 kg/m³</div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Rebar Weight</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/concrete-mix-ratio-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Mix Ratio</a>
+      <a href="/concrete-volume-calculator-bags-to-cubic-feet" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Concrete Volume Calculator</a>
+      <a href="/board-feet-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Board Feet Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/weight-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Weight Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

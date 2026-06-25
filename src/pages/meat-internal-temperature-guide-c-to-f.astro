@@ -1,0 +1,88 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Meat Internal Temperature Guide | USDA Safety Chart";
+const description = "Recommended safe internal cooking temperatures for poultry, beef, pork, lamb, and seafood according to USDA guidelines. Includes C/F conversion.";
+
+const temps = [
+  { item: "Poultry (Chicken, Turkey, Duck)", c: 74, f: 165, notes: "Whole, pieces, or ground. Essential for salmonella safety." },
+  { item: "Ground Meats (Beef, Pork, Lamb)", c: 71, f: 160, notes: "Hamburgers, meatballs, sausages." },
+  { item: "Beef, Pork, Lamb (Medium Rare)", c: 63, f: 145, notes: "Steaks, chops, roasts. Requires 3-minute rest time." },
+  { item: "Beef, Pork, Lamb (Medium)", c: 71, f: 160, notes: "Traditional recipe finish." },
+  { item: "Beef, Pork, Lamb (Well Done)", c: 77, f: 170, notes: "Fully cooked through." },
+  { item: "Seafood (Fish, Shellfish)", c: 63, f: 145, notes: "Or cook until flesh is opaque and flakes easily." }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="temperature">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Meat Temp Guide</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Meat Internal Temperature Guide</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Poultry Safe Temp = 165°F (74°C) | Steaks = 145°F (63°C)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Steaks and chops require a 3-minute rest period after cooking to ensure food safety.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Guide & Toggle -->
+  <section class="mb-10 max-w-4xl bg-card border border-hairline rounded-2xl p-6">
+    <div class="flex justify-between items-center mb-6">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono font-bold">USDA Safe Temperatures</h2>
+      <button id="toggle-scale" class="bg-brand-blue/15 text-brand-blue border border-brand-blue/30 rounded-full px-4 py-1.5 text-xs font-bold font-mono cursor-pointer select-none">
+        Show Fahrenheit (°F)
+      </button>
+    </div>
+
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Food Type</th>
+            <th class="p-3 font-semibold">Target Temperature</th>
+            <th class="p-3 font-semibold">Safety & Culinary Notes</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {temps.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-bold text-brand-blue">{row.item}</td>
+              <td class="p-3 text-ink text-base font-bold temp-cell" data-c={row.c} data-f={row.f}>{row.c}°C</td>
+              <td class="p-3 text-muted-text font-sans">{row.notes}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const toggleBtn = document.getElementById('toggle-scale') as HTMLButtonElement;
+    const tempCells = document.querySelectorAll('.temp-cell');
+
+    let currentScale: 'c' | 'f' = 'c';
+
+    toggleBtn?.addEventListener('click', () => {
+      currentScale = currentScale === 'c' ? 'f' : 'c';
+      toggleBtn.textContent = currentScale === 'c' ? 'Show Fahrenheit (°F)' : 'Show Celsius (°C)';
+
+      tempCells.forEach(cell => {
+        const c = cell.getAttribute('data-c');
+        const f = cell.getAttribute('data-f');
+        cell.textContent = currentScale === 'c' ? `${c}°C` : `${f}°F`;
+      });
+    });
+  </script>
+</BaseLayout>

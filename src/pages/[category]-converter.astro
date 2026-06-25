@@ -4,7 +4,10 @@ import ConverterWidget from '../components/ConverterWidget';
 import CategoryIcon from '../components/CategoryIcon';
 import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
 import FAQSchema from '../components/FAQSchema.astro';
+import AdBanner from '../components/AdBanner.astro';
 import { categories, convert, getFormulaExplanation, type Category } from '../lib/conversions';
+import { specialistToolsByCategory, specialistSeoContent } from '../utils/specialist-seo';
+
 
 export async function getStaticPaths() {
   return categories.map(cat => ({
@@ -63,7 +66,7 @@ const faqs = [
   },
   {
     question: `What are the most popular ${category.name.toLowerCase()} conversions?`,
-    answer: `The most frequently performed ${category.name.toLowerCase()} conversions on our site are ${category.popularPairs.slice(0, 3).map(p => `${category.units.find(u => u.id === p[0])?.name || p[0]} to ${category.units.find(u => u.id === p[1])?.name || p[1]}`).join(', ')}. Our tool pre-calculates full charts and formulas for all of them.`
+    answer: `The most frequently performed ${category.name.toLowerCase()} conversions on our site are ${category.popularPairs.slice(0, 3).map(p => `${category.units.find(u => u.id === p[0] || u.slug === p[0])?.name || p[0]} to ${category.units.find(u => u.id === p[1] || u.slug === p[1])?.name || p[1]}`).join(', ')}. Our tool pre-calculates full charts and formulas for all of them.`
   },
   {
     question: `Which ${category.name.toLowerCase()} units are supported?`,
@@ -73,8 +76,11 @@ const faqs = [
 
 // Related sibling categories
 const relatedCategories = category.relatedCategories
-  .map(slug => categories.find(c => c.slug === slug))
-  .filter(Boolean);
+  .map(slug => categories.find(c => c.slug === slug || c.id === slug))
+  .filter((c): c is Category => !!c);
+
+const relatedSpecialistTools = specialistToolsByCategory[category.id] || [];
+const specialistSeo = specialistSeoContent[category.id];
 ---
 
 <BaseLayout
@@ -100,10 +106,14 @@ const relatedCategories = category.relatedCategories
     </p>
   </section>
 
+  <AdBanner slot="category-top" />
+
   <!-- Interactive Converter Widget Island -->
   <section class="mb-10">
     <ConverterWidget client:load initialCategory={category.id} />
   </section>
+
+  <AdBanner slot="category-mid" />
 
   <!-- Split Grid for Formulas and Reference Tables -->
   <div class="grid grid-cols-1 gap-8 mb-10 select-none">
@@ -119,8 +129,8 @@ const relatedCategories = category.relatedCategories
       </p>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         {pairs.slice(0, 4).map(pair => {
-          const uA = category.units.find(u => u.id === pair[0]);
-          const uB = category.units.find(u => u.id === pair[1]);
+          const uA = category.units.find(u => u.id === pair[0] || u.slug === pair[0]);
+          const uB = category.units.find(u => u.id === pair[1] || u.slug === pair[1]);
           if (!uA || !uB) return null;
           return (
             <div class="p-3 bg-canvas border border-hairline rounded-lg">
@@ -143,8 +153,8 @@ const relatedCategories = category.relatedCategories
       
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {pairs.slice(0, 4).map(pair => {
-          const uA = category.units.find(u => u.id === pair[0]);
-          const uB = category.units.find(u => u.id === pair[1]);
+          const uA = category.units.find(u => u.id === pair[0] || u.slug === pair[0]);
+          const uB = category.units.find(u => u.id === pair[1] || u.slug === pair[1]);
           if (!uA || !uB) return null;
           
           return (
@@ -178,6 +188,44 @@ const relatedCategories = category.relatedCategories
       </div>
     </section>
 
+    <AdBanner slot="category-grid" />
+
+    <!-- Related Specialist Calculators — Content-Heavy SEO Block -->
+    {relatedSpecialistTools.length > 0 && (
+      <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
+        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono select-none">
+          Specialist {category.name} Calculators & Real-World Niche Tools
+        </h2>
+        <div class="text-sm text-body-text leading-relaxed mb-6 space-y-4 max-w-3xl">
+          <p class="font-semibold text-ink">
+            {specialistSeo?.intro || `Standard ${category.name.toLowerCase()} conversions give you the numeric answer, but real-world professionals need specialist tools that translate those measurements into actionable results.`}
+          </p>
+          <p>
+            {specialistSeo?.details || `The calculators below solve domain-specific ${category.name.toLowerCase()} problems: converting measurement inputs directly into trade-specific outputs like material quantities, sizing lookups, or system specifications.`}
+          </p>
+          {specialistSeo?.keywords && (
+            <p class="text-xs text-muted-text font-mono">
+              Related searches: {specialistSeo.keywords.join(' · ')}
+            </p>
+          )}
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {relatedSpecialistTools.map(tool => (
+            <a href={tool.href} class="group flex flex-col p-4 bg-canvas border border-hairline hover:border-brand-blue hover:shadow-[0_2px_12px_rgba(0,112,243,0.06)] rounded-xl transition-all cursor-pointer">
+              <span class="flex items-center gap-2 text-sm font-bold text-ink group-hover:text-brand-blue transition-colors duration-200 mb-1">
+                <svg class="w-3.5 h-3.5 text-brand-blue flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+                {tool.label}
+              </span>
+              <span class="text-xs text-muted-text font-sans leading-relaxed pl-5">{tool.desc}</span>
+            </a>
+          ))}
+        </div>
+      </section>
+    )}
+
+
     <!-- FAQs Section -->
     <section class="bg-card border border-hairline rounded-xl p-6 transition-colors">
       <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
@@ -186,13 +234,15 @@ const relatedCategories = category.relatedCategories
       <FAQSchema faqs={faqs} />
     </section>
 
+    <AdBanner slot="category-bottom" />
+
     <!-- Sibling Categories Navigation -->
     <section class="border-t border-hairline pt-6 text-xs text-body-text">
       <h3 class="font-semibold text-ink mb-3">Other Measurement Converters</h3>
       <div class="flex flex-wrap gap-4">
         {relatedCategories.map(cat => (
           <a
-            href={`/${cat.id}-converter`}
+            href={`/${cat.slug}-converter`}
             class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all"
           >
             {cat.name} Converter

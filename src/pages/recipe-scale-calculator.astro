@@ -1,0 +1,310 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+// Dynamic SEO tags following exact requirements
+const title = "Recipe Scale Calculator | Resize Ingredients Up or Down";
+const description = "Scale any recipe up or down instantly. Adjust servings, calculate multiplier factors, and convert ingredient quantities. Free, responsive, Vercel-style UI.";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Cooking Converter", url: "/cooking-converter" },
+  { name: "Recipe Scale Calculator", url: "/recipe-scale-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do you scale a recipe?",
+    answer: "To scale a recipe, divide the target number of servings by the original number of servings to get the scaling factor (multiplier). Then, multiply each ingredient quantity in the recipe by this scaling factor."
+  },
+  {
+    question: "How do I double or halve a recipe?",
+    answer: "To double a recipe, set the scaling factor to 2. To halve a recipe, set the scaling factor to 0.5. Our online recipe scale calculator does this math instantly for all ingredients in your list."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug="cooking"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="cooking" className="w-8 h-8 text-brand-blue" />
+      <span>Recipe Scale Calculator</span>
+    </h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Scaling Factor = Target Servings ÷ Original Servings</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Multiply all ingredients by this factor to scale your recipe up or down.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Easily resize recipes to match any party size, pan diameter, or batch requirement. Simply enter your ingredient list below, choose your scaling factor or serving size change, and see your new recipe quantities instantly.
+    </p>
+  </section>
+
+  <!-- Interactive Scaler Widget -->
+  <section class="mb-10 max-w-3xl bg-card border border-hairline rounded-2xl p-6 transition-colors">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono">Baking & Cooking Recipe Scaler</h2>
+
+    <!-- Controls -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 border-b border-hairline pb-6">
+      <div class="space-y-4">
+        <span class="block text-xs font-mono font-bold text-muted-text uppercase">Option A: Scale by Servings</span>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label for="servings-orig" class="block text-[10px] font-mono text-muted-text mb-1">Original Yield</label>
+            <input
+              id="servings-orig"
+              type="number"
+              value="4"
+              min="1"
+              class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue"
+            />
+          </div>
+          <div>
+            <label for="servings-target" class="block text-[10px] font-mono text-muted-text mb-1">Target Yield</label>
+            <input
+              id="servings-target"
+              type="number"
+              value="8"
+              min="1"
+              class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <span class="block text-xs font-mono font-bold text-muted-text uppercase">Option B: Direct Multiplier</span>
+        <div>
+          <label for="direct-factor" class="block text-[10px] font-mono text-muted-text mb-1">Scaling Factor</label>
+          <div class="relative">
+            <input
+              id="direct-factor"
+              type="number"
+              step="0.05"
+              value="2"
+              min="0.01"
+              class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue"
+            />
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-semibold text-muted-text">x</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ingredient Rows -->
+    <div class="space-y-3 mb-6">
+      <div class="hidden sm:grid grid-cols-12 gap-3 text-[10px] font-mono text-muted-text uppercase font-bold px-2">
+        <div class="col-span-5">Ingredient Name</div>
+        <div class="col-span-2">Original Qty</div>
+        <div class="col-span-2">Unit</div>
+        <div class="col-span-2 text-brand-blue">Scaled Qty</div>
+        <div class="col-span-1">Action</div>
+      </div>
+
+      <div id="ingredient-rows" class="space-y-2">
+        <!-- Rows will be injected here by client JS -->
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex flex-wrap gap-3">
+      <button
+        id="add-row-btn"
+        class="px-4 py-2 border border-hairline bg-canvas text-ink hover:border-brand-blue hover:text-brand-blue text-xs font-bold rounded-lg transition-colors cursor-pointer select-none"
+      >
+        + Add Ingredient
+      </button>
+      <button
+        id="clear-all-btn"
+        class="px-4 py-2 border border-hairline bg-canvas text-muted-text hover:text-ink text-xs font-bold rounded-lg transition-colors cursor-pointer select-none"
+      >
+        Clear All
+      </button>
+      <button
+        id="copy-recipe-btn"
+        class="px-4 py-2 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20 text-xs font-bold rounded-lg transition-colors cursor-pointer select-none ml-auto"
+      >
+        Copy Scaled Recipe
+      </button>
+    </div>
+  </section>
+
+  <!-- Formula Details & Reference Table -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-hairline pt-8 mb-10 text-xs text-body-text">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">How Recipe Scaling Works</h3>
+      <p class="leading-relaxed mb-3">
+        When doubling or halving a recipe, it's simple. But for specific numbers of servings, we use the formula:
+      </p>
+      <div class="p-3 bg-card border border-hairline rounded-lg font-mono mb-3">
+        Multiplier = Target Servings / Original Servings
+      </div>
+      <p class="leading-relaxed">
+        Example: If a recipe yields 6 servings but you need to feed 15 people, the multiplier is 15 ÷ 6 = 2.5. Every ingredient in the recipe (like flour, eggs, water) must be multiplied by 2.5 to achieve the same taste and consistency.
+      </p>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Baking Scaling Tips</h3>
+      <ul class="list-disc pl-4 space-y-2 leading-relaxed">
+        <li><strong>Baking is Chemistry:</strong> Liquid ratios are critical. If scaling up a cake recipe by 4x, you might need to adjust baking times, leavening agents, or pan size.</li>
+        <li><strong>Weight vs. Volume:</strong> Always prefer weighing ingredients in grams rather than cups when scaling. Grams scale linearly without compaction errors.</li>
+        <li><strong>Spices:</strong> Spices do not always scale linearly. For large scaling factors (e.g. 5x+), start with slightly less spice (like salt, cayenne pepper) and adjust to taste.</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const ingredientRowsContainer = document.getElementById('ingredient-rows');
+    const addRowBtn = document.getElementById('add-row-btn');
+    const clearAllBtn = document.getElementById('clear-all-btn');
+    const copyRecipeBtn = document.getElementById('copy-recipe-btn');
+
+    const servingsOrig = document.getElementById('servings-orig') as HTMLInputElement;
+    const servingsTarget = document.getElementById('servings-target') as HTMLInputElement;
+    const directFactor = document.getElementById('direct-factor') as HTMLInputElement;
+
+    let scalingFactor = 2;
+
+    const initialIngredients = [
+      { name: "All-Purpose Flour", qty: 250, unit: "g" },
+      { name: "Granulated Sugar", qty: 100, unit: "g" },
+      { name: "Baking Powder", qty: 1.5, unit: "tsp" },
+      { name: "Whole Milk", qty: 200, unit: "ml" },
+      { name: "Eggs", qty: 2, unit: "pcs" }
+    ];
+
+    function renderRow(name = '', qty = 1, unit = 'g') {
+      const rowDiv = document.createElement('div');
+      rowDiv.className = 'grid grid-cols-12 gap-3 items-center bg-canvas p-2 rounded-lg border border-hairline hover:border-hairline-hover transition-all';
+      
+      const units = ['g', 'kg', 'oz', 'lb', 'cup', 'tbsp', 'tsp', 'ml', 'l', 'pcs'];
+      const unitOptions = units.map(u => `<option value="${u}" ${u === unit ? 'selected' : ''}>${u}</option>`).join('');
+
+      rowDiv.innerHTML = `
+        <div class="col-span-5">
+          <input type="text" value="${name}" placeholder="e.g. Flour" class="ing-name w-full bg-card border border-hairline rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+        <div class="col-span-2">
+          <input type="number" step="any" value="${qty}" class="ing-qty w-full bg-card border border-hairline rounded px-2 py-1 text-xs font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+        <div class="col-span-2">
+          <select class="ing-unit w-full bg-card border border-hairline rounded px-1 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-brand-blue">
+            ${unitOptions}
+          </select>
+        </div>
+        <div class="col-span-2 text-brand-blue font-mono font-bold text-xs pl-2">
+          <span class="scaled-qty">0</span>
+        </div>
+        <div class="col-span-1 text-center">
+          <button class="delete-row text-xs text-red-500 hover:text-red-700 font-bold select-none cursor-pointer">×</button>
+        </div>
+      `;
+
+      rowDiv.querySelector('.delete-row')?.addEventListener('click', () => {
+        rowDiv.remove();
+        updateScaledQuantities();
+      });
+
+      rowDiv.querySelector('.ing-qty')?.addEventListener('input', updateScaledQuantities);
+      rowDiv.querySelector('.ing-name')?.addEventListener('input', updateScaledQuantities);
+      rowDiv.querySelector('.ing-unit')?.addEventListener('change', updateScaledQuantities);
+
+      ingredientRowsContainer?.appendChild(rowDiv);
+    }
+
+    function updateScaledQuantities() {
+      const rows = ingredientRowsContainer?.querySelectorAll('.grid') || [];
+      rows.forEach(row => {
+        const qtyInput = row.querySelector('.ing-qty') as HTMLInputElement;
+        const scaledSpan = row.querySelector('.scaled-qty') as HTMLSpanElement;
+        const unitSelect = row.querySelector('.ing-unit') as HTMLSelectElement;
+
+        const qty = parseFloat(qtyInput.value) || 0;
+        const scaledVal = qty * scalingFactor;
+        
+        // Format decimal values nicely
+        const formatted = Number(scaledVal.toFixed(2)).toString();
+        scaledSpan.textContent = `${formatted} ${unitSelect.value}`;
+      });
+    }
+
+    // Handlers for scaling inputs
+    servingsOrig?.addEventListener('input', () => {
+      const orig = parseFloat(servingsOrig.value) || 1;
+      const target = parseFloat(servingsTarget.value) || 1;
+      scalingFactor = target / orig;
+      if (directFactor) directFactor.value = Number(scalingFactor.toFixed(3)).toString();
+      updateScaledQuantities();
+    });
+
+    servingsTarget?.addEventListener('input', () => {
+      const orig = parseFloat(servingsOrig.value) || 1;
+      const target = parseFloat(servingsTarget.value) || 1;
+      scalingFactor = target / orig;
+      if (directFactor) directFactor.value = Number(scalingFactor.toFixed(3)).toString();
+      updateScaledQuantities();
+    });
+
+    directFactor?.addEventListener('input', () => {
+      scalingFactor = parseFloat(directFactor.value) || 1;
+      updateScaledQuantities();
+    });
+
+    addRowBtn?.addEventListener('click', () => {
+      renderRow();
+      updateScaledQuantities();
+    });
+
+    clearAllBtn?.addEventListener('click', () => {
+      if (ingredientRowsContainer) ingredientRowsContainer.innerHTML = '';
+      updateScaledQuantities();
+    });
+
+    copyRecipeBtn?.addEventListener('click', () => {
+      const rows = ingredientRowsContainer?.querySelectorAll('.grid') || [];
+      let text = `Scaled Recipe (${scalingFactor}x scale):\n`;
+      rows.forEach(row => {
+        const nameVal = (row.querySelector('.ing-name') as HTMLInputElement).value || 'Ingredient';
+        const qtyVal = parseFloat((row.querySelector('.ing-qty') as HTMLInputElement).value) || 0;
+        const unitVal = (row.querySelector('.ing-unit') as HTMLSelectElement).value;
+
+        const scaledVal = Number((qtyVal * scalingFactor).toFixed(2)).toString();
+        text += `- ${nameVal}: ${scaledVal} ${unitVal} (Original: ${qtyVal} ${unitVal})\n`;
+      });
+
+      navigator.clipboard.writeText(text).then(() => {
+        const origText = copyRecipeBtn.textContent;
+        copyRecipeBtn.textContent = 'Copied!';
+        setTimeout(() => {
+          copyRecipeBtn.textContent = origText;
+        }, 1500);
+      });
+    });
+
+    // Initialize default list
+    initialIngredients.forEach(i => renderRow(i.name, i.qty, i.unit));
+    updateScaledQuantities();
+  </script>
+</BaseLayout>

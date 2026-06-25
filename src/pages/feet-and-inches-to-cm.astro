@@ -1,0 +1,133 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdBanner from '../components/AdBanner.astro';
+
+const title = "Feet and Inches to cm Converter | Height Calculator";
+const description = "Convert feet and inches to centimeters (cm) instantly. Includes a handy height reference table for common imperial measurements.";
+
+const commonHeights = [];
+for (let f = 5; f <= 6; f++) {
+  const maxIn = f === 6 ? 6 : 11;
+  for (let i = 0; i <= maxIn; i++) {
+    const totalInches = f * 12 + i;
+    const cm = totalInches * 2.54;
+    commonHeights.push({ ft: f, in: i, cm });
+  }
+}
+---
+
+<BaseLayout title={title} description={description} categorySlug="length">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Feet & Inches to cm</span>
+  </nav>
+
+  <AdBanner slot="ft-in-to-cm-top" format="horizontal" />
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Feet and Inches to cm Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Formula: cm = (Feet × 30.48) + (Inches × 2.54)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: 5 feet 6 inches is equivalent to exactly 167.64 cm.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Input Height</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="feet-in" class="block text-xs font-mono text-muted-text mb-1">Feet</label>
+          <input id="feet-in" type="number" value="5" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+        <div>
+          <label for="inches-in" class="block text-xs font-mono text-muted-text mb-1">Inches</label>
+          <input id="inches-in" type="number" value="6" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Centimeters Equivalent</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+        <div>
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Length in cm</span>
+          <span id="cm-res" class="text-xl font-mono font-bold text-brand-blue">167.64 cm</span>
+        </div>
+        <span id="m-res" class="text-xs font-mono text-muted-text">(1.68 m)</span>
+      </div>
+    </div>
+  </section>
+
+  <AdBanner slot="ft-in-to-cm-mid" format="rectangle" />
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Imperial Height to Metric lookup</h2>
+    
+    <AdBanner slot="ft-in-to-cm-table" format="horizontal" />
+
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Imperial Height</th>
+            <th class="p-3 font-semibold">Centimeters</th>
+            <th class="p-3 font-semibold">Meters</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonHeights.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">
+                <a href={`/${row.ft}-feet-${row.in}-inches-to-cm`} class="hover:underline">
+                  {row.ft}' {row.in}"
+                </a>
+              </td>
+              <td class="p-3 text-ink">{row.cm.toFixed(2)} cm</td>
+              <td class="p-3 text-muted-text">{(row.cm/100).toFixed(2)} m</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const feetIn = document.getElementById('feet-in') as HTMLInputElement;
+    const inchesIn = document.getElementById('inches-in') as HTMLInputElement;
+
+    const cmRes = document.getElementById('cm-res') as HTMLSpanElement;
+    const mRes = document.getElementById('m-res') as HTMLSpanElement;
+
+    function calculate() {
+      const feet = parseFloat(feetIn.value) || 0;
+      const inches = parseFloat(inchesIn.value) || 0;
+
+      const totalInches = feet * 12 + inches;
+      const cm = totalInches * 2.54;
+      const m = cm / 100;
+
+      if (cmRes) cmRes.textContent = `${cm.toFixed(2)} cm`;
+      if (mRes) mRes.textContent = `(${m.toFixed(2)} m)`;
+    }
+
+    feetIn?.addEventListener('input', calculate);
+    inchesIn?.addEventListener('input', calculate);
+  </script>
+
+  <AdBanner slot="ft-in-to-cm-bottom" format="horizontal" />
+</BaseLayout>

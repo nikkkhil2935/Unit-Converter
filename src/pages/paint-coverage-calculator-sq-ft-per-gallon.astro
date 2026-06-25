@@ -1,0 +1,218 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Paint Coverage Calculator | How Many Gallons of Paint Do I Need?";
+const description = "Calculate how many gallons of paint you need for walls or ceilings. Enter room dimensions, number of doors and windows, and coats. Standard coverage is 350 sq ft per gallon.";
+const keywords = "paint calculator, how many gallons of paint do I need, paint coverage calculator, gallons per square foot, paint estimator, house paint calculator, interior paint calculator, paint coverage sq ft per gallon, room paint calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Paint Coverage Calculator", url: "/paint-coverage-calculator-sq-ft-per-gallon" }
+];
+
+const faqs = [
+  {
+    question: "How many square feet does a gallon of paint cover?",
+    answer: "One gallon of standard interior paint covers 350–400 square feet per coat on smooth, primed surfaces. On rough or porous surfaces (textured walls, masonry, unprimed drywall) coverage drops to 250–300 sq ft per gallon. Always check the coverage spec on your specific paint can."
+  },
+  {
+    question: "Do I need two coats of paint?",
+    answer: "Two coats are almost always recommended for the best finish, full color coverage, and durability. One coat is sufficient only when painting the same color over a well-prepared surface, or when using high-opacity 'one-coat' paint. When changing from a dark to a light color, you may need three coats."
+  },
+  {
+    question: "How do I measure walls for painting?",
+    answer: "Measure the perimeter of the room (total length of all walls) and multiply by the ceiling height to get gross wall area. Subtract 21 sq ft per door and 15 sq ft per standard window. Add 15% for rough or textured surfaces."
+  },
+  {
+    question: "Should I include ceiling in the paint calculation?",
+    answer: "Ceiling paint is separate from wall paint. Measure the floor area (length × width) to get the ceiling square footage. A standard 10x12 room ceiling = 120 sq ft, requiring about 0.34 gallons per coat."
+  },
+  {
+    question: "How much paint is wasted in a project?",
+    answer: "Add 10% to your calculated quantity for waste (spills, touch-ups, brush loading). For rooms with complex trim or multiple color changes, add 15%. Always round up to the nearest standard can size (1 qt, 1 gal)."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/paint-coverage-calculator-sq-ft-per-gallon"
+  categorySlug="area"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/volume-converter" class="hover:text-brand-blue transition-colors">Volume Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Paint Coverage</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Paint Coverage Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Standard Paint Coverage = 350 to 400 sq ft per gallon</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Typically, 1 gallon covers a standard room's walls with one coat. Two coats are recommended for optimal finish.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Wall Parameters</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="wall-length" class="block text-xs font-mono text-muted-text mb-1">Total Wall Length (ft)</label>
+          <input id="wall-length" type="number" value="48" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="wall-height" class="block text-xs font-mono text-muted-text mb-1">Wall Height (ft)</label>
+          <input id="wall-height" type="number" value="8" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="doors-in" class="block text-xs font-mono text-muted-text mb-1">Number of Doors</label>
+          <input id="doors-in" type="number" value="2" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="windows-in" class="block text-xs font-mono text-muted-text mb-1">Number of Windows</label>
+          <input id="windows-in" type="number" value="2" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+      </div>
+
+      <div>
+        <label for="coats-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Number of Coats</label>
+        <select id="coats-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="1">1 Coat</option>
+          <option value="2" selected>2 Coats (Recommended)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Paint</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Net Surface Area to Paint</span>
+          <span id="area-res" class="text-lg font-mono font-bold text-ink">324 sq ft</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Estimated Paint Required</span>
+          <span id="gallon-res" class="text-lg font-mono font-bold text-brand-blue">1.9 gallons</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const wallLength = document.getElementById('wall-length') as HTMLInputElement;
+    const wallHeight = document.getElementById('wall-height') as HTMLInputElement;
+    const doorsIn = document.getElementById('doors-in') as HTMLInputElement;
+    const windowsIn = document.getElementById('windows-in') as HTMLInputElement;
+    const coatsSelect = document.getElementById('coats-select') as HTMLSelectElement;
+
+    const areaRes = document.getElementById('area-res') as HTMLSpanElement;
+    const gallonRes = document.getElementById('gallon-res') as HTMLSpanElement;
+
+    const coveragePerGallon = 350; // standard conservative sq ft coverage
+
+    function calculate() {
+      const len = parseFloat(wallLength.value) || 0;
+      const height = parseFloat(wallHeight.value) || 0;
+      const doors = parseInt(doorsIn.value) || 0;
+      const windows = parseInt(windowsIn.value) || 0;
+      const coats = parseInt(coatsSelect.value) || 2;
+
+      // Deduct standard sizes
+      // 1 door = 21 sq ft
+      // 1 window = 15 sq ft
+      const rawArea = len * height;
+      const deductions = (doors * 21) + (windows * 15);
+      const netArea = Math.max(0, rawArea - deductions);
+      
+      const totalAreaToPaint = netArea * coats;
+      const gallonsNeeded = totalAreaToPaint / coveragePerGallon;
+
+      if (areaRes) areaRes.textContent = `${netArea.toFixed(0)} sq ft per coat (${totalAreaToPaint.toFixed(0)} sq ft total)`;
+      if (gallonRes) gallonRes.textContent = `${gallonsNeeded.toFixed(1)} Gallons`;
+    }
+
+    wallLength?.addEventListener('input', calculate);
+    wallHeight?.addEventListener('input', calculate);
+    doorsIn?.addEventListener('input', calculate);
+    windowsIn?.addEventListener('input', calculate);
+    coatsSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Paint Types & Coverage Rates</h3>
+      <p class="leading-relaxed mb-3">
+        Different paint formulations have different coverage rates. Here are typical coverages per gallon:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>Interior matte / flat</span><span class="text-brand-blue font-bold">350–400 sq ft</span></div>
+        <div class="flex justify-between"><span>Interior eggshell / satin</span><span class="text-brand-blue font-bold">350–400 sq ft</span></div>
+        <div class="flex justify-between"><span>Interior semi-gloss</span><span class="text-brand-blue font-bold">300–350 sq ft</span></div>
+        <div class="flex justify-between"><span>Interior gloss / trim</span><span class="text-brand-blue font-bold">250–300 sq ft</span></div>
+        <div class="flex justify-between"><span>Exterior latex</span><span class="text-brand-blue font-bold">250–350 sq ft</span></div>
+        <div class="flex justify-between"><span>Masonry / brick paint</span><span class="text-brand-blue font-bold">100–200 sq ft</span></div>
+        <div class="flex justify-between"><span>Primer (first coat)</span><span class="text-brand-blue font-bold">200–300 sq ft</span></div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Tips to Reduce Paint Waste</h3>
+      <p class="leading-relaxed mb-3">
+        Buying too much paint wastes money; buying too little means extra trips and potential color mismatches. Here's how to get your estimate right:
+      </p>
+      <ul class="space-y-1.5 leading-relaxed">
+        <li>• <strong>Order one extra quart</strong> for touch-ups after moving furniture in.</li>
+        <li>• <strong>Note the dye lot</strong> on your can (store label) to match future purchases.</li>
+        <li>• <strong>Measure twice</strong> — recalculate your room after accounting for all openings.</li>
+        <li>• <strong>Dark to light changes</strong> require extra coats — add 50% to your gallon count.</li>
+        <li>• <strong>Porous surfaces</strong> (new drywall, concrete) require more paint — add 20%.</li>
+      </ul>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Paint Coverage</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Flooring & Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/square-footage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Square Footage Calculator</a>
+      <a href="/tile-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Tile Coverage Calculator</a>
+      <a href="/roofing-square-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Roofing Square Calculator</a>
+      <a href="/mulch-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Mulch Coverage Calculator</a>
+      <a href="/board-feet-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Board Feet Calculator</a>
+      <a href="/volume-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Volume Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

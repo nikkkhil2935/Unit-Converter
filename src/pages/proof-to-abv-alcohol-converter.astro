@@ -1,0 +1,217 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Proof to ABV Alcohol Converter | US & UK Proof to Percent";
+const description = "Convert alcohol proof to ABV% or ABV% to proof. Covers US proof (ABV × 2) and UK proof (Sikes scale, ABV × 1.75). Includes standard ABV chart for beer, wine, and spirits.";
+const keywords = "proof to abv, abv to proof, alcohol proof calculator, us proof to abv, uk proof to abv, proof to percent alcohol, what is proof alcohol, 80 proof abv, beer abv, spirits proof";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Cooking & Baking", url: "/cooking-baking" },
+  { name: "Proof to ABV Converter", url: "/proof-to-abv-alcohol-converter" }
+];
+
+const faqs = [
+  {
+    question: "What does \"proof\" mean for alcohol?",
+    answer: "In the US, \"proof\" is simply twice the ABV percentage. A 80 Proof spirit is 40% ABV, a 100 Proof spirit is 50% ABV. The term dates from 18th century Britain, where gunpowder soaked in spirit would ignite only if the spirit was at or above 57% ABV \u2014 that was proof the spirits were strong enough."
+  },
+  {
+    question: "How do I convert US proof to ABV?",
+    answer: "US Proof to ABV: divide by 2. ABV = US Proof / 2. For example: 80 Proof vodka = 80/2 = 40% ABV. 70 Proof whiskey = 70/2 = 35% ABV. 100 Proof bourbon = 100/2 = 50% ABV."
+  },
+  {
+    question: "What is UK Proof (Sikes scale)?",
+    answer: "UK Proof uses the Sikes scale where \"100 proof\" = 57.15% ABV (not 50% like US). The conversion is: UK Proof = ABV × 1.7513. So 40% ABV spirit = 70.1 UK Proof. The UK abolished its proof system in 1980 and now uses ABV exclusively."
+  },
+  {
+    question: "What is the ABV of common alcoholic beverages?",
+    answer: "Light beer: 3.5\u20134.2% ABV (7\u20138.4 US Proof). Regular beer: 4.2\u20135.5% ABV. Wine: 11\u201314% ABV (22\u201328 US Proof). Standard spirits (vodka, gin, rum, whiskey): 40% ABV (80 US Proof). Cask strength whiskey: 55\u201365% ABV (110\u2013130 US Proof)."
+  },
+  {
+    question: "What does \"overproof\" mean?",
+    answer: "Overproof spirits have an ABV above 50% (above 100 US Proof). Overproof rum (like Bacardi 151, 75.5% ABV, 151 Proof) is used mainly for cooking flames and cocktail floats. High-proof Everclear grain alcohol reaches 95% ABV (190 Proof) \u2014 flammable and dangerous to consume neat."
+  }
+];
+
+const standardABV = [
+  { item: "Standard Light Beer", abv: "4.2%", us: "8.4 Proof", uk: "7.4 Proof" },
+  { item: "Regular Beer / Lager", abv: "5.0%", us: "10.0 Proof", uk: "8.8 Proof" },
+  { item: "Hard Cider / Seltzer", abv: "8.0%", us: "16.0 Proof", uk: "14.0 Proof" },
+  { item: "Standard Wine", abv: "12.0%", us: "24.0 Proof", uk: "21.0 Proof" },
+  { item: "Fortified Wine (Port)", abv: "20.0%", us: "40.0 Proof", uk: "35.0 Proof" },
+  { item: "Liqueurs (Triple Sec)", abv: "30.0%", us: "60.0 Proof", uk: "52.5 Proof" },
+  { item: "Standard Spirits (Vodka, Gin)", abv: "40.0%", us: "80.0 Proof", uk: "70.1 Proof" },
+  { item: "Cask Strength Whiskey", abv: "55.0%", us: "110.0 Proof", uk: "96.3 Proof" },
+  { item: "Overproof Rum / Grain Alcohol", abv: "75.5%", us: "151.0 Proof", uk: "132.2 Proof" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/proof-to-abv-alcohol-converter"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Proof to ABV</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Proof to ABV Alcohol Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>US Proof = ABV% × 2 | UK Proof = ABV% × 1.7513</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A standard 80 Proof vodka is equivalent to exactly 40.0% Alcohol By Volume (ABV).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert beverage alcohol content parameters. Convert between US Proof, UK Proof (Sikes scale), and ABV percentage.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold font-bold text-muted-text">Alcohol By Volume</h2>
+      
+      <div>
+        <label for="abv-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Alcohol By Volume (ABV %)</label>
+        <div class="relative">
+          <input
+            id="abv-input"
+            type="number"
+            step="0.1"
+            value="40"
+            min="0"
+            max="100"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Calculated Proof</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold">US Proof Rating</span>
+        <span id="us-proof-res" class="text-lg font-mono font-bold text-brand-blue">80.0 Proof</span>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold font-bold text-muted-text">UK Proof Rating</span>
+        <span id="uk-proof-res" class="text-lg font-mono font-bold text-ink">70.1 Proof</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Beverage Strengths</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Beverage Description</th>
+            <th class="p-3 font-semibold">ABV %</th>
+            <th class="p-3 font-semibold">US Proof Equivalent</th>
+            <th class="p-3 font-semibold">UK Proof Equivalent</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {standardABV.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-bold text-brand-blue">{row.item}</td>
+              <td class="p-3 text-ink">{row.abv}</td>
+              <td class="p-3 text-ink">{row.us}</td>
+              <td class="p-3 text-muted-text">{row.uk}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const abvInput = document.getElementById('abv-input') as HTMLInputElement;
+    const usProofRes = document.getElementById('us-proof-res') as HTMLSpanElement;
+    const ukProofRes = document.getElementById('uk-proof-res') as HTMLSpanElement;
+
+    function calculate() {
+      const abv = parseFloat(abvInput.value) || 0;
+
+      // US: ABV * 2
+      const us = abv * 2;
+      // UK: ABV * 1.7513
+      const uk = abv * 1.751314;
+
+      if (usProofRes) usProofRes.textContent = `${us.toFixed(1)} Proof`;
+      if (ukProofRes) ukProofRes.textContent = `${uk.toFixed(1)} Proof`;
+    }
+
+    abvInput?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">US vs UK Proof: History & Difference</h3>
+      <p class="leading-relaxed mb-3">
+        The origin of "proof" comes from 18th century Britain where customs officials needed to verify spirit strength. They soaked gunpowder in the spirit: if it ignited, the spirit was "proven" strong enough for taxation purposes. The threshold was approximately 57.1% ABV, which became 100 British Proof.
+      </p>
+      <p class="leading-relaxed">
+        The US adopted a simpler system in 1848: 1 Proof = 0.5% ABV. So 100 US Proof = 50% ABV. This means the two systems are on different scales: 80 US Proof = 40% ABV, while 80 UK Proof = 45.7% ABV.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Responsible Drinking & Standard Drinks</h3>
+      <p class="leading-relaxed mb-3">
+        A "standard drink" in the US contains 14 grams of pure alcohol:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>Beer (5% ABV)</span><span class="text-brand-blue font-bold">12 oz / 355 mL</span></div>
+        <div class="flex justify-between"><span>Wine (12% ABV)</span><span class="text-brand-blue font-bold">5 oz / 148 mL</span></div>
+        <div class="flex justify-between"><span>Spirits (40% ABV)</span><span class="text-brand-blue font-bold">1.5 oz / 44 mL</span></div>
+        <div class="flex justify-between mt-2 text-muted-text"><span>UK unit = 10 mL pure alcohol</span><span>≈ 8g</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Alcohol Proof</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Cooking & Beverage Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/brix-to-specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Brix to Specific Gravity</a>
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/baking-conversion-chart" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Baking Conversion Chart</a>
+      <a href="/recipe-scale-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Recipe Scale Calculator</a>
+      <a href="/density-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Density Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

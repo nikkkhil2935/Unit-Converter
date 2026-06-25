@@ -61,10 +61,93 @@
 
   let lastCopiedValue = '';
 
+  const specialistToolsList = [
+    // Cooking & Baking
+    { keys: ["flour cups to grams", "flour cups", "cups to grams flour"], href: "/cups-to-grams-flour" },
+    { keys: ["butter cups to grams", "butter cups", "cups to grams butter"], href: "/cups-to-grams-butter" },
+    { keys: ["sugar cups to grams", "sugar cups", "cups to grams sugar"], href: "/cups-to-grams-sugar" },
+    { keys: ["rice cups to grams", "rice cups", "cups to grams rice"], href: "/cups-to-grams-rice" },
+    { keys: ["honey cups to grams", "honey cups", "cups to grams honey"], href: "/cups-to-grams-honey" },
+    { keys: ["milk cups to grams", "milk cups", "cups to grams milk"], href: "/cups-to-grams-milk" },
+    { keys: ["oats cups to grams", "oats cups", "cups to grams oats"], href: "/cups-to-grams-oats" },
+    { keys: ["recipe scale calc", "recipe scale calculator", "recipe scaler", "scale recipe"], href: "/recipe-scale-calculator" },
+    { keys: ["baking chart", "baking conversion chart"], href: "/baking-conversion-chart" },
+    { keys: ["oven temp", "oven temperature", "oven temperature converter"], href: "/oven-temperature-converter-c-to-f" },
+    { keys: ["fan oven converter", "fan oven"], href: "/fan-oven-temperature-converter" },
+    { keys: ["gas mark to c/f", "gas mark", "gas mark converter"], href: "/gas-mark-to-celsius-to-fahrenheit" },
+    { keys: ["candy stage temp", "candy temperature", "candy stage"], href: "/candy-making-temperature-stages-chart" },
+    { keys: ["meat internal temp", "meat temperature", "meat cooking temperature"], href: "/meat-internal-temperature-guide-c-to-f" },
+    { keys: ["bread proof temp", "bread proofing", "dough proofing"], href: "/proof-temperature-for-bread-c-to-f" },
+
+    // Engineering & Trade
+    { keys: ["awg wire to mm2", "awg to mm2", "wire gauge calculator", "awg wire gauge"], href: "/awg-to-mm2-wire-gauge-calculator" },
+    { keys: ["mm2 to awg wire", "mm2 to awg", "mm to awg"], href: "/mm2-to-awg-calculator" },
+    { keys: ["torque ft-lb to nm", "torque converter", "ft-lb to nm", "nm to ft-lb"], href: "/torque-converter-ft-lb-to-nm" },
+    { keys: ["bolt torque specs", "bolt torque", "torque specs"], href: "/bolt-torque-spec-calculator" },
+    { keys: ["pipe size", "pipe size nom/actual", "nominal pipe size", "pipe size converter"], href: "/pipe-size-converter-nominal-to-actual" },
+    { keys: ["hardness converter", "rockwell brinell vickers", "hrc to hv", "hardness"], href: "/hardness-converter-rockwell-brinell-vickers" },
+    { keys: ["steel weight calc", "steel weight calculator", "steel weight"], href: "/steel-weight-calculator-kg-per-meter" },
+    { keys: ["thread pitch", "thread pitch metric/un", "unc unf converter"], href: "/thread-pitch-converter-metric-unc-unf" },
+    { keys: ["psi/bar/kpa", "psi to bar", "bar to kpa", "psi to kpa"], href: "/psi-to-bar-to-kpa-converter" },
+    { keys: ["flow gpm to lpm", "flow rate converter", "gpm to lpm", "lpm to gpm"], href: "/flow-rate-converter-gpm-to-lpm" },
+
+    // Scientific & Lab
+    { keys: ["molarity calculator", "molarity", "moles calculator"], href: "/molarity-calculator" },
+    { keys: ["concentration ppm/mgl", "ppm to mgl", "ppm to mg/l", "concentration converter"], href: "/concentration-converter-ppm-to-mgL" },
+    { keys: ["ph to h+ concentration", "ph to h+", "ph calculator", "hydrogen concentration"], href: "/ph-to-hydrogen-concentration-calculator" },
+    { keys: ["absorbance/transmittance", "absorbance to transmittance", "transmittance to absorbance"], href: "/spectrophotometry-absorbance-to-transmittance" },
+    { keys: ["osmolality/osmolarity", "osmolality to osmolarity"], href: "/osmolality-to-osmolarity-converter" },
+    { keys: ["brix to specific gravity", "brix to sg", "brix converter"], href: "/brix-to-specific-gravity-calculator" },
+    { keys: ["abv to proof", "abv to proof converter", "alcohol proof"], href: "/proof-to-abv-alcohol-converter" },
+    { keys: ["specific gravity calc", "specific gravity", "sg calculator"], href: "/specific-gravity-calculator" },
+
+    // Construction & DIY
+    { keys: ["board feet calculator", "board feet", "lumber board feet"], href: "/board-feet-calculator" },
+    { keys: ["square footage calc", "square footage", "sq ft calculator", "square feet"], href: "/square-footage-calculator" },
+    { keys: ["mulch coverage", "mulch calculator", "mulch coverage calc"], href: "/mulch-coverage-calculator" },
+    { keys: ["paint coverage", "paint calculator", "paint coverage calc"], href: "/paint-coverage-calculator-sq-ft-per-gallon" },
+    { keys: ["concrete bags volume", "concrete bags", "concrete calculator"], href: "/concrete-volume-calculator-bags-to-cubic-feet" },
+    { keys: ["gravel weight", "gravel calculator", "tons to cubic yards"], href: "/gravel-weight-calculator-tons-to-cubic-yards" },
+    { keys: ["lumber linear/board ft", "linear feet to board feet", "lumber calculator"], href: "/lumber-linear-feet-to-board-feet" },
+    { keys: ["roofing square", "roofing calculator", "roof squares"], href: "/roofing-square-calculator" },
+    { keys: ["tile coverage", "tile calculator", "tiles calculator"], href: "/tile-coverage-calculator" },
+    { keys: ["concrete mix ratios", "concrete mix", "concrete ratio"], href: "/concrete-mix-ratio-calculator" },
+    { keys: ["rebar weight", "rebar calculator", "rebar weight calc"], href: "/rebar-weight-calculator" },
+
+    // Sizing & Automotive
+    { keys: ["shoe size us/eu/uk", "shoe size converter", "shoe size"], href: "/shoe-size-converter-us-to-eu" },
+    { keys: ["dress size us/uk/eu", "dress size converter", "dress size"], href: "/dress-size-converter-us-to-uk" },
+    { keys: ["ring size us/uk/eu", "ring size converter", "ring size"], href: "/ring-size-converter-us-to-uk" },
+    { keys: ["tire size speedometer", "tire size calculator", "speedometer error"], href: "/tire-size-calculator" },
+    { keys: ["feet & inches to cm", "feet to cm", "inches to cm", "height converter"], href: "/feet-and-inches-to-cm" },
+    { keys: ["pounds & ounces to kg", "lbs to kg", "ounces to kg"], href: "/pounds-and-ounces-to-kg" },
+    { keys: ["hours/mins to seconds", "time to seconds", "minutes to seconds"], href: "/hours-minutes-seconds-to-seconds" },
+
+    // Finance & Business
+    { keys: ["simple interest", "simple interest calculator", "interest calculator"], href: "/simple-interest-calculator" },
+    { keys: ["compound interest", "compound interest calculator", "compound interest calc"], href: "/compound-interest-calculator" },
+    { keys: ["sales tax", "sales tax calculator", "tax calculator"], href: "/sales-tax-calculator" },
+    { keys: ["discount calculator", "discount", "savings calculator"], href: "/discount-calculator" },
+    { keys: ["salary to hourly", "hourly to salary", "wage calculator"], href: "/salary-to-hourly-calculator" },
+  ];
+
   searchInput?.addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
       const val = searchInput.value.trim();
       if (!val) return;
+
+      const cleaned = val.toLowerCase();
+      const withoutPrefix = cleaned.replace(/^(convert|what is|how many|show me|find)\s+/i, "").trim();
+
+      // Check specialist tools list for keyword match
+      const matchedTool = specialistToolsList.find(t => 
+        t.keys.some(k => k === withoutPrefix || withoutPrefix.includes(k) || k.includes(withoutPrefix))
+      );
+      if (matchedTool) {
+        e.preventDefault();
+        window.location.href = matchedTool.href;
+        return;
+      }
 
       // 1. Try parsing with a numeric value (e.g. "25 kg to lbs")
       const parsed = parseSearchQuery(val);
@@ -75,9 +158,6 @@
       }
 
       // 2. Try parsing a pair without value (e.g. "kg to lbs")
-      const cleaned = val.toLowerCase();
-      // Strip common conversational prefixes
-      const withoutPrefix = cleaned.replace(/^(convert|what is|how many|show me|find)\s+/i, "");
       const pairRegex = /^([a-zA-Z°'"\s]+?)\s+(?:to|in|into|=|as)\s+([a-zA-Z°'"\s]+)$/i;
       const pairMatch = withoutPrefix.match(pairRegex);
       if (pairMatch) {

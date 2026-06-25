@@ -1,0 +1,235 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+const title = "Sales Tax Calculator | Calculate Sales Tax Forward & Reverse";
+const description = "Calculate sales tax amounts on retail items, or reverse calculate to find pre-tax base prices and taxes paid.";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Finance & Business", url: "/finance-business" },
+  { name: "Sales Tax Calculator", url: "/sales-tax-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How do you calculate sales tax?",
+    answer: "To calculate sales tax on an item, multiply the pre-tax price by the tax rate in decimal form: Sales Tax = Pre-Tax Price × (Tax Rate / 100). The total price is the pre-tax price plus the sales tax."
+  },
+  {
+    question: "How do you remove sales tax from a total price (reverse tax)?",
+    answer: "To calculate the pre-tax price from a total price, divide the total price by 1 plus the tax rate (in decimal form): Pre-Tax Price = Total Price / (1 + (Tax Rate / 100))."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="sales tax calculator, reverse tax calculator, sales tax, calculate sales tax, tax rate"
+  canonicalPath="/sales-tax-calculator"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title & Featured Snippet Bait -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="finance" className="w-8 h-8 text-brand-blue" />
+      <span>Sales Tax Calculator</span>
+    </h1>
+
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Total Price = Pre-Tax Price × (1 + Tax Rate)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A $50.00 purchase with an 8% sales tax incurs $4.00 in tax, leading to a total receipt of $54.00.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Find tax amounts for business expenses or shopping receipts. Switch between forward (add tax) and reverse (remove tax) modes using the interactive widget below.
+    </p>
+  </section>
+
+  <!-- Interactive Scaler Widget -->
+  <section class="mb-10 max-w-2xl bg-card border border-hairline rounded-2xl p-6 transition-colors">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Interactive Sales Tax Calculator</h2>
+
+    <div class="space-y-6">
+      <!-- Mode Selection -->
+      <div class="flex gap-4 border-b border-hairline pb-4 select-none">
+        <button
+          id="mode-forward"
+          class="px-4 py-2 bg-brand-blue/10 text-brand-blue border border-brand-blue/20 text-xs font-bold rounded-lg transition-colors cursor-pointer select-none"
+        >
+          Add Sales Tax (Forward)
+        </button>
+        <button
+          id="mode-reverse"
+          class="px-4 py-2 border border-hairline bg-canvas text-ink text-xs font-bold rounded-lg transition-colors cursor-pointer select-none"
+        >
+          Remove Sales Tax (Reverse)
+        </button>
+      </div>
+
+      <!-- Inputs -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label id="price-input-label" for="price-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Pre-Tax Amount ($)</label>
+          <input
+            id="price-input"
+            type="number"
+            value="100"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+        <div>
+          <label for="tax-rate-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Sales Tax Rate (%)</label>
+          <input
+            id="tax-rate-input"
+            type="number"
+            value="7"
+            step="0.01"
+            min="0"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="pt-4 border-t border-hairline">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span id="tax-result-label" class="block text-[10px] font-bold text-muted-text uppercase font-mono">Tax Amount (Added)</span>
+            <span id="tax-result" class="text-xl font-mono font-bold text-brand-blue">$7.00</span>
+          </div>
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span id="total-result-label" class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total Price</span>
+            <span id="total-result" class="text-xl font-mono font-bold text-ink">$107.00</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Formula Details & Reference Table -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-hairline pt-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Adding Sales Tax</h3>
+      <p class="leading-relaxed mb-3">
+        When shopping, retail items display net prices. To find the total price at checkout:
+      </p>
+      <div class="p-3 bg-card border border-hairline rounded-lg font-mono mb-3">
+        Total = Pre-Tax Price × (1 + (Tax Rate / 100))
+      </div>
+      <p class="leading-relaxed">
+        Example: A $20 book with a 6% tax rate will end up costing $20 × 1.06 = $21.20.
+      </p>
+    </section>
+
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Removing Sales Tax (Reverse)</h3>
+      <p class="leading-relaxed mb-3">
+        If you have a receipt with the total amount paid, you can isolate the original price before taxes were added:
+      </p>
+      <div class="p-3 bg-card border border-hairline rounded-lg font-mono mb-3">
+        Pre-Tax = Total / (1 + (Tax Rate / 100))
+      </div>
+      <p class="leading-relaxed">
+        Example: If you paid a total of $107 with a 7% tax rate, the base price is $107 / 1.07 = $100.00, meaning you paid $7.00 in sales tax.
+      </p>
+    </section>
+  </div>
+
+  <!-- Related Sibling Tools Navigation -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Finance Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/simple-interest-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Simple Interest Calculator</a>
+      <a href="/compound-interest-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Compound Interest Calculator</a>
+      <a href="/discount-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Discount Calculator</a>
+      <a href="/salary-to-hourly-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Salary to Hourly Converter</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const priceInput = document.getElementById('price-input') as HTMLInputElement;
+    const taxRateInput = document.getElementById('tax-rate-input') as HTMLInputElement;
+    
+    const priceInputLabel = document.getElementById('price-input-label') as HTMLLabelElement;
+    const taxResultLabel = document.getElementById('tax-result-label') as HTMLSpanElement;
+    const totalResultLabel = document.getElementById('total-result-label') as HTMLSpanElement;
+    
+    const taxResult = document.getElementById('tax-result') as HTMLSpanElement;
+    const totalResult = document.getElementById('total-result') as HTMLSpanElement;
+
+    const modeForwardBtn = document.getElementById('mode-forward') as HTMLButtonElement;
+    const modeReverseBtn = document.getElementById('mode-reverse') as HTMLButtonElement;
+
+    let isForward = true;
+
+    function calculate() {
+      const val = parseFloat(priceInput.value) || 0;
+      const rate = parseFloat(taxRateInput.value) || 0;
+
+      let tax = 0;
+      let total = 0;
+
+      if (isForward) {
+        tax = val * (rate / 100);
+        total = val + tax;
+      } else {
+        const base = val / (1 + (rate / 100));
+        tax = val - base;
+        total = base; // base is the pre-tax price output
+      }
+
+      if (isForward) {
+        if (taxResult) taxResult.textContent = `$${tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (totalResult) totalResult.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      } else {
+        // In reverse mode, "taxResult" is tax removed, and "totalResult" is pre-tax base price
+        if (taxResult) taxResult.textContent = `$${tax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        if (totalResult) totalResult.textContent = `$${total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+      }
+    }
+
+    modeForwardBtn?.addEventListener('click', () => {
+      isForward = true;
+      modeForwardBtn.className = "px-4 py-2 bg-brand-blue/10 text-brand-blue border border-brand-blue/20 text-xs font-bold rounded-lg transition-colors cursor-pointer select-none";
+      modeReverseBtn.className = "px-4 py-2 border border-hairline bg-canvas text-ink text-xs font-bold rounded-lg transition-colors cursor-pointer select-none";
+      
+      if (priceInputLabel) priceInputLabel.textContent = "Pre-Tax Amount ($)";
+      if (taxResultLabel) taxResultLabel.textContent = "Tax Amount (Added)";
+      if (totalResultLabel) totalResultLabel.textContent = "Total Price";
+      
+      calculate();
+    });
+
+    modeReverseBtn?.addEventListener('click', () => {
+      isForward = false;
+      modeReverseBtn.className = "px-4 py-2 bg-brand-blue/10 text-brand-blue border border-brand-blue/20 text-xs font-bold rounded-lg transition-colors cursor-pointer select-none";
+      modeForwardBtn.className = "px-4 py-2 border border-hairline bg-canvas text-ink text-xs font-bold rounded-lg transition-colors cursor-pointer select-none";
+      
+      if (priceInputLabel) priceInputLabel.textContent = "Receipt Total Price ($)";
+      if (taxResultLabel) taxResultLabel.textContent = "Tax Amount (Removed)";
+      if (totalResultLabel) totalResultLabel.textContent = "Pre-Tax Base Price";
+      
+      calculate();
+    });
+
+    priceInput?.addEventListener('input', calculate);
+    taxRateInput?.addEventListener('input', calculate);
+  </script>
+</BaseLayout>

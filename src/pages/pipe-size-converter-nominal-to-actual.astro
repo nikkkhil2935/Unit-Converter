@@ -1,0 +1,232 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Nominal Pipe Size (NPS) Converter | Nominal to Actual Table";
+const description = "Convert Nominal Pipe Sizes (NPS) to actual outside diameter, inside diameter, and wall thickness for Schedule 40 and Schedule 80 steel pipes.";
+const keywords = "nominal pipe size converter, nps to actual dimensions, pipe size chart, schedule 40 pipe dimensions, schedule 80 pipe, nominal to actual pipe size, pipe od id chart, nps pipe sizes, steel pipe dimensions, pipe wall thickness calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Nominal Pipe Size Converter", url: "/pipe-size-converter-nominal-to-actual" }
+];
+
+const faqs = [
+  {
+    question: "What is Nominal Pipe Size (NPS)?",
+    answer: "Nominal Pipe Size (NPS) is a US standard for pipe dimensions that defines pipe diameter by a dimensionless number. It does NOT directly correspond to actual inside or outside diameter. For example, a 1-inch NPS pipe has an actual outside diameter of 1.315 inches (33.4mm), not 1 inch."
+  },
+  {
+    question: "What is the difference between Schedule 40 and Schedule 80 pipe?",
+    answer: "Schedule numbers indicate wall thickness. Schedule 40 is standard wall and Schedule 80 is extra strong (thicker wall). A 1-inch Sch 40 pipe has 0.133\" wall thickness, while Sch 80 is 0.179\". Thicker walls mean smaller inside diameter but higher pressure rating."
+  },
+  {
+    question: "How do you calculate pipe inside diameter?",
+    answer: "Inside Diameter (ID) = Outside Diameter (OD) − 2 × Wall Thickness. For example, a 2-inch NPS Sch 40 pipe: OD = 2.375\", wall = 0.154\", so ID = 2.375 − 2(0.154) = 2.067\"."
+  },
+  {
+    question: "What does DN mean in pipe sizes?",
+    answer: "DN (Diameter Nominal) is the metric equivalent of NPS, used in European and international standards. DN25 corresponds to NPS 1, DN50 to NPS 2, etc. DN numbers are roughly the actual OD in millimeters rounded to the nearest 25mm increment."
+  },
+  {
+    question: "How do I select the right pipe schedule for my application?",
+    answer: "Select based on operating pressure, temperature, and fluid type. Sch 40 handles most residential and light commercial applications. Sch 80 is used for higher pressure systems, chemical processing, and structural applications. For critical applications, calculate the required wall thickness using ASME B31.3 formulas."
+  }
+];
+
+const pipes = [
+  { nps: "1/8\"", od: 0.405, sch40: 0.068, sch80: 0.095 },
+  { nps: "1/4\"", od: 0.540, sch40: 0.088, sch80: 0.119 },
+  { nps: "3/8\"", od: 0.675, sch40: 0.091, sch80: 0.126 },
+  { nps: "1/2\"", od: 0.840, sch40: 0.109, sch80: 0.147 },
+  { nps: "3/4\"", od: 1.050, sch40: 0.113, sch80: 0.154 },
+  { nps: "1\"", od: 1.315, sch40: 0.133, sch80: 0.179 },
+  { nps: "1-1/4\"", od: 1.660, sch40: 0.140, sch80: 0.191 },
+  { nps: "1-1/2\"", od: 1.900, sch40: 0.145, sch80: 0.200 },
+  { nps: "2\"", od: 2.375, sch40: 0.154, sch80: 0.218 },
+  { nps: "2-1/2\"", od: 2.875, sch40: 0.203, sch80: 0.276 },
+  { nps: "3\"", od: 3.500, sch40: 0.216, sch80: 0.300 },
+  { nps: "4\"", od: 4.500, sch40: 0.237, sch80: 0.337 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/pipe-size-converter-nominal-to-actual"
+  categorySlug="length"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Pipe Size Converter</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Nominal Pipe Size (NPS) Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1/2 inch NPS Schedule 40 = OD 0.840" (21.34 mm), Wall 0.109" (2.77 mm)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Inside diameter (ID) = 0.622" (15.80 mm).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert Nominal Pipe Sizes (NPS) or DN equivalents to actual outside/inside diameters and wall thickness schedules. Essential for plumbing, HVAC, and industrial piping design.
+    </p>
+  </section>
+
+  <!-- Interactive Converter Widget -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Pipe Dimension Estimator</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+      <div>
+        <label for="pipe-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Nominal Size (NPS)</label>
+        <select id="pipe-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {pipes.map(p => (
+            <option value={p.nps} data-od={p.od} data-sch40={p.sch40} data-sch80={p.sch80}>{p.nps}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="sch-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Schedule</label>
+        <select id="sch-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="40">Schedule 40 (Standard)</option>
+          <option value="80">Schedule 80 (Extra Strong)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Outside Dia (OD)</span>
+        <span id="od-res" class="text-base font-mono font-bold text-brand-blue">0.405" (10.29 mm)</span>
+      </div>
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Inside Dia (ID)</span>
+        <span id="id-res" class="text-base font-mono font-bold text-ink">0.269" (6.83 mm)</span>
+      </div>
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Wall Thickness</span>
+        <span id="wall-res" class="text-base font-mono font-bold text-ink">0.068" (1.73 mm)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Nominal Pipe Sizes Reference Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">NPS</th>
+            <th class="p-3 font-semibold">Actual OD (in / mm)</th>
+            <th class="p-3 font-semibold">Sch 40 Wall (in / mm)</th>
+            <th class="p-3 font-semibold">Sch 80 Wall (in / mm)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {pipes.map(p => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{p.nps}</td>
+              <td class="p-3 text-ink">{p.od}" / {Math.round(p.od * 25.4 * 100) / 100} mm</td>
+              <td class="p-3 text-ink">{p.sch40}" / {Math.round(p.sch40 * 25.4 * 100) / 100} mm</td>
+              <td class="p-3 text-muted-text">{p.sch80}" / {Math.round(p.sch80 * 25.4 * 100) / 100} mm</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const pipeSelect = document.getElementById('pipe-select') as HTMLSelectElement;
+    const schSelect = document.getElementById('sch-select') as HTMLSelectElement;
+
+    const odRes = document.getElementById('od-res') as HTMLSpanElement;
+    const idRes = document.getElementById('id-res') as HTMLSpanElement;
+    const wallRes = document.getElementById('wall-res') as HTMLSpanElement;
+
+    function calculate() {
+      const selected = pipeSelect.options[pipeSelect.selectedIndex];
+      const sch = schSelect.value;
+
+      const od = parseFloat(selected.getAttribute('data-od') || '0');
+      const wall = parseFloat(selected.getAttribute(`data-sch${sch}`) || '0');
+
+      if (!od || !wall) return;
+
+      const id = od - 2 * wall;
+
+      const toMm = (val: number) => Math.round(val * 25.4 * 100) / 100;
+
+      if (odRes) odRes.textContent = `${od.toFixed(3)}" (${toMm(od)} mm)`;
+      if (idRes) idRes.textContent = `${id.toFixed(3)}" (${toMm(id)} mm)`;
+      if (wallRes) wallRes.textContent = `${wall.toFixed(3)}" (${toMm(wall)} mm)`;
+    }
+
+    pipeSelect?.addEventListener('change', calculate);
+    schSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Why NPS Doesn't Match Actual Dimensions</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Nominal Pipe Size (NPS)</strong> is a historical trade designation that evolved from early iron pipe standards. The original NPS number roughly corresponded to the inside diameter of standard-weight pipe, but as schedules (wall thicknesses) were introduced, the NPS number became purely nominal.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>NPS 1/2:</strong> OD = 0.840" (not 0.500")</div>
+        <div><strong>NPS 1:</strong> OD = 1.315" (not 1.000")</div>
+        <div><strong>NPS 2:</strong> OD = 2.375" (not 2.000")</div>
+        <div><strong>Key Rule:</strong> Always use the OD from the pipe dimension table, never assume NPS = actual diameter</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Pipe Schedule and Pressure Ratings</h3>
+      <p class="leading-relaxed mb-3">
+        The pipe schedule system (Sch 5, 10, 20, 30, 40, 60, 80, 100, 120, 140, 160, STD, XS, XXS) defines wall thickness. <strong>Schedule 40</strong> is the most common for plumbing and general-purpose applications. <strong>Schedule 80</strong> provides extra wall thickness for higher-pressure or corrosive service.
+      </p>
+      <p class="leading-relaxed">
+        Pressure rating depends on pipe material, diameter, wall thickness, and temperature. For carbon steel Sch 40 pipe, typical working pressure ranges from 150 psi (1/2") to 280 psi (4") at ambient temperature.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Pipe Size Conversion</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/flow-rate-converter-gpm-to-lpm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Flow Rate Converter</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/torque-converter-ft-lb-to-nm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Torque Converter</a>
+      <a href="/psi-to-bar-to-kpa-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PSI to Bar Converter</a>
+      <a href="/thread-pitch-converter-metric-unc-unf" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Thread Pitch Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

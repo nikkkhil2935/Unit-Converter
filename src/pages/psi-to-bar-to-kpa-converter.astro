@@ -1,0 +1,249 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "PSI to Bar to kPa Converter | Tire Pressure & Pressure Unit Calculator";
+const description = "Instantly convert pressure between PSI, Bar, and kPa (kilopascals). Live triple-field converter with reference values for tire pressure, atmospheric pressure, and industrial systems.";
+const keywords = "psi to bar, psi to kpa, bar to psi, kpa to psi, tire pressure converter, pressure unit converter, psi bar kpa calculator, convert psi to bar, bar to kpa, 32 psi to bar";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Pressure Converter", url: "/pressure-converter" },
+  { name: "PSI to Bar to kPa", url: "/psi-to-bar-to-kpa-converter" }
+];
+
+const faqs = [
+  {
+    question: "How do you convert PSI to Bar?",
+    answer: "1 PSI = 0.0689476 Bar. Formula: Bar = PSI × 0.0689476. Example: 32 PSI (typical car tire) = 32 × 0.0689476 = 2.21 bar. To go the other way: PSI = Bar ÷ 0.0689476 = Bar × 14.5038."
+  },
+  {
+    question: "What is the difference between PSI, Bar, and kPa?",
+    answer: "PSI (Pounds per Square Inch) is an imperial pressure unit common in the US. Bar is a metric unit equal to 100 kPa and approximately equal to 1 atmosphere. kPa (kilopascal) is the SI metric unit for pressure. Relationship: 1 bar = 100 kPa = 14.504 PSI. Standard atmosphere = 1.01325 bar = 101.325 kPa = 14.696 PSI."
+  },
+  {
+    question: "What is standard car tire pressure in bar?",
+    answer: "The typical recommended tire pressure for passenger cars is 30–35 PSI, which equals approximately 2.1–2.4 bar or 207–241 kPa. Always check your vehicle's door jamb sticker (driver's side) for the manufacturer's recommended tire pressure, which varies by vehicle model and load."
+  },
+  {
+    question: "What is 1 atmosphere in PSI, Bar, and kPa?",
+    answer: "Standard atmospheric pressure (1 atm) = 14.696 PSI = 1.01325 bar = 101.325 kPa. This is the air pressure at sea level used as a reference point for engineering calculations, weather reporting, and scuba diving (depth pressure calculations)."
+  },
+  {
+    question: "What PSI is recommended for bicycle tires?",
+    answer: "Road bike tires: 80–130 PSI (5.5–8.9 bar). Hybrid/touring bikes: 50–70 PSI (3.4–4.8 bar). Mountain bike tires: 25–35 PSI (1.7–2.4 bar). Fat bike tires: 5–15 PSI (0.35–1.0 bar). Higher pressure = less rolling resistance; lower pressure = more traction."
+  }
+];
+
+const commonValues = [
+  { desc: "Car Tire (Standard)", psi: 32, bar: 2.21, kpa: 220.6 },
+  { desc: "Car Tire (High Load)", psi: 36, bar: 2.48, kpa: 248.2 },
+  { desc: "Bicycle Tire (Road)", psi: 90, bar: 6.2, kpa: 620 },
+  { desc: "Mountain Bike Tire", psi: 28, bar: 1.93, kpa: 193 },
+  { desc: "Standard Atmosphere (1 atm)", psi: 14.696, bar: 1.013, kpa: 101.325 },
+  { desc: "Scuba Tank (Full)", psi: 3000, bar: 206.8, kpa: 20684 },
+  { desc: "Natural Gas Pipeline", psi: 150, bar: 10.3, kpa: 1034 },
+  { desc: "Boiler Pressure (Steam)", psi: 200, bar: 13.8, kpa: 1379 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/psi-to-bar-to-kpa-converter"
+  categorySlug="pressure"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/pressure-converter" class="hover:text-brand-blue transition-colors">Pressure Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">PSI - Bar - kPa</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">PSI to Bar to kPa Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 Bar = 14.50377 PSI = 100 kPa</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: Standard passenger car tire pressure of 32 PSI is equivalent to 2.2 Bar or 220 kPa.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive 3-way Calculator -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-6 font-mono font-bold">Live Triple Pressure Converter</h2>
+    
+    <div class="space-y-4">
+      <div>
+        <label for="psi-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Pounds per Square Inch (PSI)</label>
+        <div class="relative">
+          <input
+            id="psi-in"
+            type="number"
+            step="any"
+            value="32"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">PSI</span>
+        </div>
+      </div>
+
+      <div>
+        <label for="bar-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Bar</label>
+        <div class="relative">
+          <input
+            id="bar-in"
+            type="number"
+            step="any"
+            value="2.206"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">bar</span>
+        </div>
+      </div>
+
+      <div>
+        <label for="kpa-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Kilopascal (kPa)</label>
+        <div class="relative">
+          <input
+            id="kpa-in"
+            type="number"
+            step="any"
+            value="220.6"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">kPa</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Values Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Common Pressure Benchmarks</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Description</th>
+            <th class="p-3 font-semibold">PSI</th>
+            <th class="p-3 font-semibold">Bar</th>
+            <th class="p-3 font-semibold">kPa</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonValues.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-medium text-ink">{row.desc}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.psi} PSI</td>
+              <td class="p-3 text-ink">{row.bar} bar</td>
+              <td class="p-3 text-muted-text">{row.kpa} kPa</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const psiIn = document.getElementById('psi-in') as HTMLInputElement;
+    const barIn = document.getElementById('bar-in') as HTMLInputElement;
+    const kpaIn = document.getElementById('kpa-in') as HTMLInputElement;
+
+    // Conversion coefficients
+    // 1 PSI = 0.0689475729 Bar
+    // 1 Bar = 100 kPa
+    // 1 PSI = 6.89475729 kPa
+
+    function updateFromPsi(psi: number) {
+      if (isNaN(psi)) return;
+      if (barIn) barIn.value = Number((psi * 0.0689475729).toFixed(4)).toString();
+      if (kpaIn) kpaIn.value = Number((psi * 6.89475729).toFixed(2)).toString();
+    }
+
+    function updateFromBar(bar: number) {
+      if (isNaN(bar)) return;
+      if (psiIn) psiIn.value = Number((bar / 0.0689475729).toFixed(2)).toString();
+      if (kpaIn) kpaIn.value = Number((bar * 100).toFixed(2)).toString();
+    }
+
+    function updateFromKpa(kpa: number) {
+      if (isNaN(kpa)) return;
+      if (psiIn) psiIn.value = Number((kpa / 6.89475729).toFixed(2)).toString();
+      if (barIn) barIn.value = Number((kpa / 100).toFixed(4)).toString();
+    }
+
+    psiIn?.addEventListener('input', () => {
+      const v = parseFloat(psiIn.value);
+      updateFromPsi(v);
+    });
+
+    barIn?.addEventListener('input', () => {
+      const v = parseFloat(barIn.value);
+      updateFromBar(v);
+    });
+
+    kpaIn?.addEventListener('input', () => {
+      const v = parseFloat(kpaIn.value);
+      updateFromKpa(v);
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Pressure Units Explained</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>PSI</strong> (pounds per square inch) is the dominant pressure unit in the US for automotive, pneumatic, and hydraulic applications. <strong>Bar</strong> is the preferred unit in Europe and most industrial applications. <strong>kPa</strong> (kilopascal) is the SI metric standard used in scientific and international engineering contexts.
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>1 PSI</span><span class="text-brand-blue font-bold">= 0.06895 bar = 6.895 kPa</span></div>
+        <div class="flex justify-between"><span>1 Bar</span><span class="text-brand-blue font-bold">= 14.5038 PSI = 100 kPa</span></div>
+        <div class="flex justify-between"><span>1 kPa</span><span class="text-brand-blue font-bold">= 0.14504 PSI = 0.01 bar</span></div>
+        <div class="flex justify-between"><span>1 atm</span><span class="text-brand-blue font-bold">= 14.696 PSI = 1.01325 bar</span></div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Tire Pressure: PSI vs Bar Reference</h3>
+      <p class="leading-relaxed mb-3">
+        Most US tire gauges read in PSI; European gauges read in Bar. Here's a quick reference:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>28 PSI</span><span class="text-brand-blue font-bold">≈ 1.93 bar</span></div>
+        <div class="flex justify-between"><span>30 PSI</span><span class="text-brand-blue font-bold">≈ 2.07 bar</span></div>
+        <div class="flex justify-between"><span>32 PSI</span><span class="text-brand-blue font-bold">≈ 2.21 bar</span></div>
+        <div class="flex justify-between"><span>35 PSI</span><span class="text-brand-blue font-bold">≈ 2.41 bar</span></div>
+        <div class="flex justify-between"><span>38 PSI</span><span class="text-brand-blue font-bold">≈ 2.62 bar</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Pressure Conversion</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering & Pressure Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/pressure-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Pressure Converter</a>
+      <a href="/torque-converter-ft-lb-to-nm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Torque Converter (ft-lb to Nm)</a>
+      <a href="/bolt-torque-spec-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Bolt Torque Spec Calculator</a>
+      <a href="/flow-rate-converter-gpm-to-lpm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Flow Rate Converter (GPM to LPM)</a>
+      <a href="/tire-size-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Tire Size Calculator</a>
+      <a href="/hardness-converter-rockwell-brinell-vickers" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Hardness Converter (Rockwell/Brinell)</a>
+    </div>
+  </section>
+
+</BaseLayout>

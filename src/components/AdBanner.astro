@@ -1,0 +1,33 @@
+---
+interface Props {
+  slot?: string;
+  format?: 'auto' | 'fluid' | 'rectangle' | 'horizontal' | 'vertical';
+  responsive?: string;
+  style?: string;
+  class?: string;
+}
+
+const { 
+  slot = "default-slot",
+  format = "auto",
+  responsive = "true",
+  style = "display:block;",
+  class: className = ""
+} = Astro.props;
+---
+
+<div class={`ad-container my-6 mx-auto w-full overflow-hidden flex flex-col items-center select-none ${className}`}>
+  <span class="text-[9px] uppercase tracking-wider text-muted-text/50 font-mono mb-1 select-none">Advertisement</span>
+  <div class="w-full bg-card border border-hairline/60 rounded-xl flex items-center justify-center p-2 min-h-[90px] max-h-[320px]">
+    <ins class="adsbygoogle w-full"
+         style={style}
+         data-ad-client="ca-pub-9725731987817847"
+         data-ad-slot={slot}
+         data-ad-format={format}
+         data-full-width-responsive={responsive}></ins>
+  </div>
+</div>
+
+<script is:inline>
+  (window.adsbygoogle = window.adsbygoogle || []).push({});
+</script>

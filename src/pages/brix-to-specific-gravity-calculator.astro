@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Brix to Specific Gravity (SG) Calculator | Brewing & Winemaking";
+const description = "Convert sugar content in Brix or Plato to Specific Gravity (SG) for beer brewing, winemaking, and cider fermentation. Calculate potential ABV from starting gravity.";
+const keywords = "brix to specific gravity, brix to SG, brix calculator brewing, plato to SG, specific gravity to brix, brewing hydrometer, potential ABV calculator, OG brix, winemaking brix, refractometer calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Scientific & Lab", url: "/scientific-lab" },
+  { name: "Brix to Specific Gravity", url: "/brix-to-specific-gravity-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is Brix and how is it used in brewing?",
+    answer: "Brix (°Bx) is a measure of sugar concentration in aqueous solutions — specifically the percentage of sucrose by mass. In brewing and winemaking, Brix is measured using a refractometer and indicates the starting sugar content of wort or must. It directly predicts potential alcohol content after fermentation."
+  },
+  {
+    question: "How do you convert Brix to Specific Gravity?",
+    answer: "The formula is: SG = 1 + (Brix / (258.6 − (Brix / 258.5) × 227.1)). An approximate shortcut: SG ≈ 1 + (Brix × 0.004). For example, 10 Brix ≈ 1.040 SG, 15 Brix ≈ 1.061 SG, 20 Brix ≈ 1.083 SG."
+  },
+  {
+    question: "What is the difference between Brix and Plato?",
+    answer: "Brix and Plato are nearly identical scales — both measure percent dissolved sugar by mass relative to pure water at 20°C. Plato (°P) is more commonly used in professional brewing and is derived from density measurements, while Brix uses the sucrose refraction index. For practical purposes, 1 °Bx ≈ 1 °P."
+  },
+  {
+    question: "How do I calculate potential ABV from Brix?",
+    answer: "Step 1: Convert Brix to Starting Gravity (OG). Step 2: After fermentation is complete, convert final Brix to Final Gravity (FG). Step 3: ABV = (OG − FG) × 131.25. Note: After fermentation starts, you must apply a refractometer correction because dissolved alcohol distorts refractometer readings."
+  },
+  {
+    question: "What Brix should my must be for a 12% ABV wine?",
+    answer: "For 12% ABV wine, you need an OG of approximately 1.091, which corresponds to about 22–23 Brix. Yeast typically ferments wort completely dry (to SG 1.000), so the potential ABV = (OG − 1.000) × 131.25 = (0.091 × 131.25) ≈ 11.9%."
+  }
+];
+
+const standardConversions = [
+  { brix: 0, sg: "1.000", abv: "0.0%", desc: "Pure water baseline" },
+  { brix: 5, sg: "1.020", abv: "2.6%", desc: "Light session beer start" },
+  { brix: 10, sg: "1.040", abv: "5.2%", desc: "Standard lager starting gravity" },
+  { brix: 15, sg: "1.061", abv: "7.9%", desc: "Strong IPA or stout starting gravity" },
+  { brix: 20, sg: "1.083", abv: "10.8%", desc: "Wine must starting sugar density" },
+  { brix: 23, sg: "1.096", abv: "12.6%", desc: "Table wine typical starting gravity" },
+  { brix: 25, sg: "1.106", abv: "13.8%", desc: "Strong dessert wine starting sugar" },
+  { brix: 30, sg: "1.130", abv: "16.9%", desc: "High-gravity beer or wine" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/brix-to-specific-gravity-calculator"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/scientific-lab" class="hover:text-brand-blue transition-colors">Scientific & Lab</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Brix to SG Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Brix to Specific Gravity (SG) Calculator</h1>
+
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl" style="border-left: 3px solid #0070f3">
+      <p class="text-base text-ink font-semibold mb-1">SG = 1 + [Brix ÷ (258.6 − (Brix ÷ 258.5) × 227.1)]</p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: 10 Brix (10% sugar) = <strong>SG 1.040</strong>, with ~5.2% potential alcohol after fermentation.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert sugar concentration between Brix, Plato, and Specific Gravity (SG) for beer brewing, winemaking, and cider fermentation. The calculator also estimates <strong>potential ABV</strong> from starting gravity — critical for recipe formulation and fermentation monitoring.
+    </p>
+  </section>
+
+  <!-- Interactive Calculator -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Sugar Concentration Input</h2>
+
+      <div>
+        <label for="brix-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Brix / Plato (°Bx)</label>
+        <input
+          id="brix-in"
+          type="number"
+          step="0.1"
+          value="10"
+          min="0"
+          max="50"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-2xl font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+        <p class="text-[10px] text-muted-text mt-1 font-mono">Enter Brix or Plato (they are equivalent scales)</p>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col gap-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Results</h2>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Specific Gravity (SG)</span>
+        <span id="sg-res" class="text-3xl font-mono font-bold text-brand-blue">1.040</span>
+      </div>
+      <div class="p-4 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Potential ABV (if fermented dry)</span>
+        <span id="abv-res" class="text-2xl font-mono font-bold text-ink">5.2%</span>
+      </div>
+      <div class="p-3 bg-canvas border border-hairline rounded-xl">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Degrees Plato</span>
+        <span id="plato-res" class="text-sm font-mono font-bold text-muted-text">10.0 °P</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Brix to SG Reference Chart — Brewing & Winemaking</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase">
+            <th class="p-3 font-semibold">Brix (°Bx)</th>
+            <th class="p-3 font-semibold">Specific Gravity</th>
+            <th class="p-3 font-semibold">Potential ABV</th>
+            <th class="p-3 font-semibold hidden sm:table-cell">Context</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {standardConversions.map(row => (
+            <tr class="hover:bg-canvas/50 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.brix}°Bx</td>
+              <td class="p-3 text-ink font-bold">{row.sg}</td>
+              <td class="p-3 text-ink">{row.abv}</td>
+              <td class="p-3 text-muted-text font-sans hidden sm:table-cell">{row.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Using a Refractometer in Brewing</h3>
+      <p class="leading-relaxed mb-3">
+        A refractometer is the go-to tool for measuring Brix in the brewery or winery. A single drop of wort or must is placed on the prism and the Brix reading is taken by looking through the eyepiece at a light source. Readings take seconds — compared to a hydrometer which requires a full sample cylinder.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Important:</strong> Refractometers are only accurate for <em>unfermented</em> wort/must. Once fermentation begins, alcohol in solution distorts the light refraction. You must apply an alcohol correction formula: FG = 1.001843 − 0.002318474 × OB − 0.000007775 × OB² − 0.000000034 × OB³ + 0.00574 × FB + 0.00003344 × FB² + 0.000000086 × FB³.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Winemaking & Fruit Wine Brix Targets</h3>
+      <p class="leading-relaxed mb-3">
+        Different beverage types have different optimal starting Brix ranges:
+      </p>
+      <div class="space-y-1.5 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>Light beer (3–4% ABV)</span><span class="text-brand-blue font-bold">8–10 Brix</span></div>
+        <div class="flex justify-between"><span>Standard beer (4–6% ABV)</span><span class="text-brand-blue font-bold">10–14 Brix</span></div>
+        <div class="flex justify-between"><span>Strong beer / DIPA (8–10%)</span><span class="text-brand-blue font-bold">16–20 Brix</span></div>
+        <div class="flex justify-between"><span>Table wine (11–14% ABV)</span><span class="text-brand-blue font-bold">21–26 Brix</span></div>
+        <div class="flex justify-between"><span>Dessert wine (16–20%)</span><span class="text-brand-blue font-bold">28–36 Brix</span></div>
+        <div class="flex justify-between"><span>Mead starting gravity</span><span class="text-brand-blue font-bold">22–30 Brix</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Brix & Specific Gravity</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Brewing & Scientific Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/proof-to-abv-alcohol-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Proof to ABV Converter</a>
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PPM to mg/L Converter</a>
+      <a href="/density-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Density Unit Converter</a>
+    </div>
+  </section>
+
+  <script>
+    const brixIn = document.getElementById('brix-in') as HTMLInputElement;
+    const sgRes = document.getElementById('sg-res') as HTMLSpanElement;
+    const abvRes = document.getElementById('abv-res') as HTMLSpanElement;
+    const platoRes = document.getElementById('plato-res') as HTMLSpanElement;
+
+    function calculate() {
+      const brix = parseFloat(brixIn.value) || 0;
+      const sg = 1 + (brix / (258.6 - (brix / 258.5) * 227.1));
+      const abv = Math.max(0, (sg - 1) * 131.25);
+
+      if (sgRes) sgRes.textContent = sg.toFixed(3);
+      if (abvRes) abvRes.textContent = `${abv.toFixed(1)}%`;
+      if (platoRes) platoRes.textContent = `${brix.toFixed(1)} °P`;
+    }
+
+    brixIn?.addEventListener('input', calculate);
+    calculate();
+  </script>
+</BaseLayout>

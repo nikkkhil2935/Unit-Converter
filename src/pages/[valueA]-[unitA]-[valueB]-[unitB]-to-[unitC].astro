@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCategory, convert, type Category, type Unit } from '../lib/conversions';
+import AdBanner from '../components/AdBanner.astro';
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  // 1. Height conversions: feet & inches to cm
+  const lengthCategory = getCategory('length');
+  if (lengthCategory) {
+    const feetUnit = lengthCategory.units.find(u => u.slug === 'feet');
+    const inchesUnit = lengthCategory.units.find(u => u.slug === 'inches');
+    const cmUnit = lengthCategory.units.find(u => u.slug === 'cm');
+    
+    if (feetUnit && inchesUnit && cmUnit) {
+      // 5'0" to 6'6" in 1" increments
+      for (let f = 5; f <= 6; f++) {
+        const maxIn = f === 6 ? 6 : 11;
+        for (let i = 0; i <= maxIn; i++) {
+          paths.push({
+            params: {
+              valueA: f.toString(),
+              unitA: "feet",
+              valueB: i.toString(),
+              unitB: "inches",
+              unitC: "cm"
+            },
+            props: {
+              category: lengthCategory,
+              unitAObj: feetUnit,
+              unitBObj: inchesUnit,
+              unitCObj: cmUnit,
+              valA: f,
+              valB: i
+            }
+          });
+        }
+      }
+    }
+  }
+
+  // 2. Weight conversions: pounds & ounces to kg
+  const weightCategory = getCategory('weight');
+  if (weightCategory) {
+    const lbsUnit = weightCategory.units.find(u => u.slug === 'lbs');
+    const ozUnit = weightCategory.units.find(u => u.slug === 'ounces');
+    const kgUnit = weightCategory.units.find(u => u.slug === 'kg');
+    
+    if (lbsUnit && ozUnit && kgUnit) {
+      // 5 lbs to 10 lbs in 4 oz increments
+      for (let l = 5; l <= 10; l++) {
+        for (let o = 0; o < 16; o += 4) {
+          paths.push({
+            params: {
+              valueA: l.toString(),
+              unitA: "lbs",
+              valueB: o.toString(),
+              unitB: "ounces",
+              unitC: "kg"
+            },
+            props: {
+              category: weightCategory,
+              unitAObj: lbsUnit,
+              unitBObj: ozUnit,
+              unitCObj: kgUnit,
+              valA: l,
+              valB: o
+            }
+          });
+        }
+      }
+    }
+  }
+
+  return paths;
+}
+
+interface Props {
+  category: Category;
+  unitAObj: Unit;
+  unitBObj: Unit;
+  unitCObj: Unit;
+  valA: number;
+  valB: number;
+}
+
+const { category, unitAObj, unitBObj, unitCObj, valA, valB } = Astro.props;
+
+let result = 0;
+if (category.id === 'length') {
+  // feet and inches to cm
+  const totalInches = valA * 12 + valB;
+  result = convert(totalInches, 'inch', 'centimeter', 'length');
+} else if (category.id === 'weight') {
+  // lbs and oz to kg
+  const totalLbs = valA + valB / 16;
+  result = convert(totalLbs, 'pound', 'kilogram', 'weight');
+}
+
+// Title & Meta tags
+const title = `${valA} ${unitAObj.slug} ${valB} ${unitBObj.slug} to ${unitCObj.slug} | Exact Conversion`;
+const description = `What is ${valA} ${unitAObj.slug} ${valB} ${unitBObj.slug} in ${unitCObj.name.toLowerCase()}? The exact result is ${result.toFixed(2)} ${unitCObj.symbol}. Free, instant.`;
+
+// Pre-generate loop backlinks for other heights or weights
+const isLength = category.id === 'length';
+const isWeight = category.id === 'weight';
+
+const heightValues = [];
+if (isLength) {
+  for (let f = 5; f <= 6; f++) {
+    const maxIn = f === 6 ? 6 : 11;
+    for (let i = 0; i <= maxIn; i++) {
+      if (f !== valA || i !== valB) {
+        heightValues.push({ ft: f, in: i });
+      }
+    }
+  }
+}
+
+const weightValues = [];
+if (isWeight) {
+  for (let l = 5; l <= 10; l++) {
+    for (let o = 0; o < 16; o += 4) {
+      if (l !== valA || o !== valB) {
+        weightValues.push({ lbs: l, oz: o });
+      }
+    }
+  }
+}
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  categorySlug={category.slug}
+  robots="noindex, follow"
+>
+  <!-- Visible Breadcrumbs -->
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href={`/${category.slug}-converter`} class="hover:text-brand-blue transition-colors">{category.name} Converter</a>
+    <span>/</span>
+    <a href={`/${unitAObj.slug}-and-${unitBObj.slug}-to-${unitCObj.slug}`} class="hover:text-brand-blue transition-colors">{unitAObj.symbol} & {unitBObj.symbol} to {unitCObj.symbol}</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">{valA} {unitAObj.symbol} {valB} {unitBObj.symbol}</span>
+  </nav>
+
+  <AdBanner slot="compound-val-top" format="horizontal" />
+
+  <!-- Title & Direct Answer Block -->
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">
+      {valA} {unitAObj.name} {valB} {unitBObj.name} to {unitCObj.name}
+    </h1>
+
+    <!-- Direct Answer Block (Snippet Bait) -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>{valA} {unitAObj.symbol} {valB} {unitBObj.symbol} = {result.toFixed(2)} {unitCObj.symbol}</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Calculated using exact conversion coefficients.
+      </p>
+    </div>
+  </section>
+
+  <AdBanner slot="compound-val-mid" format="rectangle" />
+
+  <div class="mt-8 pt-8 border-t border-hairline flex flex-col gap-6 select-none max-w-2xl">
+    <div class="flex justify-start select-none">
+      <a href={`/${unitAObj.slug}-and-${unitBObj.slug}-to-${unitCObj.slug}`} class="inline-flex items-center text-xs font-semibold text-brand-blue hover:underline gap-1 cursor-pointer">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        Go to main compound details page
+      </a>
+    </div>
+
+    <AdBanner slot="compound-val-list" format="rectangle" />
+
+    {isLength && (
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other height conversions</h3>
+        <div class="flex flex-wrap gap-1.5 text-[9px] font-mono">
+          {heightValues.map(v => (
+            <a href={`/${v.ft}-feet-${v.in}-inches-to-cm`} class="px-2 py-1 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded">
+              {v.ft}' {v.in}" to cm
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {isWeight && (
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other weight conversions</h3>
+        <div class="flex flex-wrap gap-1.5 text-[9px] font-mono">
+          {weightValues.map(v => (
+            <a href={`/${v.lbs}-lbs-${v.oz}-ounces-to-kg`} class="px-2 py-1 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded">
+              {v.lbs} lb {v.oz} oz to kg
+            </a>
+          ))}
+        </div>
+      </div>
+    )}
+  </div>
+
+  <AdBanner slot="compound-val-bottom" format="horizontal" />
+</BaseLayout>

@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryIcon from '../components/CategoryIcon';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+
+const title = "Finance & Business Calculators — Interest, Sales Tax, Wages";
+const description = "Free online finance and business calculators. Estimate simple interest, calculate compound interest growth, compute sales tax, apply discounts, and calculate salary to hourly wages.";
+
+const crumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Finance & Business', url: '/finance-business' }
+];
+
+const tools = [
+  { label: "Simple Interest Calculator", href: "/simple-interest-calculator", desc: "Calculate simple interest values, principal, rate, or time parameters using the standard formula." },
+  { label: "Compound Interest Calculator", href: "/compound-interest-calculator", desc: "Calculate compound interest rates over time, compounded monthly, quarterly, or annually." },
+  { label: "Sales Tax Calculator", href: "/sales-tax-calculator", desc: "Quickly determine sales tax additions or work backwards to find pre-tax values." },
+  { label: "Discount Calculator", href: "/discount-calculator", desc: "Calculate final purchase price, savings amounts, and sales tax percentages on discounted items." },
+  { label: "Salary to Hourly Converter", href: "/salary-to-hourly-calculator", desc: "Convert your annual, monthly, or weekly salary into an equivalent hourly wage rate." }
+];
+
+const faqs = [
+  {
+    question: "What is the difference between simple interest and compound interest?",
+    answer: "Simple interest is calculated only on the principal amount of a loan or investment. Compound interest is calculated on the principal plus any accumulated interest from previous periods, leading to exponential growth over time."
+  },
+  {
+    question: "How is sales tax calculated?",
+    answer: "Sales tax is calculated by multiplying the purchase price of an item by the tax rate (in decimal form). For example, a $100 item with a 7% sales tax will have $7 in tax, making the total cost $107."
+  },
+  {
+    question: "How do you calculate salary to hourly rates?",
+    answer: "To convert an annual salary to an hourly wage rate, divide the salary by the number of work hours in a year. For a standard 40-hour work week over 52 weeks, divide the annual salary by 2,080 hours."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="finance calculators, interest calculator, simple interest, compound interest, sales tax calculator, discount calculator, salary to hourly"
+  canonicalPath="/finance-business"
+  ogTitle={title}
+  ogDescription={description}
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title Section -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2 flex items-center gap-2.5">
+      <CategoryIcon id="finance" className="w-8 h-8 text-brand-blue" />
+      <span>Finance & Business Calculators</span>
+    </h1>
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Free business calculations to project investment compounding growth, calculate loan interest payments, calculate sales tax rates, and estimate your hourly wage equivalents.
+    </p>
+  </section>
+
+  <!-- Tools Grid (Clickable Boxes) -->
+  <section class="mb-10 select-none">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tools.map(tool => (
+        <a
+          href={tool.href}
+          class="group block p-5 rounded-xl border border-hairline bg-card hover:border-brand-blue transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between cursor-pointer"
+        >
+          <div>
+            <h2 class="font-semibold text-sm text-ink mb-2 group-hover:text-brand-blue transition-colors duration-200">
+              {tool.label}
+            </h2>
+            <p class="text-xs text-body-text mb-4 leading-relaxed line-clamp-3">
+              {tool.desc}
+            </p>
+          </div>
+          <span
+            class="inline-flex items-center text-[10px] font-semibold text-brand-blue opacity-80 group-hover:opacity-100 transition-opacity mt-auto pt-2"
+          >
+            Open calculator
+            <svg class="ml-1 w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Related Specialist Categories -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text select-none">
+    <h3 class="font-semibold text-ink mb-3">Other Specialist Calculators</h3>
+    <div class="flex flex-wrap gap-4">
+      <a href="/cooking-baking" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Cooking & Baking</a>
+      <a href="/engineering-trade" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Engineering & Trade</a>
+      <a href="/scientific-lab" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Scientific & Lab</a>
+      <a href="/construction-diy" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Construction & DIY</a>
+      <a href="/sizing-automotive" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Sizing & Automotive</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 transition-colors mb-10 select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+      Finance & Business FAQs
+    </h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+</BaseLayout>

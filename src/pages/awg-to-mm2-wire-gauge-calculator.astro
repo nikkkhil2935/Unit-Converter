@@ -1,0 +1,223 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "AWG to mm² Wire Gauge Calculator | Ampacity Table";
+const description = "Convert American Wire Gauge (AWG) sizes to cross-sectional area in square millimeters (mm²). Includes current carrying capacity (ampacity) reference tables.";
+const keywords = "awg to mm2 calculator, wire gauge converter, american wire gauge to mm2, awg to square millimeters, wire size calculator, ampacity table, wire gauge chart, awg mm2 conversion, electrical wire size, wire cross section calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "AWG to mm² Wire Gauge Calculator", url: "/awg-to-mm2-wire-gauge-calculator" }
+];
+
+const faqs = [
+  {
+    question: "What is the formula to convert AWG to mm²?",
+    answer: "The wire diameter in millimeters is d = 0.127 × 92^((36-AWG)/39). The cross-sectional area in mm² is calculated using the formula A = (π/4) × d². For AWG 0 and smaller (1/0, 2/0, 3/0, 4/0), use negative AWG values: 1/0 = 0, 2/0 = -1, 3/0 = -2, 4/0 = -3."
+  },
+  {
+    question: "How many mm² is 10 AWG?",
+    answer: "10 AWG is equal to approximately 5.26 mm² with a diameter of 2.59 mm. The NEC ampacity rating for 10 AWG copper wire at 75°C is 35 Amps, making it suitable for 20-amp household circuits with margin."
+  },
+  {
+    question: "What AWG wire is used for household wiring?",
+    answer: "Standard 15-amp household circuits use 14 AWG (2.08 mm²) copper wire. 20-amp circuits require 12 AWG (3.31 mm²). Major appliances like dryers and ranges use 10 AWG (5.26 mm²) or larger. Always follow local electrical codes for wire sizing."
+  },
+  {
+    question: "What is the difference between AWG and metric wire sizes?",
+    answer: "AWG (American Wire Gauge) uses a gauge number system where smaller numbers indicate larger wires. Metric wire is specified by cross-sectional area in mm². A lower AWG number = thicker wire = more current capacity. For example, 6 AWG (13.30 mm²) carries 65A vs 10 AWG (5.26 mm²) carrying 35A."
+  },
+  {
+    question: "How does temperature affect wire ampacity?",
+    answer: "Wire current capacity decreases as ambient temperature increases. NEC ampacity ratings are based on 30°C ambient. For every 1°C above 30°C, derate the ampacity by approximately 0.5-0.8% depending on wire size. Bundled cables in conduit generate more heat and require additional derating factors."
+  }
+];
+
+const awgTable = [
+  { awg: "4/0", mm2: 107.22, ampacity: 230, diameter: 11.68 },
+  { awg: "3/0", mm2: 85.01, ampacity: 200, diameter: 10.40 },
+  { awg: "2/0", mm2: 67.43, ampacity: 175, diameter: 9.27 },
+  { awg: "1/0", mm2: 53.49, ampacity: 150, diameter: 8.25 },
+  { awg: "1", mm2: 42.41, ampacity: 130, diameter: 7.35 },
+  { awg: "2", mm2: 33.62, ampacity: 115, diameter: 6.54 },
+  { awg: "4", mm2: 21.15, ampacity: 85, diameter: 5.19 },
+  { awg: "6", mm2: 13.30, ampacity: 65, diameter: 4.11 },
+  { awg: "8", mm2: 8.37, ampacity: 50, diameter: 3.26 },
+  { awg: "10", mm2: 5.26, ampacity: 35, diameter: 2.59 },
+  { awg: "12", mm2: 3.31, ampacity: 25, diameter: 2.05 },
+  { awg: "14", mm2: 2.08, ampacity: 20, diameter: 1.63 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/awg-to-mm2-wire-gauge-calculator"
+  categorySlug="length"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/length-converter" class="hover:text-brand-blue transition-colors">Length Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">AWG to mm²</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">AWG to mm² Wire Gauge Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>10 AWG = 5.26 mm² (Diameter: 2.59 mm)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Typical copper wire current capacity: 35 Amps at 75°C.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert standard American Wire Gauge (AWG) sizes to metric cross-sectional area (mm²) and diameters. Check standard ampacity codes for electric cable ratings.
+    </p>
+  </section>
+
+  <!-- Calculator Widget -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive AWG to mm² Converter</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="awg-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Wire Size (AWG)</label>
+        <input
+          id="awg-input"
+          type="text"
+          value="10"
+          placeholder="e.g. 10, 4/0, 2"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Area (mm²)</span>
+          <span id="mm2-result" class="text-xl font-mono font-bold text-brand-blue">5.26 mm²</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Diameter (mm)</span>
+          <span id="dia-result" class="text-xl font-mono font-bold text-ink">2.59 mm</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ampacity Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">AWG to mm² Ampacity Reference Table</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">AWG Size</th>
+            <th class="p-3 font-semibold">Area (mm²)</th>
+            <th class="p-3 font-semibold">Diameter (mm)</th>
+            <th class="p-3 font-semibold">NEC Ampacity (Amps at 75°C)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {awgTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.awg}</td>
+              <td class="p-3 text-ink">{row.mm2} mm²</td>
+              <td class="p-3 text-ink">{row.diameter} mm</td>
+              <td class="p-3 text-muted-text">{row.ampacity} A</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const awgInput = document.getElementById('awg-input') as HTMLInputElement;
+    const mm2Result = document.getElementById('mm2-result') as HTMLSpanElement;
+    const diaResult = document.getElementById('dia-result') as HTMLSpanElement;
+
+    function awgToMm2(awgStr: string) {
+      let awg = 0;
+      if (awgStr === '0000' || awgStr.toLowerCase() === '4/0') awg = -3;
+      else if (awgStr === '000' || awgStr.toLowerCase() === '3/0') awg = -2;
+      else if (awgStr === '00' || awgStr.toLowerCase() === '2/0') awg = -1;
+      else if (awgStr === '0' || awgStr.toLowerCase() === '1/0') awg = 0;
+      else awg = parseInt(awgStr);
+
+      if (isNaN(awg)) return null;
+
+      const diameter = 0.127 * Math.pow(92, (36 - awg) / 39);
+      const area = (Math.PI / 4) * Math.pow(diameter, 2);
+
+      return {
+        diameter: Math.round(diameter * 1000) / 1000,
+        area: Math.round(area * 100) / 100
+      };
+    }
+
+    awgInput?.addEventListener('input', () => {
+      const val = awgInput.value.trim();
+      const res = awgToMm2(val);
+      if (res && mm2Result && diaResult) {
+        mm2Result.textContent = `${res.area} mm²`;
+        diaResult.textContent = `${res.diameter} mm`;
+      } else {
+        if (mm2Result) mm2Result.textContent = 'Invalid';
+        if (diaResult) diaResult.textContent = 'Invalid';
+      }
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding AWG Wire Gauge System</h3>
+      <p class="leading-relaxed mb-3">
+        The <strong>American Wire Gauge (AWG)</strong> system uses a logarithmic scale where each decrease of 6 gauge numbers doubles the wire cross-sectional area. A lower AWG number means thicker wire with higher current capacity. For example, 6 AWG (13.30 mm²) is roughly double the area of 8 AWG (8.37 mm²).
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Area Ratio:</strong> Each gauge step = ×1.26 area change</div>
+        <div><strong>Diameter Ratio:</strong> Each gauge step = ×1.123 diameter change</div>
+        <div><strong>6-gauge rule:</strong> Every 6 AWG steps = doubling of area</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Ampacity and Wire Selection</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Ampacity</strong> (ampere capacity) is the maximum current a wire can carry continuously without exceeding its temperature rating. NEC Table 310.16 lists ampacities for copper and aluminum conductors at 60°C, 75°C, and 90°C insulation ratings.
+      </p>
+      <p class="leading-relaxed">
+        When selecting wire size, consider: circuit breaker rating, voltage drop (keep under 3% for branch circuits), conductor bundling derating, ambient temperature, and installation method (conduit, cable tray, or free air).
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — AWG Wire Gauge</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/mm2-to-awg-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">mm² to AWG Calculator</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/flow-rate-converter-gpm-to-lpm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Flow Rate Converter</a>
+      <a href="/pipe-size-converter-nominal-to-actual" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Pipe Size Converter</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

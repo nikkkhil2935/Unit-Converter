@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Osmolality to Osmolarity Converter | Solution Concentration Guide";
+const description = "Understand the difference and convert between Osmolality (osm/kg H2O) and Osmolarity (osm/L solution) for biological fluids.";
+const keywords = "osmolality to osmolarity converter, osmolarity calculator, osmolality osmolarity difference, mOsm kg to mOsm L, solution concentration converter, osmolality normal range, osmolarity formula, biological fluid concentration, serum osmolality, clinical osmolality";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Science & Lab", url: "/scientific-lab" },
+  { name: "Osmolality to Osmolarity", url: "/osmolality-to-osmolarity-converter" }
+];
+
+const faqs = [
+  {
+    question: "What is the difference between osmolality and osmolarity?",
+    answer: "Osmolality measures osmoles of solute per kilogram of solvent (mOsm/kg H₂O) — it's temperature-independent. Osmolarity measures osmoles per liter of solution (mOsm/L) — it changes slightly with temperature due to liquid volume expansion."
+  },
+  {
+    question: "How do you convert osmolality to osmolarity?",
+    answer: "For biological fluids: Osmolarity (mOsm/L) ≈ 0.93 × Osmolality (mOsm/kg). This approximation accounts for the density of plasma/serum (~1.006 kg/L) and the partial specific volume of proteins. For pure water solutions: Osmolarity ≈ Osmolality × density of solution."
+  },
+  {
+    question: "What is normal serum osmolality?",
+    answer: "Normal human serum osmolality ranges from 275 to 295 mOsm/kg (255 to 275 mOsm/L). Values below 250 mOsm/kg indicate hypotonicity; above 300 mOsm/kg indicate hypertonicity. Serum osmolality is a key indicator of hydration and electrolyte balance."
+  },
+  {
+    question: "What causes high osmolality?",
+    answer: "Common causes include: dehydration (most common), diabetes insipidus, hyperglycemia, hypernatremia, uremia, ethylene glycol or methanol poisoning, and contrast dye administration. An 'osmolar gap' (measured > calculated by >10 mOsm/kg) suggests unmeasured osmoles like toxins."
+  },
+  {
+    question: "Why is osmolality preferred over osmolarity in clinical labs?",
+    answer: "Osmolality is preferred because it's temperature-independent and measured directly with a freezing-point osmometer. Osmolarity requires knowledge of solution density and is temperature-dependent. For blood/serum, the small density correction means the numerical difference is usually minor (<7%)."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/osmolality-to-osmolarity-converter"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Osmolality vs Osmolarity</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Osmolality to Osmolarity Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Biological Fluids: Osmolarity (mOsm/L) ≈ 0.93 × Osmolality (mOsm/kg)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Osmolality measures solutes per kilogram of solvent. Osmolarity measures solutes per Liter of solution.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Osmolality Input</h2>
+      
+      <div>
+        <label for="osmolality-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Osmolality (mOsm/kg)</label>
+        <input
+          id="osmolality-in"
+          type="number"
+          value="300"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Estimated Osmolarity</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono font-bold">Osmolarity (mOsm/L)</span>
+        <span id="osmolarity-res" class="text-lg font-mono font-bold text-brand-blue">279 mOsm/L</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Explanation -->
+  <section class="prose prose-sm dark:prose-invert max-w-none border-t border-hairline pt-8 mb-10 text-body-text">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-xs leading-relaxed">
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Why They Differ</h3>
+        <p class="mb-3">
+          <strong>Osmolality:</strong> Measures the concentration relative to solute mass of water (solvent). It remains stable regardless of temperature changes since mass does not expand.
+          <br/><br/>
+          <strong>Osmolarity:</strong> Relies on the volume of the solution. Because liquids expand with higher temperatures, osmolarity values decrease slightly as temperature climbs.
+        </p>
+      </div>
+      <div>
+        <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Clinical Reference</h3>
+        <p class="mb-3">
+          Normal human serum values range between 275 and 295 mOsm/kg. An "osmolar gap" occurs when measured osmolality exceeds calculated osmolarity, which can indicate toxic alcohol ingestion.
+        </p>
+        <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+          <div><strong>Normal Range:</strong> 275–295 mOsm/kg</div>
+          <div><strong>Hypotonic:</strong> &lt;250 mOsm/kg</div>
+          <div><strong>Hypertonic:</strong> &gt;300 mOsm/kg</div>
+          <div><strong>Osmolar Gap:</strong> Measured − Calculated &gt;10 = abnormal</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const osmolalityIn = document.getElementById('osmolality-in') as HTMLInputElement;
+    const osmolarityRes = document.getElementById('osmolarity-res') as HTMLSpanElement;
+
+    osmolalityIn?.addEventListener('input', () => {
+      const val = parseFloat(osmolalityIn.value) || 0;
+      if (osmolarityRes) {
+        osmolarityRes.textContent = `${Math.round(val * 0.93)} mOsm/L`;
+      }
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Osmolality in Clinical Medicine</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Serum osmolality</strong> is a critical diagnostic tool for evaluating fluid and electrolyte balance. It's used to diagnose dehydration, diabetes insipidus, SIADH (syndrome of inappropriate ADH), and toxic ingestions.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Serum (normal):</strong> 275–295 mOsm/kg</div>
+        <div><strong>Urine (normal):</strong> 50–1200 mOsm/kg</div>
+        <div><strong>IV Saline (0.9%):</strong> ~308 mOsm/L</div>
+        <div><strong>IV D5W:</strong> ~252 mOsm/L</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Osmolality in Food Science</h3>
+      <p class="leading-relaxed mb-3">
+        In food processing, osmolality controls microbial growth and product stability. High-sugar or high-salt foods have elevated osmolality that inhibits bacterial growth by creating osmotic stress — the principle behind curing, jam-making, and fermentation brines.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Beverage formulation:</strong> Sports drinks target 200-300 mOsm/kg for optimal gastric emptying and absorption. Hypertonic solutions ({'>'}350 mOsm/kg) slow absorption; hypotonic solutions ({'<'}200 mOsm/kg) are absorbed fastest but may not provide adequate electrolytes.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Osmolality/Osmolarity</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Science Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/ph-to-hydrogen-concentration-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">pH to [H+] Calculator</a>
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PPM to mg/L Converter</a>
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/spectrophotometry-absorbance-to-transmittance" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Absorbance to Transmittance</a>
+    </div>
+  </section>
+
+</BaseLayout>

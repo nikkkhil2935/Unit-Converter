@@ -1,0 +1,122 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Candy Making Temperature Stages | Sugar Syrup Chart";
+const description = "Complete guide to sugar syrup temperature stages for confectionery making. Includes thread, soft-ball, firm-ball, hard-ball, soft-crack, and hard-crack stages.";
+
+const stages = [
+  { name: "Thread", c: "106°C - 113°C", f: "223°F - 235°F", sugarConcentration: "80%", usage: "Syrups, liqueurs, candied fruit" },
+  { name: "Soft Ball", c: "112°C - 116°C", f: "235°F - 240°F", sugarConcentration: "85%", usage: "Fudge, pralines, fondant, marshmallows" },
+  { name: "Firm Ball", c: "118°C - 120°C", f: "244°F - 248°F", sugarConcentration: "87%", usage: "Caramels, soft nougat, toffee" },
+  { name: "Hard Ball", c: "121°C - 130°C", f: "250°F - 266°F", sugarConcentration: "92%", usage: "Rock candy, marshmallows, gummy candies" },
+  { name: "Soft Crack", c: "132°C - 143°C", f: "270°F - 290°F", sugarConcentration: "95%", usage: "Butterscotch, taffy, hard nougat" },
+  { name: "Hard Crack", c: "149°C - 154°C", f: "300°F - 310°F", sugarConcentration: "99%", usage: "Lollipops, toffee, glass candy, brittles" },
+  { name: "Caramel (Light)", c: "160°C - 170°C", f: "320°F - 338°F", sugarConcentration: "100%", usage: "Flan topping, caramel cages, spun sugar" },
+  { name: "Caramel (Dark)", c: "171°C - 177°C", f: "340°F - 350°F", sugarConcentration: "100%", usage: "Coloring agent, dark caramel sauces" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="temperature">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Candy Stages Chart</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Candy Making Temperature Stages Chart</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Soft Ball Stage = 112°C to 116°C (235°F to 240°F)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Commonly used for fudge and pralines. Sugar concentration reaches roughly 85%.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      A comprehensive temperature chart for boiling sugar syrups. Identify stages using a candy thermometer or cold water testing.
+    </p>
+  </section>
+
+  <!-- Interactive Checker -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Stage Identifier</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="temp-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Boiling Temperature</label>
+        <div class="relative">
+          <input
+            id="temp-input"
+            type="number"
+            value="115"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">°C</span>
+        </div>
+      </div>
+
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Current Candy Stage</span>
+        <span id="stage-res" class="text-lg font-mono font-bold text-brand-blue">Soft Ball</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Sugar Boiling Stages</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Stage Name</th>
+            <th class="p-3 font-semibold">Celsius Range</th>
+            <th class="p-3 font-semibold">Fahrenheit Range</th>
+            <th class="p-3 font-semibold">Sugar Concentration</th>
+            <th class="p-3 font-semibold">Common Uses</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {stages.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.name}</td>
+              <td class="p-3 text-ink">{row.c}</td>
+              <td class="p-3 text-ink">{row.f}</td>
+              <td class="p-3 text-ink">{row.sugarConcentration}</td>
+              <td class="p-3 text-muted-text font-sans">{row.usage}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const tempInput = document.getElementById('temp-input') as HTMLInputElement;
+    const stageRes = document.getElementById('stage-res') as HTMLSpanElement;
+
+    function getStage(cVal: number): string {
+      if (cVal < 106) return "Warm Syrup (Below thread)";
+      if (cVal <= 113) return "Thread Stage";
+      if (cVal <= 116) return "Soft Ball Stage";
+      if (cVal <= 120) return "Firm Ball Stage";
+      if (cVal <= 130) return "Hard Ball Stage";
+      if (cVal <= 143) return "Soft Crack Stage";
+      if (cVal <= 154) return "Hard Crack Stage";
+      if (cVal <= 170) return "Light Caramel Stage";
+      if (cVal <= 177) return "Dark Caramel Stage";
+      return "Burnt Sugar / Carbonized";
+    }
+
+    tempInput?.addEventListener('input', () => {
+      const c = parseFloat(tempInput.value) || 0;
+      if (stageRes) stageRes.textContent = getStage(c);
+    });
+  </script>
+</BaseLayout>

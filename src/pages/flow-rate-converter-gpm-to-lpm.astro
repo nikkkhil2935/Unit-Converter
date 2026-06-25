@@ -1,0 +1,255 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Flow Rate Converter GPM to LPM | Pipe Velocity Calculator";
+const description = "Convert US Gallons per Minute (GPM) to Liters per Minute (LPM). Estimate velocity inside pipes based on interior diameter.";
+const keywords = "gpm to lpm converter, gallons per minute to liters per minute, gpm to lpm conversion calculator, flow rate converter, pipe velocity calculator, water flow rate calculator, gallons per minute calculator, liters per minute conversion, pipe flow calculator, gpm lpm chart";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Flow Rate Converter GPM to LPM", url: "/flow-rate-converter-gpm-to-lpm" }
+];
+
+const faqs = [
+  {
+    question: "How do you convert GPM to LPM?",
+    answer: "Multiply the GPM value by 3.785412 to calculate Liters per Minute. Formula: LPM = GPM × 3.785412. For quick estimates, multiply GPM by 3.785. Example: 10 GPM × 3.785 = 37.85 LPM."
+  },
+  {
+    question: "What is 10 GPM in LPM?",
+    answer: "10 GPM is equal to approximately 37.85 LPM. This flow rate is typical for a residential garden hose running at full pressure."
+  },
+  {
+    question: "How do you calculate water flow rate in a pipe?",
+    answer: "Flow rate (GPM) = Velocity (ft/s) × Cross-sectional area (ft²) × 448.8. Alternatively, use Q = A × v where A is pipe cross-section in square inches and v is velocity in ft/s, then divide by 0.4085 for GPM."
+  },
+  {
+    question: "What is the typical water flow rate for a household faucet?",
+    answer: "Standard residential faucets flow at 2.2 GPM (8.3 LPM) maximum per EPA WaterSense guidelines. Low-flow models deliver 1.5 GPM (5.7 LPM). Fire sprinkler heads typically flow 15-20 GPM (57-76 LPM)."
+  },
+  {
+    question: "Why is pipe velocity important in plumbing design?",
+    answer: "Pipe velocity affects noise, erosion, and pressure drop. Ideal velocity for cold water is 4-5 ft/s (1.2-1.5 m/s) and for hot water 3-4 ft/s (0.9-1.2 m/s). Velocities above 8 ft/s cause excessive noise and pipe erosion; below 2 ft/s may allow sediment buildup."
+  }
+];
+
+const referenceTable = [
+  { gpm: 1, lpm: 3.79, desc: "Standard household faucet" },
+  { gpm: 2.5, lpm: 9.46, desc: "Low-flow shower head limit" },
+  { gpm: 5, lpm: 18.93, desc: "Residential garden hose" },
+  { gpm: 15, lpm: 56.78, desc: "Standard fire sprinkler head" },
+  { gpm: 50, lpm: 189.27, desc: "Commercial water main supply" }
+];
+---
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/flow-rate-converter-gpm-to-lpm"
+  categorySlug="flow-rate"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/flow-rate-converter" class="hover:text-brand-blue transition-colors">Flow Rate Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">GPM to LPM</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Flow Rate Converter GPM to LPM</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 GPM (US) = 3.785412 LPM (Liters/min)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: Standard faucet limits at 2.2 GPM correspond to 8.33 LPM.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Widget -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Flow Converter</h2>
+      
+      <div>
+        <label for="gpm-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Flow in GPM (US)</label>
+        <div class="relative">
+          <input
+            id="gpm-input"
+            type="number"
+            step="any"
+            value="10"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">GPM</span>
+        </div>
+      </div>
+
+      <div>
+        <label for="lpm-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Flow in LPM</label>
+        <div class="relative">
+          <input
+            id="lpm-input"
+            type="number"
+            step="any"
+            value="37.85"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">LPM</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pipe velocity estimator -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Pipe Velocity Estimator</h2>
+      
+      <div>
+        <label for="dia-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Inner Pipe Diameter (inches)</label>
+        <input
+          id="dia-input"
+          type="number"
+          step="0.01"
+          value="1.049"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono focus:outline-none focus:ring-1 focus:ring-brand-blue"
+        />
+        <span class="text-[10px] text-muted-text mt-1.5 block leading-normal">(1.049" is typical for 1" Sch 40 steel pipe)</span>
+      </div>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+        <div>
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Flow Velocity</span>
+          <span id="vel-res" class="text-xl font-mono font-bold text-brand-blue">3.7 ft/s</span>
+        </div>
+        <span id="vel-metric-res" class="text-xs font-mono text-muted-text">(1.13 m/s)</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Matrix -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">GPM to LPM Reference Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">GPM (US)</th>
+            <th class="p-3 font-semibold">Equivalent LPM</th>
+            <th class="p-3 font-semibold">Application Context</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {referenceTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.gpm} GPM</td>
+              <td class="p-3 text-ink">{row.lpm} LPM</td>
+              <td class="p-3 text-muted-text font-sans">{row.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const gpmInput = document.getElementById('gpm-input') as HTMLInputElement;
+    const lpmInput = document.getElementById('lpm-input') as HTMLInputElement;
+    const diaInput = document.getElementById('dia-input') as HTMLInputElement;
+    
+    const velRes = document.getElementById('vel-res') as HTMLSpanElement;
+    const velMetricRes = document.getElementById('vel-metric-res') as HTMLSpanElement;
+
+    const coef = 3.785411784;
+
+    function updateVelocity() {
+      const gpm = parseFloat(gpmInput.value) || 0;
+      const dia = parseFloat(diaInput.value) || 0;
+
+      if (gpm <= 0 || dia <= 0) {
+        if (velRes) velRes.textContent = "0.0 ft/s";
+        if (velMetricRes) velMetricRes.textContent = "(0.00 m/s)";
+        return;
+      }
+
+      // Velocity v (ft/s) = (GPM * 0.4085) / d² (inches)
+      const vFt = (gpm * 0.4085) / Math.pow(dia, 2);
+      const vM = vFt * 0.3048;
+
+      if (velRes) velRes.textContent = `${vFt.toFixed(1)} ft/s`;
+      if (velMetricRes) velMetricRes.textContent = `(${vM.toFixed(2)} m/s)`;
+    }
+
+    gpmInput?.addEventListener('input', () => {
+      const gpm = parseFloat(gpmInput.value);
+      if (!isNaN(gpm) && lpmInput) {
+        lpmInput.value = Number((gpm * coef).toFixed(2)).toString();
+      }
+      updateVelocity();
+    });
+
+    lpmInput?.addEventListener('input', () => {
+      const lpm = parseFloat(lpmInput.value);
+      if (!isNaN(lpm) && gpmInput) {
+        gpmInput.value = Number((lpm / coef).toFixed(2)).toString();
+      }
+      updateVelocity();
+    });
+
+    diaInput?.addEventListener('input', updateVelocity);
+
+    // Initial velocity
+    updateVelocity();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">GPM vs LPM: Understanding the Difference</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>GPM (Gallons Per Minute)</strong> is the US customary unit for volumetric flow rate, commonly used in plumbing, HVAC, and irrigation. <strong>LPM (Liters Per Minute)</strong> is the SI metric equivalent, standard in most countries outside the United States.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Quick Conversion:</strong> LPM = GPM × 3.785</div>
+        <div><strong>Reverse:</strong> GPM = LPM × 0.2642</div>
+        <div><strong>Note:</strong> 1 US gallon = 3.785 liters (1 Imperial gallon = 4.546 liters)</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Pipe Velocity and System Design</h3>
+      <p class="leading-relaxed mb-3">
+        Water velocity inside pipes directly impacts system performance. The velocity formula used in this calculator is: V (ft/s) = (0.4085 × GPM) / D², where D is inside diameter in inches. This is derived from the continuity equation Q = A × V.
+      </p>
+      <p class="leading-relaxed">
+        Excessive velocity ({'>'}8 ft/s) causes water hammer, pipe erosion, and excessive noise. Too low velocity ({'<'}2 ft/s) may allow sediment settling. Design for 4-5 ft/s for cold water mains and 3-4 ft/s for hot water lines.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Flow Rate Conversion</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/pipe-size-converter-nominal-to-actual" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Pipe Size Converter</a>
+      <a href="/psi-to-bar-to-kpa-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PSI to Bar Converter</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/torque-converter-ft-lb-to-nm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Torque Converter</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>

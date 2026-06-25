@@ -3,7 +3,128 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import SearchBar from '../components/SearchBar.astro';
 import CategoryCard from '../components/CategoryCard.astro';
 import FAQSchema from '../components/FAQSchema.astro';
+import AdBanner from '../components/AdBanner.astro';
+import CategoryIcon from '../components/CategoryIcon';
 import { categories } from '../lib/conversions';
+
+const specialistClusters = [
+  {
+    id: "cooking",
+    name: "Cooking & Baking",
+    description: "Recipe scaling, baking chart, ingredient weights, and oven temperature guides.",
+    iconId: "cooking",
+    viewAllHref: "/cooking-baking",
+    viewAllLabel: "View Cooking & Baking calculators",
+    tools: [
+      { label: "Flour Cups to Grams", href: "/cups-to-grams-flour" },
+      { label: "Butter Cups to Grams", href: "/cups-to-grams-butter" },
+      { label: "Sugar Cups to Grams", href: "/cups-to-grams-sugar" },
+      { label: "Rice Cups to Grams", href: "/cups-to-grams-rice" },
+      { label: "Honey Cups to Grams", href: "/cups-to-grams-honey" },
+      { label: "Milk Cups to Grams", href: "/cups-to-grams-milk" },
+      { label: "Oats Cups to Grams", href: "/cups-to-grams-oats" },
+      { label: "Recipe Scale Calc", href: "/recipe-scale-calculator" },
+      { label: "Baking Chart", href: "/baking-conversion-chart" },
+      { label: "Oven Temp (C/F)", href: "/oven-temperature-converter-c-to-f" },
+      { label: "Fan Oven Converter", href: "/fan-oven-temperature-converter" },
+      { label: "Gas Mark to C/F", href: "/gas-mark-to-celsius-to-fahrenheit" },
+      { label: "Candy Stage Temp", href: "/candy-making-temperature-stages-chart" },
+      { label: "Meat Internal Temp", href: "/meat-internal-temperature-guide-c-to-f" },
+      { label: "Bread Proof Temp", href: "/proof-temperature-for-bread-c-to-f" }
+    ]
+  },
+  {
+    id: "torque",
+    name: "Engineering & Trade",
+    description: "AWG wire gauge, bolt torque limits, pipe sizing, and hardness scale calculators.",
+    iconId: "torque",
+    viewAllHref: "/engineering-trade",
+    viewAllLabel: "View Engineering & Trade calculators",
+    tools: [
+      { label: "AWG Wire to mm²", href: "/awg-to-mm2-wire-gauge-calculator" },
+      { label: "mm² to AWG Wire", href: "/mm2-to-awg-calculator" },
+      { label: "Torque ft-lb to Nm", href: "/torque-converter-ft-lb-to-nm" },
+      { label: "Bolt Torque Specs", href: "/bolt-torque-spec-calculator" },
+      { label: "Pipe Size Nom/Actual", href: "/pipe-size-converter-nominal-to-actual" },
+      { label: "Hardness Converter", href: "/hardness-converter-rockwell-brinell-vickers" },
+      { label: "Steel Weight Calc", href: "/steel-weight-calculator-kg-per-meter" },
+      { label: "Thread Pitch Metric/UN", href: "/thread-pitch-converter-metric-unc-unf" },
+      { label: "PSI/Bar/kPa Converter", href: "/psi-to-bar-to-kpa-converter" },
+      { label: "Flow gpm to lpm", href: "/flow-rate-converter-gpm-to-lpm" }
+    ]
+  },
+  {
+    id: "volume",
+    name: "Scientific & Lab",
+    description: "Molarity, pH concentration, spectrophotometry, specific gravity, and alcohol proof.",
+    iconId: "volume",
+    viewAllHref: "/scientific-lab",
+    viewAllLabel: "View Scientific & Lab calculators",
+    tools: [
+      { label: "Molarity Calculator", href: "/molarity-calculator" },
+      { label: "Concentration ppm/mgL", href: "/concentration-converter-ppm-to-mgL" },
+      { label: "pH to H+ Concentration", href: "/ph-to-hydrogen-concentration-calculator" },
+      { label: "Absorbance/Transmittance", href: "/spectrophotometry-absorbance-to-transmittance" },
+      { label: "Osmolality/Osmolarity", href: "/osmolality-to-osmolarity-converter" },
+      { label: "Brix to Specific Gravity", href: "/brix-to-specific-gravity-calculator" },
+      { label: "ABV to Proof Converter", href: "/proof-to-abv-alcohol-converter" },
+      { label: "Specific Gravity Calc", href: "/specific-gravity-calculator" }
+    ]
+  },
+  {
+    id: "angle",
+    name: "Construction & DIY",
+    description: "Board feet, concrete bags volume, square footage, paint coverage, and mix ratios.",
+    iconId: "angle",
+    viewAllHref: "/construction-diy",
+    viewAllLabel: "View Construction & DIY calculators",
+    tools: [
+      { label: "Board Feet Calculator", href: "/board-feet-calculator" },
+      { label: "Square Footage Calc", href: "/square-footage-calculator" },
+      { label: "Mulch Coverage Calc", href: "/mulch-coverage-calculator" },
+      { label: "Paint Coverage Calc", href: "/paint-coverage-calculator-sq-ft-per-gallon" },
+      { label: "Concrete Bags Volume", href: "/concrete-volume-calculator-bags-to-cubic-feet" },
+      { label: "Gravel Weight Calc", href: "/gravel-weight-calculator-tons-to-cubic-yards" },
+      { label: "Lumber Linear/Board Ft", href: "/lumber-linear-feet-to-board-feet" },
+      { label: "Roofing Square Calc", href: "/roofing-square-calculator" },
+      { label: "Tile Coverage Calc", href: "/tile-coverage-calculator" },
+      { label: "Concrete Mix Ratios", href: "/concrete-mix-ratio-calculator" },
+      { label: "Rebar Weight Calc", href: "/rebar-weight-calculator" }
+    ]
+  },
+  {
+    id: "speed",
+    name: "Sizing & Automotive",
+    description: "US to EU shoe/dress/ring sizes, tire speedometer ratios, and compound converters.",
+    iconId: "speed",
+    viewAllHref: "/sizing-automotive",
+    viewAllLabel: "View Sizing & Automotive calculators",
+    tools: [
+      { label: "Shoe Size US/EU/UK", href: "/shoe-size-converter-us-to-eu" },
+      { label: "Dress Size US/UK/EU", href: "/dress-size-converter-us-to-uk" },
+      { label: "Ring Size US/UK/EU", href: "/ring-size-converter-us-to-uk" },
+      { label: "Tire Size Speedometer", href: "/tire-size-calculator" },
+      { label: "Feet & Inches to cm", href: "/feet-and-inches-to-cm" },
+      { label: "Pounds & Ounces to kg", href: "/pounds-and-ounces-to-kg" },
+      { label: "Hours/Mins to Seconds", href: "/hours-minutes-seconds-to-seconds" }
+    ]
+  },
+  {
+    id: "finance",
+    name: "Finance & Business",
+    description: "Simple interest, compound interest, sales tax, discounts, and salary/hourly conversions.",
+    iconId: "finance",
+    viewAllHref: "/finance-business",
+    viewAllLabel: "View Finance & Business calculators",
+    tools: [
+      { label: "Simple Interest", href: "/simple-interest-calculator" },
+      { label: "Compound Interest", href: "/compound-interest-calculator" },
+      { label: "Sales Tax Calc", href: "/sales-tax-calculator" },
+      { label: "Discount Calc", href: "/discount-calculator" },
+      { label: "Salary to Hourly", href: "/salary-to-hourly-calculator" }
+    ]
+  }
+];
 
 const popularLinks = [
   { label: "cm → inches", href: "/cm-to-inches" },
@@ -121,6 +242,8 @@ const homepageFaqs = [
   <!-- SEARCH BAR -->
   <SearchBar />
 
+  <AdBanner slot="home-top" />
+
   <!-- CATEGORY GRID -->
   <section class="pb-10 relative z-10">
     <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 border-b border-hairline pb-2 font-mono">
@@ -137,6 +260,69 @@ const homepageFaqs = [
       No categories found matching your query. Check spelling or try a different term.
     </p>
   </section>
+
+  <AdBanner slot="home-mid" />
+
+  <!-- SPECIALIST & NICHE CALCULATORS -->
+  <section class="pb-10 relative z-10 border-t border-hairline pt-10">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-6 font-mono">
+      Specialist & Niche Calculators
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {specialistClusters.map(cluster => (
+        <div
+          data-category-name={cluster.name}
+          data-category-desc={cluster.description}
+          class="group block p-5 rounded-xl border border-hairline bg-card hover:border-brand-blue transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between"
+        >
+          <div class="block select-none">
+            <a href={cluster.viewAllHref} class="block select-none group-hover:text-brand-blue">
+              <!-- Header -->
+              <div class="flex items-start justify-between mb-3">
+                <div class="flex items-center gap-2.5">
+                  <CategoryIcon id={cluster.iconId} className="w-5 h-5 text-brand-blue group-hover:text-brand-blue" />
+                  <h2 class="font-semibold text-sm text-ink group-hover:text-brand-blue transition-colors duration-200">{cluster.name}</h2>
+                </div>
+                <span class="text-[10px] text-muted-text border border-hairline px-2 py-0.5 rounded-full font-mono bg-canvas">
+                  {cluster.tools.length} tools
+                </span>
+              </div>
+
+              <!-- Description -->
+              <p class="text-xs text-body-text mb-4 leading-relaxed line-clamp-2 min-h-[2.5rem]">
+                {cluster.description}
+              </p>
+            </a>
+          </div>
+
+          <!-- Wrapped pill links matching category card styling -->
+          <div class="flex flex-wrap gap-1.5 mb-2 mt-auto pt-2">
+            {cluster.tools.slice(0, 3).map(tool => (
+              <a
+                href={tool.href}
+                class="text-[10px] font-mono px-2 py-1 rounded border border-hairline bg-canvas text-body-text hover:border-brand-blue hover:text-brand-blue transition-colors duration-200"
+              >
+                {tool.label}
+              </a>
+            ))}
+          </div>
+
+          <!-- Arrow view all to match standard category cards -->
+          <a
+            href={cluster.viewAllHref}
+            class="inline-flex items-center text-[10px] font-semibold text-brand-blue opacity-80 group-hover:opacity-100 transition-opacity mt-2 cursor-pointer"
+          >
+            {cluster.viewAllLabel}
+            <svg class="ml-1 w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <AdBanner slot="home-mid-2" />
 
   <!-- SEO CONTENT BLOCK -->
   <section class="prose prose-sm dark:prose-invert max-w-none border-t border-hairline pt-12 pb-16 relative z-10 text-body-text">
@@ -230,6 +416,8 @@ const homepageFaqs = [
       <FAQSchema faqs={homepageFaqs} />
     </div>
   </section>
+
+  <AdBanner slot="home-bottom" />
 
   <!-- KEYWORD RICH FOOTER LINKS -->
   <section class="border-t border-hairline py-8 text-xs text-muted-text select-none relative z-10">

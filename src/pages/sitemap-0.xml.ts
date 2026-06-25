@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { categories } from '../lib/conversions';
 
 export const GET: APIRoute = async () => {
   const baseUrl = 'https://myunitconverter.app';
@@ -8,7 +9,12 @@ export const GET: APIRoute = async () => {
     { loc: `${baseUrl}/about`, changefreq: 'monthly', priority: 0.5 },
     { loc: `${baseUrl}/privacy`, changefreq: 'monthly', priority: 0.5 },
     { loc: `${baseUrl}/terms`, changefreq: 'monthly', priority: 0.5 },
-    { loc: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.5 }
+    { loc: `${baseUrl}/contact`, changefreq: 'monthly', priority: 0.5 },
+    ...categories.map(cat => ({
+      loc: `${baseUrl}/${cat.slug}-converter`,
+      changefreq: 'weekly',
+      priority: 0.8
+    }))
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

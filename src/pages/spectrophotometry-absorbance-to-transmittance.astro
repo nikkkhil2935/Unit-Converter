@@ -1,0 +1,217 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Absorbance to Transmittance Calculator | Beer-Lambert Law";
+const description = "Convert between Absorbance (A) and Transmittance percentage (%T) for spectrophotometry and laboratory chemistry.";
+const keywords = "absorbance to transmittance calculator, beer lambert law calculator, absorbance transmittance conversion, spectrophotometry calculator, absorbance formula, transmittance percentage, optical density calculator, absorbance units, percent transmittance, absorbance to concentration";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Science & Lab", url: "/scientific-lab" },
+  { name: "Absorbance to Transmittance", url: "/spectrophotometry-absorbance-to-transmittance" }
+];
+
+const faqs = [
+  {
+    question: "What is the formula to convert absorbance to transmittance?",
+    answer: "Transmittance (%T) = 10^(-A) × 100, where A is absorbance. Alternatively, %T = 10^(2−A) when using the log10 form. Example: A = 0.5 → %T = 10^(-0.5) × 100 = 31.6%."
+  },
+  {
+    question: "What is the Beer-Lambert Law?",
+    answer: "The Beer-Lambert Law states A = εlc, where A is absorbance, ε is molar absorptivity (L/mol·cm), l is path length (cm), and c is concentration (mol/L). It explains why absorbance is directly proportional to concentration — the basis for spectrophotometric analysis."
+  },
+  {
+    question: "What absorbance reading range is most accurate?",
+    answer: "Most spectrophotometers achieve maximum accuracy between 0.1 and 1.5 absorbance units (approximately 80% to 3% transmittance). Below 0.1 A, stray light causes errors. Above 1.5 A, very little light reaches the detector, increasing noise. Dilute concentrated samples to bring readings into range."
+  },
+  {
+    question: "What does an absorbance of 1.0 mean?",
+    answer: "An absorbance of 1.0 means exactly 90% of incident light is absorbed by the sample, and only 10% is transmitted. A = 1.0 ↔ %T = 10.0%. This is a common benchmark — solutions with A = 1.0 contain the standard concentration for many colorimetric assays."
+  },
+  {
+    question: "How do you convert absorbance to concentration?",
+    answer: "Using Beer-Lambert Law: c = A / (ε × l). If you have a calibration curve (A vs. known concentrations), plot absorbance on y-axis and concentration on x-axis, then interpolate. Most lab software performs linear regression: A = m × c + b, then c = (A − b) / m."
+  }
+];
+
+const referencePoints = [
+  { a: "0.00", t: "100%", desc: "Perfect transmission, no absorption" },
+  { a: "0.10", t: "79.4%", desc: "Typical light organic solvent baseline" },
+  { a: "0.50", t: "31.6%", desc: "Standard protein concentration reading" },
+  { a: "1.00", t: "10.0%", desc: "High concentration, 90% of light absorbed" },
+  { a: "2.00", t: "1.0%", desc: "Very dark solution, 99% of light absorbed" },
+  { a: "3.00", t: "0.1%", desc: "Near limit of standard spectrophotometer" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/spectrophotometry-absorbance-to-transmittance"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/density-converter" class="hover:text-brand-blue transition-colors">Density Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Absorbance to Transmittance</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Absorbance to Transmittance Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Absorbance Formula: A = -log10(T) = 2 - log10(%T)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: An absorbance reading of 1.00 corresponds to exactly 10.0% transmittance (90% light absorbed).
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Converter</h2>
+      
+      <div>
+        <label for="abs-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Absorbance (A)</label>
+        <input
+          id="abs-input"
+          type="number"
+          step="0.001"
+          value="0.5"
+          min="0"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div>
+        <label for="trans-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Transmittance (%T)</label>
+        <input
+          id="trans-input"
+          type="number"
+          step="0.1"
+          value="31.6"
+          min="0"
+          max="100"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+
+    <!-- Explanations -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 flex flex-col justify-between">
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Beer-Lambert Law Context</h3>
+      <p class="text-xs text-body-text leading-relaxed">
+        Absorbance (A) is directly proportional to solute concentration in a solution. Most laboratory spectrophotometers read absorbance values between 0.1 and 1.5 with maximum accuracy. Above 2.0, the light transmitted is less than 1%, causing high detection errors.
+      </p>
+      <div class="mt-4 space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>A = 0:</strong> 100% T (no absorption)</div>
+        <div><strong>A = 0.301:</strong> 50% T (half-light absorbed)</div>
+        <div><strong>A = 1.0:</strong> 10% T (90% absorbed)</div>
+        <div><strong>A = 2.0:</strong> 1% T (99% absorbed)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Absorbance to %T Benchmarks</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Absorbance (A)</th>
+            <th class="p-3 font-semibold">Transmittance (%T)</th>
+            <th class="p-3 font-semibold">Optical Significance</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {referencePoints.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.a}</td>
+              <td class="p-3 text-ink">{row.t}</td>
+              <td class="p-3 text-muted-text font-sans">{row.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const absInput = document.getElementById('abs-input') as HTMLInputElement;
+    const transInput = document.getElementById('trans-input') as HTMLInputElement;
+
+    absInput?.addEventListener('input', () => {
+      const a = parseFloat(absInput.value);
+      if (a >= 0 && !isNaN(a) && transInput) {
+        // T = 10^-A
+        const t = Math.pow(10, -a) * 100;
+        transInput.value = Number(t.toFixed(2)).toString();
+      }
+    });
+
+    transInput?.addEventListener('input', () => {
+      const t = parseFloat(transInput.value);
+      if (t > 0 && t <= 100 && !isNaN(t) && absInput) {
+        // A = 2 - log10(%T)
+        const a = 2 - Math.log10(t);
+        absInput.value = Number(a.toFixed(4)).toString();
+      }
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Absorbance vs Transmittance</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Transmittance (%T)</strong> measures the percentage of light that passes through a sample unabsorbed. <strong>Absorbance (A)</strong> measures the fraction of light absorbed. They are logarithmically related — absorbance increases linearly with concentration, while transmittance decreases exponentially.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>A = −log₁₀(T)</strong> where T = decimal transmittance</div>
+        <div><strong>%T = 10^(−A) × 100</strong></div>
+        <div><strong>Linear relationship:</strong> A ∝ concentration</div>
+        <div><strong>Nonlinear:</strong> %T ∝ 1/concentration</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Spectrophotometry Best Practices</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Cuvette handling:</strong> Always handle cuvettes by frosted sides only. Wipe clear faces with lint-free tissue. Ensure no bubbles or scratches on optical path. <strong>Blank calibration:</strong> Use a blank (solvent only) to zero the instrument before each measurement series.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Wavelength selection:</strong> Set the instrument to λ_max (wavelength of maximum absorption) for highest sensitivity. For nucleic acids, use 260 nm; for proteins, 280 nm; for Bradford assay, 595 nm. Avoid the UV range ({'<'}340 nm) for routine work — visible range cuvettes absorb UV.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Spectrophotometry</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Science Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/ph-to-hydrogen-concentration-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">pH to [H+] Calculator</a>
+      <a href="/concentration-converter-ppm-to-mgL" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">PPM to mg/L Converter</a>
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/osmolality-to-osmolarity-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Osmolality Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

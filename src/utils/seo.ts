@@ -7,25 +7,54 @@ export interface SEOData {
 }
 
 export function getPairSEO(from: any, to: any, category: any): SEOData {
-  // Title variants - rotated based on character code hashing of slugs
-  const hash = (from.slug.charCodeAt(0) + to.slug.charCodeAt(0)) % 3;
-  const titles = [
-    `Convert ${from.name} to ${to.name} — ${from.symbol} to ${to.symbol} Converter`,
-    `${from.name} to ${to.name} Converter | ${from.symbol} to ${to.symbol}`,
-    `${from.symbol} to ${to.symbol} — ${from.name} to ${to.name} Calculator`,
-  ];
-  const title = titles[hash];
+  // Calculate conversion factor programmatically for description
+  let factorVal = 1;
+  if (category.slug === "temperature") {
+    if (from.id === "celsius" && to.id === "fahrenheit") factorVal = 33.8;
+    else if (from.id === "fahrenheit" && to.id === "celsius") factorVal = -17.22;
+    else if (from.id === "celsius" && to.id === "kelvin") factorVal = 274.15;
+    else if (from.id === "kelvin" && to.id === "celsius") factorVal = -272.15;
+    else if (from.id === "fahrenheit" && to.id === "kelvin") factorVal = 255.928;
+    else if (from.id === "kelvin" && to.id === "fahrenheit") factorVal = -457.87;
+  } else if (category.slug === "fuel-consumption") {
+    if (from.id === "mpg-us" && to.id === "l100km") factorVal = 235.214583;
+    else if (from.id === "l100km" && to.id === "mpg-us") factorVal = 235.214583;
+    else if (from.id === "mpg-uk" && to.id === "l100km") factorVal = 282.480936;
+    else if (from.id === "l100km" && to.id === "mpg-uk") factorVal = 282.480936;
+    else if (from.id === "km-l" && to.id === "l100km") factorVal = 100;
+    else if (from.id === "l100km" && to.id === "km-l") factorVal = 100;
+    else factorVal = from.factor / to.factor;
+  } else {
+    factorVal = from.factor / to.factor;
+  }
 
-  // Description variant - unique per page
-  const description = 
-    `Convert ${from.name} to ${to.name} instantly. ` +
-    `Use our free ${from.symbol} to ${to.symbol} calculator — ` +
-    `see the exact formula, a full conversion table from ` +
-    `1–1000 ${from.symbol}, and common conversion examples. ` +
-    `No signup required.`;
+  const formatVal = (v: number) => {
+    if (v === 0) return "0";
+    const absV = Math.abs(v);
+    if (absV < 1e-6 || absV > 1e12) return v.toExponential(4);
+    return Number(v.toFixed(6)).toString();
+  };
+  const factorStr = formatVal(factorVal);
 
-  // H1 - matches search query
-  const h1 = `${from.name} to ${to.name} Converter`;
+  // Dynamic long-tail titles
+  let title = `${from.slug} to ${to.slug} | Exact Decimal + Formula`;
+  if (category.slug === "length") {
+    if ((from.slug === "cm" && to.slug === "inches") || (from.slug === "inches" && to.slug === "cm")) {
+      title = `${from.slug} to ${to.slug} | Fraction + Decimal Converter`;
+    } else if (from.slug === "feet" || from.slug === "inches" || to.slug === "feet" || to.slug === "inches") {
+      title = `${from.slug} to ${to.slug} | Show as Feet and Inches Too`;
+    } else {
+      title = `${from.slug} to ${to.slug} | Decimal AND Fraction Results`;
+    }
+  } else if (category.slug === "weight") {
+    title = `${from.slug} to ${to.slug} | Exact Decimal + Stone/Pounds`;
+  }
+
+  // Meta description containing exact answer
+  const description = `1 ${from.name} = ${factorStr} ${to.name}. Learn how to convert ${from.name.toLowerCase()} to ${to.name.toLowerCase()} using our advanced calculator with decimal and fraction options. Free, instant, no signup.`;
+
+  // H1 - matches long-tail title
+  const h1 = `${from.slug} to ${to.slug} | ${title.split(' | ')[1]}`;
 
   // H2 variants
   const h2variants = [

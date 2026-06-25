@@ -1,0 +1,153 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Fan Oven Temperature Converter | Conventional to Convection";
+const description = "Easily convert recipe temperatures between conventional ovens and fan-assisted convection ovens. Reduces standard temperature by 20°C (35°F).";
+
+const referenceTable = [
+  { conventional: "150°C (300°F)", fan: "130°C (265°F)", gas: "Gas Mark 2" },
+  { conventional: "180°C (350°F)", fan: "160°C (320°F)", gas: "Gas Mark 4" },
+  { conventional: "200°C (400°F)", fan: "180°C (355°F)", gas: "Gas Mark 6" },
+  { conventional: "220°C (425°F)", fan: "200°C (390°F)", gas: "Gas Mark 7" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="temperature">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Fan Oven Converter</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Fan Oven Temperature Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Convection Rule: Conventional Temp - 20°C (or -35°F) = Fan Temp</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Fan ovens circulate heat much more efficiently, so recipes require a temperature reduction.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Recipe Settings</h2>
+      
+      <div>
+        <label for="recipe-temp" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Conventional Recipe Temp</label>
+        <div class="relative">
+          <input
+            id="recipe-temp"
+            type="number"
+            value="180"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text" id="unit-label">°C</span>
+        </div>
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btn-c" class="flex-1 bg-brand-blue/15 text-brand-blue border border-brand-blue/30 rounded-lg py-2.5 text-xs font-bold font-mono cursor-pointer select-none">Celsius (°C)</button>
+        <button id="btn-f" class="flex-1 bg-canvas text-body-text border border-hairline hover:border-brand-blue rounded-lg py-2.5 text-xs font-medium font-mono cursor-pointer select-none">Fahrenheit (°F)</button>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Target Fan Settings</h2>
+        <div class="p-4 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Set Fan Oven To</span>
+          <span id="fan-temp-res" class="text-2xl font-mono font-bold text-brand-blue">160°C</span>
+        </div>
+      </div>
+      <p class="text-xs text-muted-text leading-relaxed">
+        *Tip: If your fan oven runs extremely hot, you can also reduce cooking time by 10-15% in addition to lowering the temperature.
+      </p>
+    </div>
+  </section>
+
+  <!-- Reference Chart Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Conventional to Fan Oven Reference Chart</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Conventional Oven</th>
+            <th class="p-3 font-semibold">Fan Oven (Convection)</th>
+            <th class="p-3 font-semibold">Equivalent Gas Mark</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {referenceTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-ink">{row.conventional}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.fan}</td>
+              <td class="p-3 text-muted-text">{row.gas}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const recipeTemp = document.getElementById('recipe-temp') as HTMLInputElement;
+    const unitLabel = document.getElementById('unit-label') as HTMLSpanElement;
+    
+    const btnC = document.getElementById('btn-c') as HTMLButtonElement;
+    const btnF = document.getElementById('btn-f') as HTMLButtonElement;
+    
+    const fanTempRes = document.getElementById('fan-temp-res') as HTMLSpanElement;
+
+    let scale: 'c' | 'f' = 'c';
+
+    function setScale(s: 'c' | 'f') {
+      scale = s;
+      if (unitLabel) unitLabel.textContent = s === 'c' ? '°C' : '°F';
+      
+      if (scale === 'c') {
+        btnC?.classList.add('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnC?.classList.remove('bg-canvas', 'text-body-text', 'border-hairline');
+        btnF?.classList.remove('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnF?.classList.add('bg-canvas', 'text-body-text', 'border-hairline');
+        if (recipeTemp.value === '350') recipeTemp.value = '180';
+      } else {
+        btnF?.classList.add('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnF?.classList.remove('bg-canvas', 'text-body-text', 'border-hairline');
+        btnC?.classList.remove('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnC?.classList.add('bg-canvas', 'text-body-text', 'border-hairline');
+        if (recipeTemp.value === '180') recipeTemp.value = '350';
+      }
+      calculate();
+    }
+
+    function calculate() {
+      const val = parseFloat(recipeTemp.value);
+      if (isNaN(val)) return;
+
+      if (scale === 'c') {
+        const fan = val - 20;
+        if (fanTempRes) fanTempRes.textContent = `${Math.round(fan)}°C`;
+      } else {
+        const fan = val - 35;
+        if (fanTempRes) fanTempRes.textContent = `${Math.round(fan)}°F`;
+      }
+    }
+
+    btnC?.addEventListener('click', () => setScale('c'));
+    btnF?.addEventListener('click', () => setScale('f'));
+    recipeTemp?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+</BaseLayout>

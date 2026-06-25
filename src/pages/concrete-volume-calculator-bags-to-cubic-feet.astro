@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Concrete Volume Calculator Bags to Cubic Feet | Slab Estimator";
+const description = "Calculate how many bags of concrete (80lb, 60lb, 40lb) are needed for slabs, columns, or footings based on dimensions.";
+---
+
+<BaseLayout title={title} description={description} categorySlug="volume">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/volume-converter" class="hover:text-brand-blue transition-colors">Volume Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Concrete Bags Calculator</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Concrete Bags to Cubic Feet Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Concrete Yield: 80 lb bag = 0.60 cu ft | 60 lb bag = 0.45 cu ft</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A 4x4 ft slab that is 4 inches deep requires exactly 8 bags of 80 lb concrete.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Slab Dimensions</h2>
+      
+      <div class="grid grid-cols-3 gap-2">
+        <div>
+          <label for="len-in" class="block text-xs font-mono text-muted-text mb-1">Length (ft)</label>
+          <input id="len-in" type="number" value="4" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="wid-in" class="block text-xs font-mono text-muted-text mb-1">Width (ft)</label>
+          <input id="wid-in" type="number" value="4" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+        <div>
+          <label for="thick-in" class="block text-xs font-mono text-muted-text mb-1">Thickness (in)</label>
+          <input id="thick-in" type="number" value="4" class="w-full bg-canvas border border-hairline text-ink rounded px-2 py-1.5 text-xs font-mono" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Bags</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Total Volume</span>
+        <span id="volume-res" class="text-lg font-mono font-bold text-brand-blue">5.3 cubic feet</span>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2">
+        <div class="p-2 bg-canvas border border-hairline rounded-lg text-center">
+          <span class="block text-[8px] font-bold text-muted-text uppercase font-mono">80 lb bags</span>
+          <span id="bags-80" class="text-base font-mono font-bold text-ink">9 bags</span>
+        </div>
+        <div class="p-2 bg-canvas border border-hairline rounded-lg text-center">
+          <span class="block text-[8px] font-bold text-muted-text uppercase font-mono">60 lb bags</span>
+          <span id="bags-60" class="text-base font-mono font-bold text-ink">12 bags</span>
+        </div>
+        <div class="p-2 bg-canvas border border-hairline rounded-lg text-center">
+          <span class="block text-[8px] font-bold text-muted-text uppercase font-mono">40 lb bags</span>
+          <span id="bags-40" class="text-base font-mono font-bold text-ink">18 bags</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const lenIn = document.getElementById('len-in') as HTMLInputElement;
+    const widIn = document.getElementById('wid-in') as HTMLInputElement;
+    const thickIn = document.getElementById('thick-in') as HTMLInputElement;
+
+    const volumeRes = document.getElementById('volume-res') as HTMLSpanElement;
+    const bags80 = document.getElementById('bags-80') as HTMLSpanElement;
+    const bags60 = document.getElementById('bags-60') as HTMLSpanElement;
+    const bags40 = document.getElementById('bags-40') as HTMLSpanElement;
+
+    function calculate() {
+      const len = parseFloat(lenIn.value) || 0;
+      const wid = parseFloat(widIn.value) || 0;
+      const thick = parseFloat(thickIn.value) || 0;
+
+      // Volume = L (ft) * W (ft) * T (ft) = L * W * (T / 12)
+      const cubicFeet = len * wid * (thick / 12);
+      
+      if (volumeRes) volumeRes.textContent = `${cubicFeet.toFixed(2)} cu ft (${(cubicFeet/27).toFixed(3)} cu yd)`;
+
+      // Yields
+      const n80 = cubicFeet / 0.60;
+      const n60 = cubicFeet / 0.45;
+      const n40 = cubicFeet / 0.30;
+
+      if (bags80) bags80.textContent = `${Math.ceil(n80)} bags`;
+      if (bags60) bags60.textContent = `${Math.ceil(n60)} bags`;
+      if (bags40) bags40.textContent = `${Math.ceil(n40)} bags`;
+    }
+
+    lenIn?.addEventListener('input', calculate);
+    widIn?.addEventListener('input', calculate);
+    thickIn?.addEventListener('input', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+</BaseLayout>

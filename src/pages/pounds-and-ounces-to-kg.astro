@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdBanner from '../components/AdBanner.astro';
+
+const title = "Pounds and Ounces to kg Converter | Weight Calculator";
+const description = "Convert pounds (lbs) and ounces (oz) to kilograms (kg) instantly. Perfect for tracking infant weights and culinary recipes.";
+
+const commonWeights = [];
+for (let l = 5; l <= 10; l++) {
+  for (let o = 0; o < 16; o += 4) {
+    const totalLbs = l + o / 16;
+    const kg = totalLbs * 0.45359237;
+    commonWeights.push({ lbs: l, oz: o, kg });
+  }
+}
+---
+
+<BaseLayout title={title} description={description} categorySlug="weight">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/weight-converter" class="hover:text-brand-blue transition-colors">Weight Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Pounds & Ounces to kg</span>
+  </nav>
+
+  <AdBanner slot="lbs-oz-to-kg-top" format="horizontal" />
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Pounds and Ounces to kg Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Formula: kg = (Pounds × 0.453592) + (Ounces × 0.0283495)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: 7 pounds 8 ounces is equivalent to exactly 3.40 kg.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Input Weight</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="lbs-in" class="block text-xs font-mono text-muted-text mb-1">Pounds (lb)</label>
+          <input id="lbs-in" type="number" value="7" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+        <div>
+          <label for="oz-in" class="block text-xs font-mono text-muted-text mb-1">Ounces (oz)</label>
+          <input id="oz-in" type="number" value="8" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-base font-mono font-bold focus:outline-none focus:ring-1 focus:ring-brand-blue" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Kilograms Equivalent</h2>
+      
+      <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+        <div>
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Weight in kg</span>
+          <span id="kg-res" class="text-xl font-mono font-bold text-brand-blue">3.40 kg</span>
+        </div>
+        <span id="grams-res" class="text-xs font-mono text-muted-text">(3402 grams)</span>
+      </div>
+    </div>
+  </section>
+
+  <AdBanner slot="lbs-oz-to-kg-mid" format="rectangle" />
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+     <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Imperial Weight to Metric lookup</h2>
+     
+     <AdBanner slot="lbs-oz-to-kg-table" format="horizontal" />
+
+     <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Imperial Weight</th>
+            <th class="p-3 font-semibold">Kilograms</th>
+            <th class="p-3 font-semibold">Grams</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {commonWeights.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">
+                <a href={`/${row.lbs}-lbs-${row.oz}-ounces-to-kg`} class="hover:underline">
+                  {row.lbs} lb {row.oz} oz
+                </a>
+              </td>
+              <td class="p-3 text-ink">{row.kg.toFixed(2)} kg</td>
+              <td class="p-3 text-muted-text">{Math.round(row.kg * 1000)} g</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const lbsIn = document.getElementById('lbs-in') as HTMLInputElement;
+    const ozIn = document.getElementById('oz-in') as HTMLInputElement;
+
+    const kgRes = document.getElementById('kg-res') as HTMLSpanElement;
+    const gramsRes = document.getElementById('grams-res') as HTMLSpanElement;
+
+    function calculate() {
+      const lbs = parseFloat(lbsIn.value) || 0;
+      const oz = parseFloat(ozIn.value) || 0;
+
+      const totalLbs = lbs + oz / 16;
+      const kg = totalLbs * 0.45359237;
+      const grams = kg * 1000;
+
+      if (kgRes) kgRes.textContent = `${kg.toFixed(2)} kg`;
+      if (gramsRes) gramsRes.textContent = `(${Math.round(grams)} grams)`;
+    }
+
+    lbsIn?.addEventListener('input', calculate);
+    ozIn?.addEventListener('input', calculate);
+  </script>
+
+  <AdBanner slot="lbs-oz-to-kg-bottom" format="horizontal" />
+</BaseLayout>

@@ -1,0 +1,364 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import CategoryIcon from '../components/CategoryIcon';
+
+const title = "Hardness Converter Rockwell Brinell Vickers | ASTM E140";
+const description = "Convert steel hardness values between Rockwell C (HRC), Rockwell B (HRB), Brinell (HB), and Vickers (HV) scales using ASTM E140 interpolation.";
+
+const scaleTable = [
+  { hrc: 65, hrb: "-", hb: 739, hv: 840 },
+  { hrc: 60, hrb: "-", hb: 654, hv: 697 },
+  { hrc: 55, hrb: "-", hb: 560, hv: 595 },
+  { hrc: 50, hrb: "-", hb: 481, hv: 513 },
+  { hrc: 45, hrb: "-", hb: 421, hv: 446 },
+  { hrc: 40, hrb: "-", hb: 371, hv: 392 },
+  { hrc: 35, hrb: 109.5, hb: 327, hv: 345 },
+  { hrc: 30, hrb: 105.4, hb: 286, hv: 302 },
+  { hrc: 25, hrb: 100.8, hb: 253, hv: 266 },
+  { hrc: 20, hrb: 97.0, hb: 226, hv: 238 }
+];
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Force Converter", url: "/force-converter" },
+  { name: "Hardness Converter", url: "/hardness-converter-rockwell-brinell-vickers" }
+];
+
+const faqs = [
+  {
+    question: "What is the Rockwell hardness scale?",
+    answer: "The Rockwell hardness scale measures the indentation hardness of materials. The Rockwell C (HRC) scale is commonly used for hard steels, while Rockwell B (HRB) is used for softer alloys."
+  },
+  {
+    question: "How do you convert Rockwell C (HRC) to Vickers (HV)?",
+    answer: "HRC to Vickers conversion does not follow a simple mathematical formula. Instead, ASTM E140 standard tables are used to interpolate values, where HRC 60 is roughly equivalent to 697 HV."
+  },
+  {
+    question: "What is the difference between Brinell and Vickers hardness tests?",
+    answer: "The Brinell test uses a spherical indenter (typically a steel or tungsten carbide ball), whereas the Vickers test uses a square-based diamond pyramid indenter."
+  }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="force">
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <section class="mb-6 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3 flex items-center gap-2">
+      <CategoryIcon id="force" className="w-8 h-8 text-brand-blue" />
+      <span>Hardness Converter: Rockwell, Brinell & Vickers</span>
+    </h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>ASTM E140 Hardness Standard Comparison</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: HRC 60 (hardened tool steel) is equivalent to approximately 654 Brinell (HB) or 697 Vickers (HV). Rockwell B (HRB) is only used for softer materials (HRC &le; 35).
+      </p>
+    </div>
+
+    <!-- Quick Switch Popular Conversions -->
+    <div class="mb-6 max-w-2xl">
+      <span class="block text-[10px] font-mono font-bold text-muted-text uppercase mb-2">Popular Conversions:</span>
+      <div class="flex flex-wrap gap-2">
+        <button data-from="hrc" data-val="60" class="quick-switch-btn px-3 py-1.5 bg-card hover:bg-canvas text-xs font-semibold border border-hairline hover:border-brand-blue rounded-lg text-ink font-mono transition-all cursor-pointer">
+          HRC 60 to Vickers (HV)
+        </button>
+        <button data-from="hrc" data-val="50" class="quick-switch-btn px-3 py-1.5 bg-card hover:bg-canvas text-xs font-semibold border border-hairline hover:border-brand-blue rounded-lg text-ink font-mono transition-all cursor-pointer">
+          HRC 50 to Brinell (HB)
+        </button>
+        <button data-from="hv" data-val="302" class="quick-switch-btn px-3 py-1.5 bg-card hover:bg-canvas text-xs font-semibold border border-hairline hover:border-brand-blue rounded-lg text-ink font-mono transition-all cursor-pointer">
+          HV 302 to Rockwell B (HRB)
+        </button>
+        <button data-from="hb" data-val="286" class="quick-switch-btn px-3 py-1.5 bg-card hover:bg-canvas text-xs font-semibold border border-hairline hover:border-brand-blue rounded-lg text-ink font-mono transition-all cursor-pointer">
+          HB 286 to Rockwell C (HRC)
+        </button>
+      </div>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert steel hardness numbers between HRC, HRB, Brinell (HB), and Vickers (HV) scales using linear interpolation curves based on standard ASTM E140 tables.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 max-w-4xl">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4 shadow-sm">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Hardness Input</h2>
+      
+      <div>
+        <label for="scale-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Input Scale</label>
+        <select id="scale-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue font-medium transition-all">
+          <option value="hrc">Rockwell C (HRC) - Range: 20 to 70</option>
+          <option value="hrb">Rockwell B (HRB) - Range: 97 to 110</option>
+          <option value="hv">Vickers (HV) - Range: 238 to 1000</option>
+          <option value="hb">Brinell (HB) - Range: 226 to 739</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="hardness-value" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Hardness Value</label>
+        <div class="relative">
+          <input
+            id="hardness-value"
+            type="number"
+            value="50"
+            step="0.1"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+          />
+          <span id="unit-label" class="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted-text">HRC</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4 shadow-sm">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Estimated Equivalents</h2>
+      
+      <div class="grid grid-cols-2 gap-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Rockwell C (HRC)</span>
+          <span id="res-hrc" class="text-lg font-mono font-bold text-brand-blue">50.0</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Rockwell B (HRB)</span>
+          <span id="res-hrb" class="text-lg font-mono font-bold text-ink">-</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Vickers (HV)</span>
+          <span id="res-hv" class="text-lg font-mono font-bold text-ink">513</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Brinell (HB)</span>
+          <span id="res-hb" class="text-lg font-mono font-bold text-ink">481</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Hardness Comparison Reference Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Rockwell C (HRC)</th>
+            <th class="p-3 font-semibold">Rockwell B (HRB)</th>
+            <th class="p-3 font-semibold">Brinell (HB)</th>
+            <th class="p-3 font-semibold">Vickers (HV)</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {scaleTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.hrc}</td>
+              <td class="p-3 text-ink">{row.hrb}</td>
+              <td class="p-3 text-ink">{row.hb}</td>
+              <td class="p-3 text-muted-text">{row.hv}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Direct Conversions Section at the Bottom -->
+  <section class="border-t border-hairline pt-8 mb-10 max-w-4xl">
+    <h3 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Direct Hardness Scale Conversions</h3>
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 text-xs font-mono">
+      <a href="?from=hrc" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Rockwell C to Vickers</a>
+      <a href="?from=hrc" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Rockwell C to Brinell</a>
+      <a href="?from=hrb" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Rockwell B to Brinell</a>
+      <a href="?from=hrb" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Rockwell B to Rockwell C</a>
+      <a href="?from=hv" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Vickers to Rockwell C</a>
+      <a href="?from=hv" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Vickers to Brinell</a>
+      <a href="?from=hb" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Brinell to Rockwell C</a>
+      <a href="?from=hb" class="direct-link p-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-center transition-colors">Brinell to Vickers</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <script>
+    const scaleSelect = document.getElementById('scale-select') as HTMLSelectElement;
+    const hardValInput = document.getElementById('hardness-value') as HTMLInputElement;
+    const unitLabel = document.getElementById('unit-label') as HTMLSpanElement;
+
+    const resHrc = document.getElementById('res-hrc') as HTMLSpanElement;
+    const resHrb = document.getElementById('res-hrb') as HTMLSpanElement;
+    const resHv = document.getElementById('res-hv') as HTMLSpanElement;
+    const resHb = document.getElementById('res-hb') as HTMLSpanElement;
+
+    // Hardness lookup database for linear interpolation
+    const db = [
+      { hrc: 20, hrb: 97.0, hb: 226, hv: 238 },
+      { hrc: 25, hrb: 100.8, hb: 253, hv: 266 },
+      { hrc: 30, hrb: 105.4, hb: 286, hv: 302 },
+      { hrc: 35, hrb: 109.5, hb: 327, hv: 345 },
+      { hrc: 40, hrb: null as number | null, hb: 371, hv: 392 },
+      { hrc: 45, hrb: null as number | null, hb: 421, hv: 446 },
+      { hrc: 50, hrb: null as number | null, hb: 481, hv: 513 },
+      { hrc: 55, hrb: null as number | null, hb: 560, hv: 595 },
+      { hrc: 60, hrb: null as number | null, hb: 654, hv: 697 },
+      { hrc: 65, hrb: null as number | null, hb: 739, hv: 840 },
+      { hrc: 70, hrb: null as number | null, hb: 800, hv: 940 } // Extrapolation helper
+    ];
+
+    interface HardnessResult {
+      hrc: number | null;
+      hrb: number | null;
+      hv: number | null;
+      hb: number | null;
+    }
+
+    function calculate() {
+      const scale = scaleSelect.value as 'hrc' | 'hrb' | 'hv' | 'hb';
+      const val = parseFloat(hardValInput.value);
+
+      if (isNaN(val)) return;
+
+      let hrc: number | null = null;
+      let hrb: number | null = null;
+      let hv: number | null = null;
+      let hb: number | null = null;
+
+      // Clean/clamp the input based on physical boundaries
+      let clampedVal = val;
+      if (scale === 'hrc') clampedVal = Math.max(20, Math.min(70, val));
+      else if (scale === 'hrb') clampedVal = Math.max(97, Math.min(110, val));
+      else if (scale === 'hv') clampedVal = Math.max(238, Math.min(1000, val));
+      else if (scale === 'hb') clampedVal = Math.max(226, Math.min(739, val));
+
+      const interp = interpolate(clampedVal, scale);
+      hrc = interp.hrc;
+      hrb = interp.hrb;
+      hv = interp.hv;
+      hb = interp.hb;
+
+      if (resHrc) resHrc.textContent = hrc !== null ? hrc.toFixed(1) : '-';
+      if (resHrb) resHrb.textContent = hrb !== null ? hrb.toFixed(1) : '-';
+      if (resHv) resHv.textContent = hv !== null ? hv.toFixed(0) : '-';
+      if (resHb) resHb.textContent = hb !== null ? hb.toFixed(0) : '-';
+    }
+
+    function interpolate(val: number, srcKey: 'hrc' | 'hrb' | 'hv' | 'hb'): HardnessResult {
+      // Filter database to elements that have valid source key (not null)
+      const validDb = db.filter(item => item[srcKey] !== null) as Array<Record<string, number>>;
+      
+      if (validDb.length < 2) {
+        return { hrc: null, hrb: null, hv: null, hb: null };
+      }
+
+      // Find bounding indices
+      let i = 0;
+      if (val <= validDb[0][srcKey]) {
+        i = 0;
+      } else if (val >= validDb[validDb.length - 1][srcKey]) {
+        i = validDb.length - 2;
+      } else {
+        for (; i < validDb.length - 1; i++) {
+          if (validDb[i][srcKey] <= val && validDb[i+1][srcKey] >= val) {
+            break;
+          }
+        }
+      }
+
+      const p1 = validDb[i];
+      const p2 = validDb[i+1];
+
+      const diff = p2[srcKey] - p1[srcKey];
+      const ratio = diff !== 0 ? (val - p1[srcKey]) / diff : 0;
+
+      const target = { hrc: null, hrb: null, hv: null, hb: null } as Record<string, number | null>;
+      const keys = ['hrc', 'hrb', 'hv', 'hb'];
+      
+      keys.forEach(k => {
+        if (k === srcKey) {
+          target[k] = val;
+        } else {
+          const v1 = p1[k];
+          const v2 = p2[k];
+          if (v1 === null || v2 === null) {
+            target[k] = null;
+          } else {
+            target[k] = v1 + ratio * (v2 - v1);
+          }
+        }
+      });
+
+      return target as unknown as HardnessResult;
+    }
+
+    // Bind UI scale select changes
+    scaleSelect?.addEventListener('change', () => {
+      const scale = scaleSelect.value;
+      unitLabel.textContent = scale.toUpperCase();
+      
+      if (scale === 'hrc') hardValInput.value = '50';
+      else if (scale === 'hrb') hardValInput.value = '105';
+      else if (scale === 'hv') hardValInput.value = '513';
+      else if (scale === 'hb') hardValInput.value = '481';
+      
+      calculate();
+    });
+
+    hardValInput?.addEventListener('input', calculate);
+
+    // Binds Popular conversion Quick switches
+    document.querySelectorAll('.quick-switch-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const from = btn.getAttribute('data-from') || 'hrc';
+        const val = btn.getAttribute('data-val') || '50';
+        scaleSelect.value = from;
+        unitLabel.textContent = from.toUpperCase();
+        hardValInput.value = val;
+        calculate();
+        window.history.pushState({}, '', `?from=${from}`);
+      });
+    });
+
+    // Binds Direct links at the bottom
+    document.querySelectorAll('.direct-link').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const href = link.getAttribute('href') || '';
+        const searchParams = new URLSearchParams(href.split('?')[1]);
+        const fromParam = searchParams.get('from');
+        if (fromParam) {
+          scaleSelect.value = fromParam;
+          unitLabel.textContent = fromParam.toUpperCase();
+          if (fromParam === 'hrc') hardValInput.value = '50';
+          else if (fromParam === 'hrb') hardValInput.value = '105';
+          else if (fromParam === 'hv') hardValInput.value = '513';
+          else if (fromParam === 'hb') hardValInput.value = '481';
+          calculate();
+          window.history.pushState({}, '', href);
+        }
+      });
+    });
+
+    // Check query parameters on load
+    const params = new URLSearchParams(window.location.search);
+    const fromParam = params.get('from');
+    if (fromParam && ['hrc', 'hrb', 'hv', 'hb'].includes(fromParam)) {
+      scaleSelect.value = fromParam;
+      unitLabel.textContent = fromParam.toUpperCase();
+      if (fromParam === 'hrc') hardValInput.value = '50';
+      else if (fromParam === 'hrb') hardValInput.value = '105';
+      else if (fromParam === 'hv') hardValInput.value = '513';
+      else if (fromParam === 'hb') hardValInput.value = '481';
+    }
+
+    // Initial load
+    calculate();
+  </script>
+</BaseLayout>

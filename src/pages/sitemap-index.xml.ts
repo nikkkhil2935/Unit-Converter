@@ -4,11 +4,12 @@ export const GET: APIRoute = async () => {
   const baseUrl = 'https://myunitconverter.app';
   
   const sitemaps = [
-    '/sitemap-homepage.xml',
-    '/sitemap-categories.xml',
-    '/sitemap-pairs-a-f.xml',
-    '/sitemap-pairs-g-m.xml',
-    '/sitemap-pairs-n-z.xml'
+    '/sitemap-0.xml',
+    '/sitemap-1.xml',
+    '/sitemap-2.xml',
+    '/sitemap-3.xml',
+    '/sitemap-niche.xml',
+    '/sitemap-longtail.xml'
   ];
 
   const xml = `<?xml version="1.0" encoding="UTF-8"?>

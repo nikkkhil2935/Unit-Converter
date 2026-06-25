@@ -1,0 +1,129 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const title = "Gas Mark to Celsius to Fahrenheit | Oven Settings Guide";
+const description = "Convert oven Gas Mark numbers to Celsius and Fahrenheit equivalents. Standard temperature lookups for British and European gas ovens.";
+
+const gasMarks = [
+  { mark: "1/4", c: "110°C", f: "225°F", desc: "Very cool oven" },
+  { mark: "1/2", c: "130°C", f: "250°F", desc: "Cool oven" },
+  { mark: "1", c: "140°C", f: "275°F", desc: "Slow oven" },
+  { mark: "2", c: "150°C", f: "300°F", desc: "Very moderate oven" },
+  { mark: "3", c: "170°C", f: "325°F", desc: "Moderate oven" },
+  { mark: "4", c: "180°C", f: "350°F", desc: "Moderate oven" },
+  { mark: "5", c: "190°C", f: "375°F", desc: "Moderately hot oven" },
+  { mark: "6", c: "200°C", f: "400°F", desc: "Hot oven" },
+  { mark: "7", c: "220°C", f: "425°F", desc: "Hot oven" },
+  { mark: "8", c: "230°C", f: "450°F", desc: "Very hot oven" },
+  { mark: "9", c: "240°C", f: "475°F", desc: "Extremely hot oven" }
+];
+---
+
+<BaseLayout title={title} description={description} categorySlug="temperature">
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Gas Mark Converter</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Gas Mark to Celsius & Fahrenheit Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Gas Mark 4 = 180°C = 350°F (Moderate Oven)</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Formulas for Gas Mark N (N >= 1): Temp(°F) = 250 + 25 × N, Temp(°C) = 120 + 14 × N.
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Gas Mark Input</h2>
+      
+      <div>
+        <label for="gas-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Select Gas Mark</label>
+        <select id="gas-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {gasMarks.map(g => (
+            <option value={g.mark} data-c={g.c} data-f={g.f} data-desc={g.desc}>Gas Mark {g.mark}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4 flex flex-col justify-between">
+      <div>
+        <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Equivalents</h2>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Celsius</span>
+            <span id="c-res" class="text-lg font-mono font-bold text-brand-blue">110°C</span>
+          </div>
+          <div class="p-3 bg-canvas border border-hairline rounded-lg">
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Fahrenheit</span>
+            <span id="f-res" class="text-lg font-mono font-bold text-ink">225°F</span>
+          </div>
+        </div>
+      </div>
+      <p id="desc-res" class="text-xs text-muted-text italic">Very cool oven setting</p>
+    </div>
+  </section>
+
+  <!-- Reference Chart Matrix Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Gas Mark Lookup Matrix</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Gas Mark</th>
+            <th class="p-3 font-semibold">Celsius Equivalent</th>
+            <th class="p-3 font-semibold">Fahrenheit Equivalent</th>
+            <th class="p-3 font-semibold">Description</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {gasMarks.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">Gas Mark {row.mark}</td>
+              <td class="p-3 text-ink">{row.c}</td>
+              <td class="p-3 text-ink">{row.f}</td>
+              <td class="p-3 text-muted-text font-sans">{row.desc}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const gasSelect = document.getElementById('gas-select') as HTMLSelectElement;
+    
+    const cRes = document.getElementById('c-res') as HTMLSpanElement;
+    const fRes = document.getElementById('f-res') as HTMLSpanElement;
+    const descRes = document.getElementById('desc-res') as HTMLParagraphElement;
+
+    function update() {
+      const opt = gasSelect.options[gasSelect.selectedIndex];
+      const c = opt.getAttribute('data-c');
+      const f = opt.getAttribute('data-f');
+      const desc = opt.getAttribute('data-desc');
+
+      if (cRes && c) cRes.textContent = c;
+      if (fRes && f) fRes.textContent = f;
+      if (descRes && desc) descRes.textContent = desc;
+    }
+
+    gasSelect?.addEventListener('change', update);
+    
+    // Initial load
+    update();
+  </script>
+</BaseLayout>

@@ -1,0 +1,211 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Torque Converter ft-lb to Nm | Bolt Grade Torque Specifications";
+const description = "Convert foot-pounds (ft-lb) to Newton-meters (Nm) or vice-versa. Calculate maximum torque ratings based on steel bolt grades and sizes.";
+const keywords = "torque converter ft lb to nm, foot pounds to newton meters, ft lb to nm conversion, torque conversion calculator, bolt torque specifications, metric bolt torque chart, how to convert ft-lb to nm, newton meter calculator, torque wrench settings, bolt grade torque limits";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Engineering & Construction", url: "/engineering-construction" },
+  { name: "Torque Converter ft-lb to Nm", url: "/torque-converter-ft-lb-to-nm" }
+];
+
+const faqs = [
+  {
+    question: "How do you convert ft-lb to Nm?",
+    answer: "Multiply the foot-pounds value by 1.355818 to calculate Newton-meters. Formula: Nm = ft-lb × 1.355818. For quick estimates, multiply by 1.356. Example: 25 ft-lb × 1.356 = 33.9 Nm."
+  },
+  {
+    question: "What is 20 ft-lb in Nm?",
+    answer: "20 ft-lb is equivalent to approximately 27.12 Newton-meters. This torque level is typical for medium-duty fasteners like M8 bolts in automotive applications."
+  },
+  {
+    question: "What torque should I use for M8 bolts?",
+    answer: "M8 bolts (1.25mm pitch) require 25 Nm (18.4 ft-lb) for Class 8.8 steel and 35 Nm (25.8 ft-lb) for Class 10.9 high-strength steel. Always use a calibrated torque wrench for critical joints."
+  },
+  {
+    question: "What is the difference between torque and moment?",
+    answer: "Torque is a rotational force that causes angular acceleration, measured in ft-lb or Nm. Moment is a static tendency to rotate about a point. In engineering, the terms are often used interchangeably, but torque specifically implies motion while moment implies potential rotation."
+  },
+  {
+    question: "Why is torque specification important for bolts?",
+    answer: "Proper bolt torque ensures correct clamping force without over-stretching the bolt. Under-torqued bolts can loosen under vibration, while over-torqued bolts can strip threads, snap the bolt head, or cause fatigue failure. Always follow manufacturer specifications for safety-critical assemblies."
+  }
+];
+
+const specTable = [
+  { size: "M6", pitch: "1.00", class88: "10 Nm / 7.4 ft-lb", class109: "14 Nm / 10.3 ft-lb" },
+  { size: "M8", pitch: "1.25", class88: "25 Nm / 18.4 ft-lb", class109: "35 Nm / 25.8 ft-lb" },
+  { size: "M10", pitch: "1.50", class88: "49 Nm / 36.1 ft-lb", class109: "69 Nm / 50.9 ft-lb" },
+  { size: "M12", pitch: "1.75", class88: "85 Nm / 62.7 ft-lb", class109: "120 Nm / 88.5 ft-lb" },
+  { size: "M14", pitch: "2.00", class88: "135 Nm / 99.6 ft-lb", class109: "190 Nm / 140.1 ft-lb" },
+  { size: "M16", pitch: "2.00", class88: "210 Nm / 154.9 ft-lb", class109: "295 Nm / 217.6 ft-lb" }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/torque-converter-ft-lb-to-nm"
+  categorySlug="torque"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/torque-converter" class="hover:text-brand-blue transition-colors">Torque Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">ft-lb to Nm</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Torque Converter ft-lb to Nm</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 ft-lb = 1.355818 Nm</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: M8 standard metric bolt torque limit is roughly 25 Nm (18.4 ft-lb) for standard steel Grade 8.8.
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Convert torque ratings between foot-pounds and Newton-meters. Select standard bolt sizes and steel classes to see installation limits. Essential for automotive, aerospace, and mechanical engineering applications.
+    </p>
+  </section>
+
+  <!-- Interactive Converter Widget -->
+  <section class="mb-10 bg-card border border-hairline rounded-2xl p-6 max-w-2xl">
+    <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Interactive Torque Converter</h2>
+    
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 items-end">
+      <div>
+        <label for="ft-lb-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Torque (ft-lb)</label>
+        <input
+          id="ft-lb-input"
+          type="number"
+          step="any"
+          value="1"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+      <div>
+        <label for="nm-input" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Torque (Nm)</label>
+        <input
+          id="nm-input"
+          type="number"
+          step="any"
+          value="1.3558"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Bolt Specifications Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Metric Bolt Torque Specifications</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Bolt Size</th>
+            <th class="p-3 font-semibold">Thread Pitch (mm)</th>
+            <th class="p-3 font-semibold">Class 8.8 Strength Max Torque</th>
+            <th class="p-3 font-semibold">Class 10.9 Strength Max Torque</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {specTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-bold text-brand-blue">{row.size}</td>
+              <td class="p-3 text-ink">{row.pitch} mm</td>
+              <td class="p-3 text-ink">{row.class88}</td>
+              <td class="p-3 text-muted-text">{row.class109}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  
+  <div class="mt-6 flex justify-start select-none">
+    <a href="/bolt-torque-spec-calculator" class="inline-flex items-center text-xs font-semibold text-brand-blue hover:underline gap-1 cursor-pointer">
+      Open Bolt Torque Calculator
+      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+      </svg>
+    </a>
+  </div>
+
+  <script>
+    const ftLbInput = document.getElementById('ft-lb-input') as HTMLInputElement;
+    const nmInput = document.getElementById('nm-input') as HTMLInputElement;
+
+    const conversionFactor = 1.3558179483;
+
+    ftLbInput?.addEventListener('input', () => {
+      const ftLb = parseFloat(ftLbInput.value);
+      if (!isNaN(ftLb) && nmInput) {
+        nmInput.value = Number((ftLb * conversionFactor).toFixed(4)).toString();
+      }
+    });
+
+    nmInput?.addEventListener('input', () => {
+      const nm = parseFloat(nmInput.value);
+      if (!isNaN(nm) && ftLbInput) {
+        ftLbInput.value = Number((nm / conversionFactor).toFixed(4)).toString();
+      }
+    });
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding Torque Units</h3>
+      <p class="leading-relaxed mb-3">
+        <strong>Foot-pounds (ft-lb)</strong> is the imperial unit of torque, representing the rotational force applied when one pound of force acts at the end of a one-foot lever arm. <strong>Newton-meters (Nm)</strong> is the SI metric equivalent, where one Newton of force acts at the end of a one-meter arm.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>Quick Conversion:</strong> Nm = ft-lb × 1.356</div>
+        <div><strong>Reverse:</strong> ft-lb = Nm × 0.7376</div>
+        <div><strong>Common Values:</strong> 10 ft-lb = 13.6 Nm | 50 ft-lb = 67.8 Nm | 100 ft-lb = 135.6 Nm</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Torque Wrench Best Practices</h3>
+      <p class="leading-relaxed mb-3">
+        Always calibrate torque wrenches annually or every 5,000 cycles. Apply torque in a smooth, steady motion — never jerk or impact. For critical joints, use the "torque-angle" method: tighten to a seating torque, then rotate through a specified angle for precise clamping load.
+      </p>
+      <p class="leading-relaxed">
+        When converting between ft-lb and Nm for wrench settings, always round to the nearest marked increment on your wrench. Most click-type torque wrenches have accuracy within ±4% of the set value.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Torque Conversion</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Engineering Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/bolt-torque-spec-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Bolt Torque Spec Calculator</a>
+      <a href="/rebar-weight-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Rebar Weight Calculator</a>
+      <a href="/steel-weight-calculator-kg-per-meter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Steel Weight Calculator</a>
+      <a href="/flow-rate-converter-gpm-to-lpm" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Flow Rate Converter</a>
+      <a href="/pipe-size-converter-nominal-to-actual" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Pipe Size Converter</a>
+    </div>
+  </section>
+
+</BaseLayout>

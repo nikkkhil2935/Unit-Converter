@@ -1,0 +1,259 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Oven Temperature Converter °C to °F | Conventional vs Fan Oven Chart";
+const description = "Convert oven temperatures between Celsius and Fahrenheit. Includes fan/convection oven reduction, Gas Mark lookup, and a full baking temperature chart. Essential for recipe conversion.";
+const keywords = "oven temperature converter, celsius to fahrenheit oven, oven temp chart, 180c to fahrenheit, 200c to fahrenheit, fan oven temperature reduction, convection oven conversion, gas mark to celsius fahrenheit, baking temperature conversion, oven temperature guide";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Cooking & Baking", url: "/cooking-baking" },
+  { name: "Oven Temperature Converter", url: "/oven-temperature-converter-c-to-f" }
+];
+
+const faqs = [
+  {
+    question: "What is 180°C in Fahrenheit for baking?",
+    answer: "180°C is equal to 356°F (commonly rounded to 350°F in American recipes). This is a moderate oven temperature used for most cakes, cookies, muffins, and casseroles."
+  },
+  {
+    question: "What temperature should a fan oven be set to for 180°C recipes?",
+    answer: "For fan/convection ovens, reduce the temperature by 20°C (about 25°F). So 180°C conventional = 160°C fan forced = 320°F fan forced. The circulating air makes cooking faster and more even."
+  },
+  {
+    question: "What is 200°C in Fahrenheit?",
+    answer: "200°C equals 392°F (rounded to 400°F in most recipes). This is a 'hot oven' — suitable for roasting vegetables, pizza, crusty breads, and pastries."
+  },
+  {
+    question: "What is Gas Mark 4 in Celsius and Fahrenheit?",
+    answer: "Gas Mark 4 = 180°C = 350°F. This is a 'moderate' oven temperature and the most commonly specified temperature in UK and Australian recipes."
+  },
+  {
+    question: "What is the conversion formula for oven temperatures?",
+    answer: "°F = (°C × 9/5) + 32. For example: 180°C × 1.8 + 32 = 356°F. Going the other way: °C = (°F − 32) × 5/9."
+  },
+  {
+    question: "What is 220°C in Fahrenheit?",
+    answer: "220°C equals 428°F (commonly cited as 425°F). This is a very hot oven — ideal for searing meat, crisping pizza bases, and baking rustic bread with a crackly crust."
+  }
+];
+
+const referenceTable = [
+  { desc: "Very Slow / Warm Oven", c: "120°C", f: "250°F", fan: "100°C", gas: "1/2" },
+  { desc: "Slow Oven", c: "150°C", f: "300°F", fan: "130°C", gas: "2" },
+  { desc: "Moderately Slow", c: "165°C", f: "325°F", fan: "145°C", gas: "3" },
+  { desc: "Moderate Oven", c: "180°C", f: "350°F", fan: "160°C", gas: "4" },
+  { desc: "Moderately Hot", c: "190°C", f: "375°F", fan: "170°C", gas: "5" },
+  { desc: "Hot Oven", c: "200°C", f: "400°F", fan: "180°C", gas: "6" },
+  { desc: "Very Hot", c: "220°C", f: "425°F", fan: "200°C", gas: "7" },
+  { desc: "Extremely Hot", c: "230°C", f: "450°F", fan: "210°C", gas: "8" },
+  { desc: "Maximum / Broil", c: "250°C", f: "480°F", fan: "230°C", gas: "9" }
+];
+---
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/oven-temperature-converter-c-to-f"
+  categorySlug="temperature"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/temperature-converter" class="hover:text-brand-blue transition-colors">Temperature Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Oven Temperature</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Oven Temperature Converter</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>Standard Baking: 180°C = 350°F = Gas Mark 4</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Convection/Fan forced oven: Reduce standard recipe temperature by 20°C (35°F).
+      </p>
+    </div>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Oven Settings</h2>
+      
+      <div>
+        <label for="temp-val" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Temperature</label>
+        <input
+          id="temp-val"
+          type="number"
+          value="180"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div class="flex gap-2">
+        <button id="btn-c" class="flex-1 bg-brand-blue/15 text-brand-blue border border-brand-blue/30 rounded-lg py-2.5 text-xs font-bold font-mono cursor-pointer select-none">Celsius (°C)</button>
+        <button id="btn-f" class="flex-1 bg-canvas text-body-text border border-hairline hover:border-brand-blue rounded-lg py-2.5 text-xs font-medium font-mono cursor-pointer select-none">Fahrenheit (°F)</button>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Estimated Equivalents</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Conventional Equivalent</span>
+            <span id="conv-res" class="text-lg font-mono font-bold text-brand-blue">356°F</span>
+          </div>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between items-center">
+          <div>
+            <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Fan-Forced (Convection) Equivalent</span>
+            <span id="fan-res" class="text-lg font-mono font-bold text-ink">320°F (160°C)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Reference Chart Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Standard Oven Temperature Lookup Chart</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase font-mono">
+            <th class="p-3 font-semibold">Oven Description</th>
+            <th class="p-3 font-semibold">Celsius</th>
+            <th class="p-3 font-semibold">Fahrenheit</th>
+            <th class="p-3 font-semibold">Fan-forced</th>
+            <th class="p-3 font-semibold">Gas Mark</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {referenceTable.map(row => (
+            <tr class="hover:bg-card/40 transition-colors">
+              <td class="p-3 font-sans font-medium text-ink">{row.desc}</td>
+              <td class="p-3 text-brand-blue font-bold">{row.c}</td>
+              <td class="p-3 text-ink">{row.f}</td>
+              <td class="p-3 text-ink">{row.fan}</td>
+              <td class="p-3 text-muted-text">{row.gas}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    const tempVal = document.getElementById('temp-val') as HTMLInputElement;
+    const btnC = document.getElementById('btn-c') as HTMLButtonElement;
+    const btnF = document.getElementById('btn-f') as HTMLButtonElement;
+    
+    const convRes = document.getElementById('conv-res') as HTMLSpanElement;
+    const fanRes = document.getElementById('fan-res') as HTMLSpanElement;
+
+    let scale: 'c' | 'f' = 'c';
+
+    function setScale(s: 'c' | 'f') {
+      scale = s;
+      if (scale === 'c') {
+        btnC?.classList.add('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnC?.classList.remove('bg-canvas', 'text-body-text', 'border-hairline');
+        btnF?.classList.remove('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnF?.classList.add('bg-canvas', 'text-body-text', 'border-hairline');
+      } else {
+        btnF?.classList.add('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnF?.classList.remove('bg-canvas', 'text-body-text', 'border-hairline');
+        btnC?.classList.remove('bg-brand-blue/15', 'border-brand-blue/30', 'text-brand-blue');
+        btnC?.classList.add('bg-canvas', 'text-body-text', 'border-hairline');
+      }
+      calculate();
+    }
+
+    function calculate() {
+      const val = parseFloat(tempVal.value);
+      if (isNaN(val)) return;
+
+      if (scale === 'c') {
+        const f = (val * 9) / 5 + 32;
+        const fanC = val - 20;
+        const fanF = (fanC * 9) / 5 + 32;
+        
+        if (convRes) convRes.textContent = `${Math.round(f)}°F`;
+        if (fanRes) fanRes.textContent = `${Math.round(fanF)}°F (${Math.round(fanC)}°C)`;
+      } else {
+        const c = ((val - 32) * 5) / 9;
+        const fanF = val - 35;
+        const fanC = ((fanF - 32) * 5) / 9;
+        
+        if (convRes) convRes.textContent = `${Math.round(c)}°C`;
+        if (fanRes) fanRes.textContent = `${Math.round(fanC)}°C (${Math.round(fanF)}°F)`;
+      }
+    }
+
+    btnC?.addEventListener('click', () => setScale('c'));
+    btnF?.addEventListener('click', () => setScale('f'));
+    tempVal?.addEventListener('input', calculate);
+
+    // Initial calculate
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Conventional vs. Fan (Convection) Ovens</h3>
+      <p class="leading-relaxed mb-3">
+        A <strong>conventional oven</strong> heats food using stationary heating elements at the top and bottom. Heat distribution can be uneven — the bottom tends to be hotter, and different oven zones cook at slightly different rates. This is why recipes say "rotate halfway through baking."
+      </p>
+      <p class="leading-relaxed">
+        A <strong>fan-forced (convection) oven</strong> adds a fan that circulates hot air, creating even temperatures throughout. This reduces hot spots but also increases the effective cooking temperature. The standard adjustment is: reduce the recipe temperature by <strong>20°C (35°F)</strong>, or reduce cooking time by 10–15% while keeping the same temperature.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Gas Mark Quick Reference</h3>
+      <p class="leading-relaxed mb-3">
+        Gas marks are the temperature control system for gas ovens, used primarily in the UK, Ireland, and Australia. Each Gas Mark number roughly equals a 14°C / 25°F increment above 135°C (275°F). The most common baking temperature, 180°C (350°F), corresponds to Gas Mark 4.
+      </p>
+      <div class="space-y-1 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div class="flex justify-between"><span>Gas Mark 1</span><span class="text-ink font-bold">140°C / 275°F</span></div>
+        <div class="flex justify-between"><span>Gas Mark 2</span><span class="text-ink font-bold">150°C / 300°F</span></div>
+        <div class="flex justify-between"><span>Gas Mark 4</span><span class="text-brand-blue font-bold">180°C / 350°F ← most common</span></div>
+        <div class="flex justify-between"><span>Gas Mark 6</span><span class="text-ink font-bold">200°C / 400°F</span></div>
+        <div class="flex justify-between"><span>Gas Mark 8</span><span class="text-ink font-bold">230°C / 450°F</span></div>
+      </div>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Oven Temperatures</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Baking & Temperature Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/fan-oven-temperature-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Fan Oven Converter</a>
+      <a href="/gas-mark-to-celsius-to-fahrenheit" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Gas Mark to °C / °F</a>
+      <a href="/candy-making-temperature-stages-chart" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Candy Temperature Stages</a>
+      <a href="/meat-internal-temperature-guide-c-to-f" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Meat Internal Temp Guide</a>
+      <a href="/proof-temperature-for-bread-c-to-f" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Bread Proofing Temp</a>
+      <a href="/celsius-to-fahrenheit" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Celsius to Fahrenheit</a>
+    </div>
+  </section>
+
+</BaseLayout>
+

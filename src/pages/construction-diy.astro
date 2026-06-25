@@ -1,0 +1,114 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import CategoryIcon from '../components/CategoryIcon';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+
+const title = "Construction & DIY Calculators — Board Feet, Concrete, Paint";
+const description = "Free online construction and DIY calculators. Estimate lumber board feet, calculate concrete volume requirements, check paint coverage, and estimate tile totals.";
+
+const crumbs = [
+  { name: 'Home', url: '/' },
+  { name: 'Construction & DIY', url: '/construction-diy' }
+];
+
+const tools = [
+  { label: "Board Feet Calculator", href: "/board-feet-calculator", desc: "Calculate total board feet measurements for hardwood and construction lumber quantities." },
+  { label: "Square Footage Calc", href: "/square-footage-calculator", desc: "Determine total square feet (sq ft) of a room or area for tiling, flooring, or landscaping." },
+  { label: "Mulch Coverage Calc", href: "/mulch-coverage-calculator", desc: "Calculate how many bags or cubic yards of mulch you need based on thickness and garden area." },
+  { label: "Paint Coverage Calc", href: "/paint-coverage-calculator-sq-ft-per-gallon", desc: "Estimate how many gallons of paint are needed to cover walls based on room dimensions." },
+  { label: "Concrete Bags Volume", href: "/concrete-volume-calculator-bags-to-cubic-feet", desc: "Estimate how many 80lb, 60lb, or 40lb bags of concrete mix you need to pour a slab." },
+  { label: "Gravel Weight Calc", href: "/gravel-weight-calculator-tons-to-cubic-yards", desc: "Convert gravel coverage volume in cubic yards to bulk tons for delivery ordering." },
+  { label: "Lumber Linear/Board Ft", href: "/lumber-linear-feet-to-board-feet", desc: "Convert linear feet of standard boards of various widths into total board feet." },
+  { label: "Roofing Square Calc", href: "/roofing-square-calculator", desc: "Determine how many roofing shingles and squares you need to purchase based on pitch and roof area." },
+  { label: "Tile Coverage Calc", href: "/tile-coverage-calculator", desc: "Calculate how many individual ceramic, stone, or porcelain tiles are needed, plus wastage factor." },
+  { label: "Concrete Mix Ratios", href: "/concrete-mix-ratio-calculator", desc: "Determine parts of cement, sand, gravel, and water required for standard strength concrete mixes." },
+  { label: "Rebar Weight Calc", href: "/rebar-weight-calculator", desc: "Estimate total weight and count of steel reinforcing bars (rebar) needed for concrete slabs." }
+];
+
+const faqs = [
+  {
+    question: "What is a board foot in lumber?",
+    answer: "A board foot is a specialized unit of volume for lumber. It is equivalent to a volume of 12 inches by 12 inches by 1 inch, or 144 cubic inches. The formula is: Board Feet = (Thickness in inches × Width in inches × Length in feet) / 12."
+  },
+  {
+    question: "How do I calculate concrete volume for a slab?",
+    answer: "To calculate concrete volume for a rectangular slab: (1) Measure the length, width, and depth (thickness) in feet. (2) Multiply all three numbers together to get cubic feet. (3) Divide the cubic feet result by 27 to convert it to cubic yards, which is the standard ordering unit. One 80lb bag yields about 0.6 cubic feet of mixed concrete."
+  },
+  {
+    question: "How much square footage does a gallon of paint cover?",
+    answer: "As a general rule, one gallon of quality wall paint will cover between 350 and 400 square feet with a single coat. Rough or porous surfaces like raw drywall or stucco may require more paint, reducing coverage to about 250 square feet per gallon."
+  }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords="construction calculators, diy calculator, board feet calculator, concrete calculator, paint coverage calculator, square footage calculator, tiling calculator"
+  canonicalPath="/construction-diy"
+  ogTitle={title}
+  ogDescription={description}
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <!-- Title Section -->
+  <section class="mb-8 select-none">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-2 flex items-center gap-2.5">
+      <CategoryIcon id="angle" className="w-8 h-8 text-brand-blue" />
+      <span>Construction & DIY Calculators</span>
+    </h1>
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Practical estimators for home improvement projects and job sites. Calculate concrete volumes, lumber board feet, paint coverage, tile layouts, and mulch needs.
+    </p>
+  </section>
+
+  <!-- Tools Grid -->
+  <section class="mb-10 select-none">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {tools.map(tool => (
+        <a
+          href={tool.href}
+          class="group block p-5 rounded-xl border border-hairline bg-card hover:border-brand-blue transition-all duration-200 hover:shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex flex-col justify-between cursor-pointer"
+        >
+          <div>
+            <h2 class="font-semibold text-sm text-ink mb-2 group-hover:text-brand-blue transition-colors duration-200">
+              {tool.label}
+            </h2>
+            <p class="text-xs text-body-text mb-4 leading-relaxed line-clamp-3">
+              {tool.desc}
+            </p>
+          </div>
+          <span
+            class="inline-flex items-center text-[10px] font-semibold text-brand-blue opacity-80 group-hover:opacity-100 transition-opacity mt-auto pt-2"
+          >
+            Open calculator
+            <svg class="ml-1 w-3 h-3 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <!-- Related Specialist Categories -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text select-none">
+    <h3 class="font-semibold text-ink mb-3">Other Specialist Calculators</h3>
+    <div class="flex flex-wrap gap-4">
+      <a href="/cooking-baking" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Cooking & Baking</a>
+      <a href="/engineering-trade" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Engineering & Trade</a>
+      <a href="/scientific-lab" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Scientific & Lab</a>
+      <a href="/sizing-automotive" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Sizing & Automotive</a>
+      <a href="/finance-business" class="px-3 py-2 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded-lg font-medium transition-all">Finance & Business</a>
+    </div>
+  </section>
+
+  <!-- FAQs Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 transition-colors mb-10 select-none">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
+      Construction & DIY FAQs
+    </h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+</BaseLayout>

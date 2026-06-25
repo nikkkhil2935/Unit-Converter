@@ -2,8 +2,12 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ConverterWidget from '../components/ConverterWidget';
 import FAQSchema from '../components/FAQSchema.astro';
+import AdBanner from '../components/AdBanner.astro';
 import { categories, convert, getFormulaExplanation, type Category, type Unit } from '../lib/conversions';
 import { getPairSEO, getRealWorldContext, getEquivalent } from '../utils/seo';
+import { decimalToFraction } from '../utils/fraction';
+import { specialistToolsByCategory, specialistSeoContent } from '../utils/specialist-seo';
+
 
 export interface Props {
   category: Category;
@@ -91,10 +95,24 @@ const conversionFactor = formatVal(convert(1, unitA.id, unitB.id, category.id));
 const tableValues = [0.001, 0.01, 0.1, 0.5, 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000];
 const conversions = tableValues.map(val => {
   const converted = convert(val, unitA.id, unitB.id, category.id);
+  
+  // Calculate fraction representation if category is length, weight, volume, or area
+  const showFraction = ['length', 'weight', 'volume', 'area'].includes(category.slug);
+  let fractionStr = '';
+  if (showFraction) {
+    const frac = decimalToFraction(converted, 64);
+    if (frac.numerator !== 0) {
+      fractionStr = frac.displayString + (unitB.slug === 'inches' ? '"' : ` ${unitB.symbol}`);
+    } else {
+      fractionStr = '-';
+    }
+  }
+
   return {
     from: formatVal(val),
     to: formatVal(converted),
-    equivalent: getEquivalent(converted, unitB.slug)
+    equivalent: getEquivalent(converted, unitB.slug),
+    fraction: fractionStr
   };
 });
 
@@ -114,11 +132,9 @@ const faqs = [
   }
 ];
 
-// Generate dynamic 6 same-category links
-// 3 starting with unitA, 3 ending with unitB
+// Generate dense same-category links to ensure robust crawling (no orphans)
 const siblingFrom = category.units
   .filter(u => u.slug !== unitA.slug && u.slug !== unitB.slug)
-  .slice(0, 3)
   .map(u => ({
     label: `Convert ${unitA.symbol} to ${u.symbol}`,
     url: `/${unitA.slug}-to-${u.slug}`
@@ -126,13 +142,34 @@ const siblingFrom = category.units
 
 const siblingTo = category.units
   .filter(u => u.slug !== unitA.slug && u.slug !== unitB.slug)
-  .slice(0, 3)
   .map(u => ({
     label: `Convert ${u.symbol} to ${unitB.symbol}`,
     url: `/${u.slug}-to-${unitB.slug}`
   }));
 
-const siblingLinks = [...siblingFrom, ...siblingTo];
+const isPopularPair = [
+  { from: "cm", to: "inches" },
+  { from: "inches", to: "cm" },
+  { from: "kg", to: "lbs" },
+  { from: "lbs", to: "kg" },
+  { from: "celsius", to: "fahrenheit" },
+  { from: "fahrenheit", to: "celsius" },
+  { from: "mm", to: "inches" },
+  { from: "inches", to: "mm" },
+  { from: "meters", to: "feet" },
+  { from: "feet", to: "meters" },
+  { from: "km", to: "miles" },
+  { from: "miles", to: "km" }
+].some(p => p.from === unitA.slug && p.to === unitB.slug);
+
+const isPopularFractionPair = [
+  { from: "mm", to: "inches" },
+  { from: "cm", to: "inches" },
+  { from: "inches", to: "mm" },
+  { from: "inches", to: "cm" },
+  { from: "meters", to: "feet" },
+  { from: "feet", to: "meters" }
+].some(p => p.from === unitA.slug && p.to === unitB.slug);
 
 // Related categories
 const categoryMap = categories.reduce((acc, c) => {
@@ -275,6 +312,9 @@ const getMentalMathTip = () => {
     return `Divide the value by roughly ${roundedDiv} to quickly estimate the converted result.`;
   }
 };
+
+const relatedSpecialistTools = specialistToolsByCategory[category.id] || [];
+const specialistSeo = specialistSeoContent[category.id];
 ---
 
 <BaseLayout
@@ -307,13 +347,8 @@ const getMentalMathTip = () => {
     </h1>
     
     <!-- Direct Answer Snippet for Position 0 -->
-    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl select-text">
-      <p class="text-base text-ink mb-1">
-        <strong>1 {unitA.name} = {conversionFactor} {unitB.name}</strong>
-      </p>
-      <p class="text-xs text-body-text font-normal leading-relaxed">
-        To convert {unitA.name.toLowerCase()}s to {unitB.name.toLowerCase()}s, multiply by {conversionFactor}.
-      </p>
+    <div class="direct-answer mb-5 bg-card" style="font-size:1.25rem; font-weight:600; padding:1rem; border-left:3px solid #0070f3">
+      1 {unitA.name} = {conversionFactor} {unitB.name}
     </div>
 
     <!-- Context Paragraph -->
@@ -321,6 +356,8 @@ const getMentalMathTip = () => {
       {realWorldParagraph}
     </p>
   </section>
+
+  <AdBanner slot="detail-top" />
 
   <!-- Interactive Converter Widget -->
   <section class="mb-10">
@@ -332,6 +369,8 @@ const getMentalMathTip = () => {
     />
   </section>
 
+  <AdBanner slot="detail-mid" />
+
   <!-- Split Grid for Table and Formulas -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 select-none">
     
@@ -340,21 +379,23 @@ const getMentalMathTip = () => {
       <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">
         {seo.h2variants[2]}
       </h2>
-      <div class="overflow-hidden border border-hairline rounded-lg">
+      <div class="overflow-hidden border border-hairline rounded-lg font-mono">
         <table class="w-full border-collapse text-left text-xs">
           <thead>
-            <tr class="bg-canvas border-b border-hairline text-muted-text font-mono text-[10px] uppercase">
-              <th class="p-3 font-semibold">{unitA.name} ({unitA.symbol})</th>
-              <th class="p-3 font-semibold">{unitB.name} ({unitB.symbol})</th>
+            <tr class="bg-canvas border-b border-hairline text-muted-text text-[10px] uppercase">
+              <th class="p-3 font-semibold">{unitA.name}</th>
+              <th class="p-3 font-semibold">{unitB.name} (Decimal)</th>
+              <th class="p-3 font-semibold">Fraction</th>
               <th class="p-3 font-semibold hidden sm:table-cell">Real-world equivalent</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-hairline font-mono">
+          <tbody class="divide-y divide-hairline">
             {conversions.map(row => (
               <tr class="hover:bg-canvas/50 transition-colors">
-                <td class="p-3 text-ink font-medium">{row.from}</td>
-                <td class="p-3 text-brand-blue font-bold">{row.to}</td>
-                <td class="p-3 text-muted-text text-[11px] hidden sm:table-cell">{row.equivalent}</td>
+                <td class="p-3 text-ink font-medium">{row.from} {unitA.symbol}</td>
+                <td class="p-3 text-brand-blue font-bold">{row.to} {unitB.symbol}</td>
+                <td class="p-3 text-ink font-semibold">{row.fraction || '-'}</td>
+                <td class="p-3 text-muted-text text-[11px] hidden sm:table-cell font-sans">{row.equivalent}</td>
               </tr>
             ))}
           </tbody>
@@ -395,21 +436,77 @@ const getMentalMathTip = () => {
       </div>
 
       <!-- Common Value Searches (Targeting specific searches) -->
-      <div class="bg-card border border-hairline rounded-xl p-6 transition-colors">
-        <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
-          Common {unitA.name} to {unitB.name} Calculations
-        </h2>
-        <ul class="space-y-2 text-xs font-mono text-body-text">
-          <li>5 {unitA.symbol} = {formatVal(convert(5, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
-          <li>10 {unitA.symbol} = {formatVal(convert(10, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
-          <li>50 {unitA.symbol} = {formatVal(convert(50, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
-          <li>100 {unitA.symbol} = {formatVal(convert(100, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
-          <li>500 {unitA.symbol} = {formatVal(convert(500, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
-        </ul>
+      <div class="bg-card border border-hairline rounded-xl p-6 transition-colors flex flex-col gap-6">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
+            Common {unitA.name} to {unitB.name} Calculations
+          </h2>
+          {isPopularPair ? (
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+              {[1, 2, 3, 5, 8, 10, 15, 20, 25, 30, 45, 50, 75, 100, 120, 150, 180, 200, 250, 500].map(val => (
+                <a href={`/${val}-${unitA.slug}-to-${unitB.slug}`} class="px-2 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded text-center truncate">
+                  {val} {unitA.symbol} to {unitB.symbol}
+                </a>
+              ))}
+            </div>
+          ) : (
+            <ul class="space-y-2 text-xs font-mono text-body-text">
+              <li>5 {unitA.symbol} = {formatVal(convert(5, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+              <li>10 {unitA.symbol} = {formatVal(convert(10, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+              <li>50 {unitA.symbol} = {formatVal(convert(50, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+              <li>100 {unitA.symbol} = {formatVal(convert(100, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+              <li>500 {unitA.symbol} = {formatVal(convert(500, unitA.id, unitB.id, category.id))} {unitB.symbol}</li>
+            </ul>
+          )}
+        </div>
+
+        {isPopularFractionPair && (
+          <div>
+            <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-3 font-mono">
+              Common {unitA.name} to {unitB.name} Fraction Calculations
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-mono">
+              {[1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 30, 45, 50, 75, 100, 120, 127, 200].map(val => (
+                <a href={`/${val}-${unitA.slug}-to-${unitB.slug}-fraction`} class="px-2 py-1.5 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded text-center truncate">
+                  {val} {unitA.symbol} as Fraction
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
     </section>
   </div>
+
+  <AdBanner slot="detail-grid" />
+
+  <!-- Related Specialist Calculators -->
+  {relatedSpecialistTools.length > 0 && (
+    <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
+      <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono select-none">
+        Related Specialist {category.name} Calculators & Niche Tools
+      </h2>
+      
+      <div class="text-xs text-body-text leading-relaxed mb-6 space-y-3">
+        <p class="font-semibold text-ink">
+          {specialistSeo?.intro || `For more complex engineering, construction, or trade applications involving ${category.name.toLowerCase()} measurements, use our specialist calculators below.`}
+        </p>
+        <p>
+          {specialistSeo?.details || `These tools help solve real-world problems like wire gauge ampacity, lumber volume, shoe size fittings, or baking weights directly without manual calculation errors.`}
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {relatedSpecialistTools.map(tool => (
+          <a href={tool.href} class="p-4 bg-canvas border border-hairline hover:border-brand-blue hover:shadow-[0_2px_8px_rgba(0,112,243,0.05)] rounded-lg group block transition-all cursor-pointer">
+            <span class="block text-xs font-bold text-ink group-hover:text-brand-blue transition-colors duration-200">{tool.label}</span>
+            <span class="block text-[11px] text-muted-text mt-1.5 font-sans leading-normal">{tool.desc}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )}
 
   <!-- FAQs Accordion UI -->
   <section class="bg-card border border-hairline rounded-xl p-6 mb-10 transition-colors">
@@ -419,6 +516,8 @@ const getMentalMathTip = () => {
     <FAQSchema faqs={faqs} />
   </section>
 
+  <AdBanner slot="detail-bottom" />
+
   <!-- Internal Linking Sections (PILLAR 4) -->
   <section class="border-t border-hairline pt-8 pb-12 text-xs text-body-text select-none">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -426,20 +525,41 @@ const getMentalMathTip = () => {
       <!-- Reverse & Sibling Links -->
       <div class="flex flex-col gap-6">
         <div>
-          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Reverse Conversion</h3>
-          <a href={`/${unitB.slug}-to-${unitA.slug}`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Convert {unitB.name} to {unitA.name}
-          </a>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-2">Alternative Views</h3>
+          <div class="flex flex-col gap-2">
+            <a href={`/${unitB.slug}-to-${unitA.slug}`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+              Convert {unitB.name} to {unitA.name}
+            </a>
+            {['length', 'weight', 'volume', 'area'].includes(category.slug) && (
+              <a href={`/${unitA.slug}-to-${unitB.slug}-fraction`} class="text-brand-blue font-semibold hover:underline inline-flex items-center gap-1">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+                View {unitA.name} to {unitB.name} as Fraction
+              </a>
+            )}
+          </div>
         </div>
 
         <div>
-          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Other {category.name} Conversions</h3>
-          <div class="grid grid-cols-2 gap-2">
-            {siblingLinks.map(sibling => (
-              <a href={sibling.url} class="p-2 border border-hairline bg-canvas hover:border-brand-blue hover:text-brand-blue rounded font-mono text-[11px] truncate">
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Convert {unitA.name} to other units</h3>
+          <div class="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto pr-1 border border-hairline rounded-lg p-2 bg-canvas">
+            {siblingFrom.map(sibling => (
+              <a href={sibling.url} class="p-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-[10px] font-mono truncate">
+                {sibling.label}
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Convert other units to {unitB.name}</h3>
+          <div class="grid grid-cols-2 gap-1.5 max-h-[150px] overflow-y-auto pr-1 border border-hairline rounded-lg p-2 bg-canvas">
+            {siblingTo.map(sibling => (
+              <a href={sibling.url} class="p-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded text-[10px] font-mono truncate">
                 {sibling.label}
               </a>
             ))}

@@ -1,0 +1,256 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Concentration Converter: PPM to mg/L | Gas mg/m³ | Scientific Calculator";
+const description = "Convert concentration between ppm, mg/L, mg/m³, ppb, and percent. Separate calculators for aqueous solutions and gas phase. Includes standard atmospheric gas reference table.";
+const keywords = "ppm to mg/L, ppm to mg L converter, concentration converter, parts per million calculator, ppb to mg L, ppm to percent, gas concentration calculator, mg per cubic meter, atmospheric ppm, water quality ppm";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Scientific & Lab", url: "/scientific-lab" },
+  { name: "PPM to mg/L Converter", url: "/concentration-converter-ppm-to-mgL" }
+];
+
+const faqs = [
+  {
+    question: "Is 1 ppm equal to 1 mg/L?",
+    answer: "Yes, for aqueous (water-based) solutions, 1 ppm is exactly equal to 1 mg/L. This is because 1 liter of water has a mass of approximately 1 kg (1,000 grams), so 1 mg in 1 liter = 1 mg per 1,000,000 mg = 1 part per million."
+  },
+  {
+    question: "How do you convert ppm to mg/m³ for gases?",
+    answer: "For gases at standard conditions (25°C, 1 atm): mg/m³ = ppm × Molar Mass (g/mol) ÷ 24.45 L/mol. For example, 100 ppm of CO₂ (molar mass 44.01) = 100 × 44.01 ÷ 24.45 = 180 mg/m³. At different temperatures, replace 24.45 with the actual molar volume = 22.414 × (T + 273.15) / 273.15."
+  },
+  {
+    question: "What is the difference between ppm (v/v) and ppm (w/w)?",
+    answer: "PPM v/v (volume per volume) is used for gas mixtures and liquid solutions, representing μL of substance per liter of solution. PPM w/w (weight per weight) is mg of substance per kg of total material. For dilute aqueous solutions, both are numerically equivalent to mg/L because water density ≈ 1 kg/L."
+  },
+  {
+    question: "How many ppb are in 1 ppm?",
+    answer: "1 ppm = 1,000 ppb (parts per billion). To convert ppb to mg/L: divide by 1,000. For example, 500 ppb = 0.5 mg/L = 0.5 ppm. Environmental regulations for water quality often specify limits in ppb, while industrial process limits are often in ppm."
+  },
+  {
+    question: "What is the WHO safe drinking water limit for common contaminants?",
+    answer: "WHO guideline values (in mg/L = ppm): Nitrates: 50 mg/L, Fluoride: 1.5 mg/L, Lead: 0.01 mg/L (10 ppb), Arsenic: 0.01 mg/L, Chlorine (residual): 5 mg/L max. Most water quality standards are expressed in mg/L, making ppm the standard unit for water analysis."
+  }
+];
+
+const standardGases = [
+  { name: "Carbon Dioxide (CO2)", mw: 44.01 },
+  { name: "Carbon Monoxide (CO)", mw: 28.01 },
+  { name: "Oxygen (O2)", mw: 32.00 },
+  { name: "Nitrogen Dioxide (NO2)", mw: 46.01 },
+  { name: "Methane (CH4)", mw: 16.04 },
+  { name: "Sulfur Dioxide (SO2)", mw: 64.06 },
+  { name: "Ozone (O3)", mw: 48.00 },
+  { name: "Ammonia (NH3)", mw: 17.03 },
+  { name: "Hydrogen Sulfide (H2S)", mw: 34.08 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/concentration-converter-ppm-to-mgL"
+  categorySlug="density"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/scientific-lab" class="hover:text-brand-blue transition-colors">Scientific & Lab</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">PPM to mg/L</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Concentration Converter: ppm to mg/L, mg/m³, ppb</h1>
+
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl" style="border-left: 3px solid #0070f3">
+      <p class="text-base text-ink font-semibold mb-1">For aqueous solutions: 1 ppm = 1 mg/L = 1,000 ppb</p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        For gases: mg/m³ = ppm × Molar Mass ÷ 24.45 (at 25°C & 1 atm)
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      This dual-mode concentration converter handles both <strong>aqueous solutions</strong> (water quality, environmental monitoring, industrial process chemistry) and <strong>gas phase concentrations</strong> (air quality, atmospheric science, occupational safety). Select your compound or enter a custom molar mass for non-standard gases.
+    </p>
+  </section>
+
+  <!-- Interactive Calculator -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <!-- Left: Aqueous -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Aqueous / Liquid Phase</h2>
+
+      <div>
+        <label for="ppm-aq-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Concentration (ppm)</label>
+        <input id="ppm-aq-in" type="number" value="10"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-2xl font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all" />
+      </div>
+
+      <div class="space-y-2">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between">
+          <span class="text-[10px] font-bold text-muted-text uppercase font-mono self-center">mg/L</span>
+          <span id="aq-mgl" class="text-lg font-mono font-bold text-brand-blue">10.00 mg/L</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between">
+          <span class="text-[10px] font-bold text-muted-text uppercase font-mono self-center">µg/L (ppb)</span>
+          <span id="aq-ppb" class="text-base font-mono font-bold text-ink">10,000 ppb</span>
+        </div>
+        <div class="p-3 bg-canvas border border-hairline rounded-lg flex justify-between">
+          <span class="text-[10px] font-bold text-muted-text uppercase font-mono self-center">% by mass</span>
+          <span id="aq-pct" class="text-base font-mono font-bold text-muted-text">0.001%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Gas Phase -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text font-mono">Gaseous Phase</h2>
+
+      <div>
+        <label for="gas-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Select Gas Compound</label>
+        <select id="gas-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue">
+          {standardGases.map(g => (
+            <option value={g.name} data-mw={g.mw}>{g.name} (MW: {g.mw})</option>
+          ))}
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label for="ppm-gas-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Gas ppm</label>
+          <input id="ppm-gas-in" type="number" value="100"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+        </div>
+        <div>
+          <label for="temp-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Temperature (°C)</label>
+          <input id="temp-in" type="number" value="25"
+            class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue" />
+        </div>
+      </div>
+
+      <div class="p-4 bg-canvas border border-hairline rounded-lg">
+        <span class="block text-[10px] font-bold text-muted-text uppercase font-mono mb-1">Gas Concentration</span>
+        <span id="gas-res" class="text-2xl font-mono font-bold text-brand-blue">179.9 mg/m³</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Reference Table -->
+  <section class="mb-10 max-w-4xl">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Standard Atmospheric Gas Reference (at 25°C, 1 atm)</h2>
+    <div class="overflow-hidden border border-hairline rounded-xl">
+      <table class="w-full border-collapse text-left text-xs font-mono">
+        <thead>
+          <tr class="bg-card border-b border-hairline text-muted-text text-[10px] uppercase">
+            <th class="p-3 font-semibold">Gas</th>
+            <th class="p-3 font-semibold">Molar Mass</th>
+            <th class="p-3 font-semibold">100 ppm =</th>
+            <th class="p-3 font-semibold hidden sm:table-cell">1,000 ppm =</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-hairline">
+          {standardGases.map(g => {
+            const mv = 24.45;
+            const per100 = (100 * g.mw / mv).toFixed(0);
+            const per1000 = (1000 * g.mw / mv).toFixed(0);
+            return (
+              <tr class="hover:bg-canvas/50 transition-colors">
+                <td class="p-3 font-bold text-ink">{g.name}</td>
+                <td class="p-3 text-muted-text">{g.mw} g/mol</td>
+                <td class="p-3 text-brand-blue font-bold">{per100} mg/m³</td>
+                <td class="p-3 text-muted-text hidden sm:table-cell">{per1000} mg/m³</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">PPM in Water Quality Testing</h3>
+      <p class="leading-relaxed mb-3">
+        In aqueous solution chemistry, <strong>ppm is identical to mg/L</strong> because 1 liter of water has a mass of approximately 1 kg = 1,000,000 mg. So 1 mg in 1 liter = 1 part per million. This equivalence is used universally for water quality monitoring, effluent testing, drinking water standards, and laboratory analytical chemistry.
+      </p>
+      <p class="leading-relaxed">
+        Environmental agencies like the US EPA, WHO, and EU publish water quality guidelines in mg/L. For ultra-trace contaminants (pesticides, heavy metals), measurements switch to µg/L = ppb (parts per billion), where 1 ppb = 0.001 mg/L = 0.001 ppm.
+      </p>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">PPM in Air Quality & Industrial Safety</h3>
+      <p class="leading-relaxed mb-3">
+        Gas concentrations in air quality and industrial hygiene are typically measured as ppm (v/v) — the volume ratio of gas molecules to air molecules. However, health and safety standards often specify occupational exposure limits (OELs) in mg/m³, which is mass-based and independent of temperature.
+      </p>
+      <p class="leading-relaxed">
+        OSHA Permissible Exposure Limits (PELs) and NIOSH recommended limits are in mg/m³. Converting ppm to mg/m³ requires the gas's molar mass and the ambient temperature, which this calculator handles automatically.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — PPM & Concentration</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Scientific & Lab Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/molarity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Molarity Calculator</a>
+      <a href="/ph-to-hydrogen-concentration-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">pH to [H⁺] Concentration</a>
+      <a href="/spectrophotometry-absorbance-to-transmittance" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Absorbance/Transmittance</a>
+      <a href="/osmolality-to-osmolarity-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Osmolality/Osmolarity</a>
+      <a href="/specific-gravity-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Specific Gravity Calculator</a>
+      <a href="/density-converter" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Density Unit Converter</a>
+    </div>
+  </section>
+
+  <script>
+    const ppmAqIn = document.getElementById('ppm-aq-in') as HTMLInputElement;
+    const aqMgl = document.getElementById('aq-mgl') as HTMLSpanElement;
+    const aqPpb = document.getElementById('aq-ppb') as HTMLSpanElement;
+    const aqPct = document.getElementById('aq-pct') as HTMLSpanElement;
+
+    const gasSelect = document.getElementById('gas-select') as HTMLSelectElement;
+    const ppmGasIn = document.getElementById('ppm-gas-in') as HTMLInputElement;
+    const tempIn = document.getElementById('temp-in') as HTMLInputElement;
+    const gasRes = document.getElementById('gas-res') as HTMLSpanElement;
+
+    ppmAqIn?.addEventListener('input', () => {
+      const val = parseFloat(ppmAqIn.value) || 0;
+      if (aqMgl) aqMgl.textContent = `${val.toFixed(2)} mg/L`;
+      if (aqPpb) aqPpb.textContent = `${(val * 1000).toLocaleString()} ppb`;
+      if (aqPct) aqPct.textContent = `${(val / 10000).toFixed(4)}%`;
+    });
+
+    function calculateGas() {
+      const opt = gasSelect.options[gasSelect.selectedIndex];
+      const mw = parseFloat(opt.getAttribute('data-mw') || '0');
+      const ppm = parseFloat(ppmGasIn.value) || 0;
+      const temp = parseFloat(tempIn.value) || 25;
+
+      if (!mw || ppm <= 0) return;
+
+      const molarVolume = 22.414 * ((temp + 273.15) / 273.15);
+      const mgM3 = (ppm * mw) / molarVolume;
+
+      if (gasRes) gasRes.textContent = `${mgM3.toFixed(1)} mg/m³`;
+    }
+
+    gasSelect?.addEventListener('change', calculateGas);
+    ppmGasIn?.addEventListener('input', calculateGas);
+    tempIn?.addEventListener('input', calculateGas);
+
+    calculateGas();
+  </script>
+</BaseLayout>

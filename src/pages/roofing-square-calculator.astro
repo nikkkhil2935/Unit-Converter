@@ -1,0 +1,239 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import FAQSchema from '../components/FAQSchema.astro';
+import BreadcrumbSchema from '../components/BreadcrumbSchema.astro';
+
+const title = "Roofing Square Calculator | Shingle & Pitch Estimator";
+const description = "Calculate roofing squares, bundles of shingles, and underlayment rolls. Factors in roof pitch slope multipliers and waste margins.";
+const keywords = "roofing square calculator, how many shingles do i need, roof pitch calculator, roofing squares to bundles, shingle calculator, roof area calculator, roofing material calculator, square feet to roofing squares, roof shingle estimator, roofing cost calculator";
+
+const crumbs = [
+  { name: "Home", url: "/" },
+  { name: "Construction & DIY", url: "/construction-diy" },
+  { name: "Roofing Square Calculator", url: "/roofing-square-calculator" }
+];
+
+const faqs = [
+  {
+    question: "How many square feet are in a roofing square?",
+    answer: "One roofing square = 100 square feet of roof area. This is the standard unit used by roofing contractors. A roof measuring 1,500 sq ft of footprint has approximately 15-17 roofing squares depending on pitch."
+  },
+  {
+    question: "How many bundles of shingles per square?",
+    answer: "Standard 3-tab asphalt shingles require 3 bundles per square (100 sq ft). Architectural/dimensional shingles also use 3 bundles per square. Each bundle contains approximately 26-33 shingles depending on manufacturer and shingle size."
+  },
+  {
+    question: "How do I calculate roof area from ground measurements?",
+    answer: "Measure the building footprint (length × width), then multiply by the roof pitch slope factor. For example: 1,500 sq ft footprint × 1.054 (4/12 pitch factor) = 1,581 sq ft of roof surface. Add waste factor (10-15%) for hip/valley cuts."
+  },
+  {
+    question: "What waste factor should I add for roofing?",
+    answer: "Simple gable roof: 5% waste. Standard hip/valley roof: 10% waste. Complex roof with many dormers, valleys, and penetrations: 15% waste. The waste accounts for cut shingles, starter strips, and ridge caps that can't be reused."
+  },
+  {
+    question: "How many rolls of underlayment do I need?",
+    answer: "Standard underlayment rolls cover approximately 4 squares (400 sq ft) with 4\" overlap. Divide total roof area (including waste) by 400 to get rolls needed. For steep slopes (>8/12), use ice-and-water shield on eaves — these rolls cover ~2 squares each."
+  }
+];
+
+const pitchOptions = [
+  { value: "0", name: "Flat Roof (0/12 pitch)", factor: 1.000 },
+  { value: "3", name: "Low Slope (3/12 pitch)", factor: 1.031 },
+  { value: "4", name: "Standard Slope (4/12 pitch)", factor: 1.054 },
+  { value: "5", name: "Standard Slope (5/12 pitch)", factor: 1.083 },
+  { value: "6", name: "Medium Slope (6/12 pitch)", factor: 1.118 },
+  { value: "8", name: "Medium Slope (8/12 pitch)", factor: 1.202 },
+  { value: "10", name: "Steep Slope (10/12 pitch)", factor: 1.302 },
+  { value: "12", name: "Steep Slope (12/12 pitch)", factor: 1.414 }
+];
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  keywords={keywords}
+  canonicalPath="/roofing-square-calculator"
+  categorySlug="area"
+>
+  <BreadcrumbSchema crumbs={crumbs} />
+
+  <nav class="flex text-[10px] font-mono text-muted-text mt-6 mb-4 gap-1.5 items-center select-none" aria-label="Breadcrumb">
+    <a href="/" class="hover:text-brand-blue transition-colors">Home</a>
+    <span>/</span>
+    <a href="/area-converter" class="hover:text-brand-blue transition-colors">Area Converter</a>
+    <span>/</span>
+    <span class="text-ink font-semibold">Roofing Square</span>
+  </nav>
+
+  <section class="mb-8">
+    <h1 class="text-3xl font-extrabold tracking-tight text-ink mb-3">Roofing Square Calculator</h1>
+    
+    <!-- Direct Answer Block -->
+    <div class="direct-answer bg-card border border-hairline rounded-xl p-5 mb-5 shadow-sm max-w-2xl">
+      <p class="text-base text-ink mb-1">
+        <strong>1 Roofing Square = 100 Square Feet of Roof Area</strong>
+      </p>
+      <p class="text-xs text-body-text font-normal leading-relaxed">
+        Example: A roof with a footprint of 1,500 sq ft and a 4/12 pitch has a surface area of ~1,581 sq ft (15.8 squares).
+      </p>
+    </div>
+
+    <p class="text-sm text-body-text max-w-2xl leading-relaxed">
+      Calculate roofing squares, bundles of shingles, and underlayment rolls. Accounts for roof pitch and waste factors.
+    </p>
+  </section>
+
+  <!-- Interactive Form -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Roof Parameters</h2>
+      
+      <div>
+        <label for="area-in" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Ground Footprint Area (sq ft)</label>
+        <input
+          id="area-in"
+          type="number"
+          value="1500"
+          class="w-full bg-canvas border border-hairline text-ink rounded-lg p-3 text-lg font-mono font-bold focus:outline-none focus:ring-2 focus:ring-brand-blue/20 focus:border-brand-blue transition-all"
+        />
+      </div>
+
+      <div>
+        <label for="pitch-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Roof Pitch (Slope)</label>
+        <select id="pitch-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          {pitchOptions.map(p => (
+            <option value={p.value} data-factor={p.factor}>{p.name}</option>
+          ))}
+        </select>
+      </div>
+
+      <div>
+        <label for="waste-select" class="block text-xs font-mono font-bold text-muted-text uppercase mb-1.5">Waste Margin</label>
+        <select id="waste-select" class="w-full bg-canvas border border-hairline text-ink rounded-lg p-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-brand-blue">
+          <option value="5">5% (Simple Gable Roof)</option>
+          <option value="10" selected>10% (Standard Hip/Valley Roof)</option>
+          <option value="15">15% (Complex Cut Roof)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Outputs -->
+    <div class="bg-card border border-hairline rounded-2xl p-6 space-y-4">
+      <h2 class="text-sm font-bold uppercase tracking-wider text-muted-text mb-4 font-mono font-bold">Required Materials</h2>
+      
+      <div class="space-y-3">
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Actual Surface Area</span>
+          <span id="surf-res" class="text-lg font-mono font-bold text-brand-blue">1,581 sq ft</span>
+        </div>
+
+        <div class="p-3 bg-canvas border border-hairline rounded-lg">
+          <span class="block text-[10px] font-bold text-muted-text uppercase font-mono">Roofing Squares (including waste)</span>
+          <span id="squares-res" class="text-lg font-mono font-bold text-ink">17.4 squares</span>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div class="p-2 bg-canvas border border-hairline rounded-lg text-center">
+            <span class="block text-[8px] font-bold text-muted-text uppercase font-mono">Shingle Bundles</span>
+            <span id="bundles-res" class="text-sm font-mono font-bold text-ink">53 bundles</span>
+          </div>
+          <div class="p-2 bg-canvas border border-hairline rounded-lg text-center">
+            <span class="block text-[8px] font-bold text-muted-text uppercase font-mono">Underlayment Rolls</span>
+            <span id="rolls-res" class="text-sm font-mono font-bold text-ink">5 rolls</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const areaIn = document.getElementById('area-in') as HTMLInputElement;
+    const pitchSelect = document.getElementById('pitch-select') as HTMLSelectElement;
+    const wasteSelect = document.getElementById('waste-select') as HTMLSelectElement;
+
+    const surfRes = document.getElementById('surf-res') as HTMLSpanElement;
+    const squaresRes = document.getElementById('squares-res') as HTMLSpanElement;
+    const bundlesRes = document.getElementById('bundles-res') as HTMLSpanElement;
+    const rollsRes = document.getElementById('rolls-res') as HTMLSpanElement;
+
+    function calculate() {
+      const footprint = parseFloat(areaIn.value) || 0;
+      
+      const opt = pitchSelect.options[pitchSelect.selectedIndex];
+      const factor = parseFloat(opt.getAttribute('data-factor') || '1.000');
+      
+      const waste = parseFloat(wasteSelect.value) || 10;
+
+      // 1. Surface area = footprint * slope factor
+      const surf = footprint * factor;
+      
+      // 2. Total area with waste
+      const totalArea = surf * (1 + waste / 100);
+      
+      // 3. Squares = totalArea / 100
+      const squares = totalArea / 100;
+
+      // 4. Shingle Bundles: 3 bundles per square
+      const bundles = Math.ceil(squares * 3);
+
+      // 5. Underlayment Rolls: 1 roll covers approx 4 squares (400 sq ft)
+      const rolls = Math.ceil(totalArea / 400);
+
+      if (surfRes) surfRes.textContent = `${Math.round(surf).toLocaleString()} sq ft`;
+      if (squaresRes) squaresRes.textContent = `${squares.toFixed(1)} squares`;
+      if (bundlesRes) bundlesRes.textContent = `${bundles} bundles`;
+      if (rollsRes) rollsRes.textContent = `${rolls} rolls (400 sq ft ea)`;
+    }
+
+    areaIn?.addEventListener('input', calculate);
+    pitchSelect?.addEventListener('change', calculate);
+    wasteSelect?.addEventListener('change', calculate);
+
+    // Initial load
+    calculate();
+  </script>
+
+  <!-- Content Section -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10 text-xs text-body-text max-w-4xl">
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Understanding Roofing Squares</h3>
+      <p class="leading-relaxed mb-3">
+        A <strong>roofing square</strong> is the standard unit of measurement in the roofing industry, equal to 100 square feet of roof surface area. Contractors use squares to estimate materials, calculate labor, and provide bids. The term helps standardize estimates across different roof sizes.
+      </p>
+      <div class="space-y-2 font-mono text-[11px] bg-canvas border border-hairline rounded-lg p-3">
+        <div><strong>1 square</strong> = 100 sq ft of roof surface</div>
+        <div><strong>3-tab shingles:</strong> 3 bundles per square</div>
+        <div><strong>Architectural shingles:</strong> 3 bundles per square</div>
+        <div><strong>Underlayment:</strong> 1 roll per 4 squares (400 sq ft)</div>
+      </div>
+    </section>
+    <section>
+      <h3 class="font-bold text-ink uppercase tracking-wider text-[10px] font-mono mb-3">Roof Pitch and Slope Multipliers</h3>
+      <p class="leading-relaxed mb-3">
+        Roof pitch is measured as rise over run (e.g., 4/12 = 4 inches of rise per 12 inches of horizontal run). As pitch increases, actual surface area grows. The slope factor converts flat footprint to actual roof surface.
+      </p>
+      <p class="leading-relaxed">
+        <strong>Low slope ({'<'}3/12):</strong> Nearly flat — minimal area increase, but requires special membrane roofing. <strong>Standard (4-6/12):</strong> Most residential roofs — 5-12% more area than footprint. <strong>Steep ({'>'}8/12):</strong> 20%+ more area — difficult to walk, requires special safety equipment and installation techniques.
+      </p>
+    </section>
+  </div>
+
+  <!-- FAQ Section -->
+  <section class="bg-card border border-hairline rounded-xl p-6 mb-10 max-w-4xl transition-colors">
+    <h2 class="text-xs font-bold uppercase tracking-wider text-muted-text mb-4 font-mono">Frequently Asked Questions — Roofing Calculation</h2>
+    <FAQSchema faqs={faqs} />
+  </section>
+
+  <!-- Related Tools -->
+  <section class="border-t border-hairline pt-6 mb-10 text-xs text-body-text max-w-4xl select-none">
+    <h3 class="font-semibold text-ink mb-3">Related Construction Tools</h3>
+    <div class="flex flex-wrap gap-3 font-mono">
+      <a href="/square-footage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Square Footage Calculator</a>
+      <a href="/paint-coverage-calculator-sq-ft-per-gallon" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Paint Coverage Calculator</a>
+      <a href="/tile-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Tile Coverage Calculator</a>
+      <a href="/mulch-coverage-calculator" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Mulch Coverage Calculator</a>
+      <a href="/gravel-weight-calculator-tons-to-cubic-yards" class="px-2.5 py-1.5 border border-hairline bg-card hover:border-brand-blue hover:text-brand-blue rounded transition-colors">Gravel Weight Calculator</a>
+    </div>
+  </section>
+
+</BaseLayout>
